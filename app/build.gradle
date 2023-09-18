@@ -105,4 +105,14 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2"
     implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.2"
+
+
+    //map
+    implementation 'com.google.maps.android:maps-compose:2.14.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
+
+
+    implementation "com.google.accompanist:accompanist-permissions:0.28.0"
+
 }
