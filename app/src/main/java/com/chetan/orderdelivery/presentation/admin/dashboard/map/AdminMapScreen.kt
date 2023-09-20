@@ -1,28 +1,22 @@
-package com.chetan.orderdelivery.presentation.user.dashboard
+package com.chetan.orderdelivery.presentation.admin.dashboard.map
+
 
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
+import android.net.Uri
 import android.provider.Settings
-import android.widget.Toast
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -55,39 +49,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-sealed class BackPress {
-    object Idle : BackPress()
-    object InitialTouch : BackPress()
-}
-
 @SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun UserDashboardScreen(onBack: () -> Unit) {
-    var showToast by remember { mutableStateOf(false) }
-    var backPressState by remember {
-        mutableStateOf<BackPress>(BackPress.Idle)
-    }
+fun MapScreen(state: AdminMapState, onEvent: (event: AdminMapEvent) -> Unit) {
     val context = LocalContext.current
-
-    if (showToast) {
-        Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
-        showToast = false
-    }
-
-
-    LaunchedEffect(key1 = backPressState) {
-        if (backPressState == BackPress.InitialTouch) {
-            delay(2000)
-            backPressState = BackPress.Idle
-        }
-    }
-
-    BackHandler(backPressState == BackPress.Idle) {
-        backPressState = BackPress.InitialTouch
-        showToast = true
-    }
-
     val scope = rememberCoroutineScope()
     val locationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
@@ -118,8 +84,8 @@ fun UserDashboardScreen(onBack: () -> Unit) {
             }, onDismissRequest = { }, confirmButton = {
                 Button(onClick = {
                     // Redirect the user to GPS settings
-//                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-//                    context.startActivity(intent)
+                    val intent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+                    context.startActivity(intent)
                     hideDialog = true
                 }) {
                     Text("Enable GPS")
@@ -138,113 +104,97 @@ fun UserDashboardScreen(onBack: () -> Unit) {
                 }
             })
         }
-
-
     }
-
-
-    //
     val cameraPositionState = com.google.maps.android.compose.rememberCameraPositionState()
-    var destination by remember {
-        mutableStateOf(LatLng(0.0, 0.0))
+
+    RequestPermission(permission = Manifest.permission.ACCESS_FINE_LOCATION) {
+        canOrder = it
     }
-    val markerState = rememberMarkerState(position = destination)
+
+    if (locationInfo.isNotBlank()) {
+        LaunchedEffect(key1 = Unit, block = {
+            val userlatlng = locationInfo.split(",")
+            val position = CameraPosition.fromLatLngZoom(
+                LatLng(
+                    userlatlng.first().toDouble(), userlatlng.last().toDouble()
+                ), 16f
+            )
+            cameraPositionState.animate(CameraUpdateFactory.newCameraPosition(position))
+            cameraPositionState.position = position
+        })
+    }
 
 
-    Scaffold(modifier = Modifier, topBar = {}, bottomBar = {
-        BottomAppBar {
-            NavigationBarItem(label = { Text(text = "nepal") },
-                selected = true,
-                onClick = { },
-                icon = {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "")
-                })
-
-            NavigationBarItem(selected = false, onClick = { }, icon = {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "")
-            })
-
-            NavigationBarItem(selected = false, onClick = { }, icon = {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "")
-            })
-
-
-        }
-    }, content = {
+    Scaffold(modifier = Modifier, topBar = {}, bottomBar = {}, content = {
         Column(
             modifier = Modifier
                 .padding(it)
                 .fillMaxSize()
         ) {
-//                CurrentLocationScreen()
-            RequestPermission(permission = Manifest.permission.ACCESS_FINE_LOCATION) {
-                canOrder = it
-            }
 
-            if (locationInfo.isNotBlank()) {
-                LaunchedEffect(key1 = Unit, block = {
-                    val userlatlng = locationInfo.split(",")
-                    val position = CameraPosition.fromLatLngZoom(
-                        LatLng(
-                            userlatlng.first().toDouble(),
-                            userlatlng.last().toDouble()
-                        ), 16f
-                    )
-                    cameraPositionState.animate(CameraUpdateFactory.newCameraPosition(position))
-
-                    cameraPositionState.position = position
-                })
-            }
-            GoogleMap(
-                modifier = Modifier.fillMaxSize(),
+            GoogleMap(modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
                 properties = remember {
                     MapProperties(
                         mapType = MapType.NORMAL,
                         isMyLocationEnabled = true,
                         mapStyleOptions = MapStyleOptions.loadRawResourceStyle(
-                            context,
-                            R.raw.map_style
+                            context, R.raw.map_style
                         )
                     )
                 },
                 onMapClick = {
-                    destination = it
+
                 },
                 onMapLongClick = {
 
                 }
 
             ) {
-                LaunchedEffect(destination) {
-                    if (destination.latitude != 0.0) {
-                        // Delay the marker update to ensure it occurs after the recomposition
-                        delay(100)
-                        markerState.position = destination
-                    }
-                }
-                if (destination.latitude != 0.0) {
+
+                state.orderedUserList.forEach { userData ->
+                    val lok = userData.location.split(",")
                     Marker(
-                        state = markerState,
-                        draggable = true,
+                        state = rememberMarkerState(position = LatLng(lok.first().toDouble(),lok.last().toDouble()), ),
+                        draggable = false,
                         title = "Nepalgunj",
                         snippet = "Nepalgunj Momo bar",
                         icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE),
                         onInfoWindowLongClick = {
-//                                viewModel.onEvent(MapEvent.OnInfoWindowLongClick(parkingSpot))
+                            val uri = Uri.parse("google.navigation:q=${lok.first()},${lok.last()}&origin=${locationInfo}")
+                            val mapIntent = Intent(Intent.ACTION_VIEW, uri)
+                            mapIntent.setPackage("com.google.android.apps.maps")
+
+                            // Start the navigation intent
+                            context.startActivity(mapIntent)
                         },
                         onClick = {
                             it.showInfoWindow()
                             true
-                        }
-                    )
+                        })
                 }
+//                LaunchedEffect(destination) {
+//                    if (destination.latitude != 0.0) {
+//                        // Delay the marker update to ensure it occurs after the recomposition
+//                        delay(100)
+//                        markerState.position = destination
+//                    }
+//                }
+//                if (destination.latitude != 0.0) {
+//                    Marker(state = markerState,
+//                        draggable = true,
+//                        title = "Nepalgunj",
+//                        snippet = "Nepalgunj Momo bar",
+//                        icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE),
+//                        onInfoWindowLongClick = {
+////                                viewModel.onEvent(MapEvent.OnInfoWindowLongClick(parkingSpot))
+//                        },
+//                        onClick = {
+//                            it.showInfoWindow()
+//                            true
+//                        })
+//                }
 
-            }
-            TextButton(
-                onClick = { }, enabled = canOrder
-            ) {
-                Text(text = locationInfo)
             }
         }
     })

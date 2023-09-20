@@ -12,7 +12,9 @@ import androidx.navigation.compose.rememberNavController
 import com.chetan.orderdelivery.presentation.common.google_sign_in.GoogleAuthUiClient
 import com.chetan.orderdelivery.ui.theme.OrderDeliveryTheme
 import com.google.android.gms.auth.api.identity.Identity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val googleAuthUiClient by lazy {
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
                     AppNavHost(
                         navController = navController,
                         onBack = {
+                            println("I am called")
                             finish()
                         },
                         googleAuthUiClient,

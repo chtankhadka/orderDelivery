@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.admin.dashboard
+package com.chetan.orderdelivery.presentation.common.components.requestpermission
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
