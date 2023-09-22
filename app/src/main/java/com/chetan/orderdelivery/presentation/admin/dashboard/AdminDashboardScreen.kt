@@ -42,7 +42,7 @@ import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomN
 import kotlinx.coroutines.delay
 
 
-data class InnerPage(
+data class AdminInnerPage(
     val route: String, val label: Int, val icon: ImageVector
 )
 
@@ -66,15 +66,14 @@ fun AdminDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
         if (backPressCount == 0) {
             Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
             backPressCount++
-            // Reset backPressCount after 2 seconds if no further back press occurs
         } else if (backPressCount == 1) {
             onBack() // Call your onBack function
         }
     }
-    val items: List<InnerPage> = remember {
+    val items: List<AdminInnerPage> = remember {
         listOf(
-            InnerPage("home", R.string.home, Icons.Default.Home),
-            InnerPage("map", R.string.map, Icons.Default.LocationOn)
+            AdminInnerPage("home", R.string.home, Icons.Default.Home),
+            AdminInnerPage("map", R.string.map, Icons.Default.LocationOn)
         )
     }
 

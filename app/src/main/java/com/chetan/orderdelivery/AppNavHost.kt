@@ -20,6 +20,7 @@ import com.chetan.orderdelivery.presentation.common.google_sign_in.GoogleAuthUiC
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInViewModel
 import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
+import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardScreen
 import com.chetan.orderdelivery.presentation.user.foodorder.FoodOrderScreen
 import com.chetan.orderdelivery.presentation.user.foodorder.FoodOrderViewModel
 import kotlinx.coroutines.launch
@@ -47,7 +48,7 @@ fun AppNavHost (
                     if (googleAuthUiClient.getSignedInUser()!!.userEmail == "chtankhadka12@gmail.com"){
                         navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
                     }else{
-                        navController.cleanNavigate(Destination.Screen.UserFoodOrderScreen.route)
+                        navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
                     }
                 }
             })
@@ -90,7 +91,10 @@ fun AppNavHost (
 
         // User
         composable(Destination.Screen.UserDashboardScreen.route){
-
+            UserDashboardScreen(
+                onBack = onBack,
+                navController = navController
+            )
         }
 
         composable(Destination.Screen.UserFoodOrderScreen.route){
