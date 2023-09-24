@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.presentation.common.components.requestpermission.RequestPermission
+import com.chetan.orderdelivery.presentation.common.utils.UserLocation
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -131,7 +132,7 @@ fun FoodOrderScreen(onEvent: (event: FoodOrderEvent) -> Unit, state: FoodOrderSt
                 }
             })
         } else {
-            LaunchedEffect(key1 = canOrder, block = {
+            LaunchedEffect(key1 = Unit, block = {
                 scope.launch(Dispatchers.IO) {
                     val priority = Priority.PRIORITY_HIGH_ACCURACY
                     val result =
@@ -230,7 +231,10 @@ fun FoodOrderScreen(onEvent: (event: FoodOrderEvent) -> Unit, state: FoodOrderSt
                 repeat(pageCount){iteration ->
                     val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
                     Box(modifier = Modifier
-                        .padding(2.dp).clip(CircleShape).background(color = color).size(20.dp))
+                        .padding(2.dp)
+                        .clip(CircleShape)
+                        .background(color = color)
+                        .size(20.dp))
 
                 }
             }
@@ -320,7 +324,7 @@ fun FoodOrderScreen(onEvent: (event: FoodOrderEvent) -> Unit, state: FoodOrderSt
                             FoodOrderEvent.OrderFood(locationInfo)
                         )
                     },
-                    enabled = canOrder && isGpsEnabled && locationInfo.isNotBlank()
+                    enabled = locationInfo.isNotBlank()
                 ) {
                     Text(text = "Order Now")
                 }
