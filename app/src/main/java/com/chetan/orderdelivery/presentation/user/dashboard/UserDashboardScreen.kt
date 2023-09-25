@@ -16,9 +16,12 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuOpen
+import androidx.compose.material.icons.filled.NotificationAdd
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerDefaults
@@ -27,6 +30,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
@@ -36,6 +40,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -65,7 +70,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
+import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.favourite.UserFavouriteScreen
+import com.chetan.orderdelivery.presentation.user.dashboard.history.UserHistoryScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeViewModel
 import kotlinx.coroutines.delay
@@ -73,7 +80,7 @@ import kotlinx.coroutines.launch
 
 
 data class UserInnerPage(
-    val route: String, val label: Int, val icon: ImageVector
+    val route: String, val label: Int, val icon: ImageVector, val count: String = ""
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,6 +109,7 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
         listOf(
             UserInnerPage("home", R.string.home, Icons.Default.Home),
             UserInnerPage("favourite", R.string.favourite, Icons.Default.Favorite),
+            UserInnerPage("cart", R.string.cart, Icons.Default.ShoppingCart),
             UserInnerPage("history", R.string.history, Icons.Default.History)
         )
     }
@@ -170,12 +178,12 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                                     modifier = Modifier
                                         .align(Alignment.BottomCenter)
                                         .size(20.dp),
-                                    imageVector = Icons.Default.ShoppingCart,
+                                    imageVector = Icons.Default.NotificationsActive,
                                     tint = Color.White,
                                     contentDescription = ""
                                 )
                                 Text(
-                                    text = "20",
+                                    text = "201",
                                     modifier = Modifier
                                         .fillMaxSize()
                                         .padding(end = 2.dp),
@@ -197,31 +205,60 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                     })
             },
             bottomBar = {
-                BottomAppBar {
+                BottomAppBar{
                     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
                     items.forEach { screen ->
                         val isSelected =
                             navBackStackEntry?.destination?.hierarchy?.any { it.route == screen.route } == true
                         val color =
-                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                            if (isSelected) Color.White else MaterialTheme.colorScheme.outline
 
-                        CompositionLocalProvider(LocalContentColor provides color) {
-                            NavigationBarItem(colors = NavigationBarItemDefaults.colors(color),
+
+                            NavigationBarItem(
+                                colors = NavigationBarItemDefaults.colors(
+                                    indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                        LocalAbsoluteTonalElevation.current)
+                                ),
                                 icon = {
-                                    Icon(
-                                        imageVector = screen.icon, contentDescription = null
-                                    )
+                                    Card(
+                                        modifier = Modifier.size(34.dp),
+                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                                        elevation = CardDefaults.cardElevation(10.dp),
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(2.dp)
+                                        ) {
+                                            Icon(
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomCenter)
+                                                    .size(20.dp),
+                                                imageVector = screen.icon,
+                                                tint = color,
+                                                contentDescription = ""
+                                            )
+                                            Text(
+                                                text = "12",
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(end = 2.dp),
+                                                fontSize = 8.sp,
+                                                textAlign = TextAlign.Right,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White
+                                            )
+                                        }
+
+                                    }
                                 },
                                 selected = isSelected,
                                 onClick = { bottomNavController.bottomNavigate(screen.route) },
                                 label = {
-                                    Text(
-                                        stringResource(screen.label),
-                                        style = MaterialTheme.typography.labelSmall
-                                    )
-                                })
+                                },
+                                alwaysShowLabel = false)
 
-                        }
+
 
                     }
                 }
@@ -246,7 +283,10 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                         UserFavouriteScreen()
                     }
                     composable("history") {
-
+                        UserHistoryScreen()
+                    }
+                    composable("cart"){
+                        UserCartScreen()
                     }
 
                 }

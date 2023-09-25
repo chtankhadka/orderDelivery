@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 object Constants {
     val testFoodUrl = "https://png.pngtree.com/png-clipart/20230412/original/pngtree-modern-kitchen-food-boxed-cheese-lunch-pizza-png-image_9048155.png"
+    val bottle = "https://www.pngall.com/wp-content/uploads/14/Beer-Bottle-PNG-Picture.png"
     val light_primary = Color(0xFF386A1F)
     val light_onprimary = Color(0xFFFFFFFF)
     val light_primaryContainer = Color(0xFFB8F396)
