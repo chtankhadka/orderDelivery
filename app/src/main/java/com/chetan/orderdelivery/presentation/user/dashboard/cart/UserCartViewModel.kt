@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.user.foodorder
+package com.chetan.orderdelivery.presentation.user.dashboard.cart
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,18 +10,17 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class FoodOrderViewModel @Inject constructor(
+class UserCartViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases
-) : ViewModel() {
+) :ViewModel(){
+    private val _state = MutableStateFlow(UserCartState())
+    val state : StateFlow<UserCartState> = _state
 
-    private val _state = MutableStateFlow(FoodOrderState())
-    val state: StateFlow<FoodOrderState> = _state
-
-    val onEvent: (event: FoodOrderEvent) -> Unit = { event ->
+    val onEvent : (event: UserCartEvent) -> Unit = {event ->
         viewModelScope.launch {
-            when (event) {
-                is FoodOrderEvent.OrderFood -> {
-                    firestoreUseCases.orderFood(event.value)
+            when(event){
+                UserCartEvent.test -> {
+
                 }
             }
         }

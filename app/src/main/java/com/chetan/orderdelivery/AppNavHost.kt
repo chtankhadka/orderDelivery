@@ -21,8 +21,9 @@ import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInViewModel
 import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardScreen
-import com.chetan.orderdelivery.presentation.user.foodorder.FoodOrderScreen
-import com.chetan.orderdelivery.presentation.user.foodorder.FoodOrderViewModel
+import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionScreen
+import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionViewModel
+import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -97,13 +98,17 @@ fun AppNavHost (
             )
         }
 
-        composable(Destination.Screen.UserFoodOrderScreen.route){
-            val viewModel = hiltViewModel<FoodOrderViewModel>()
+        composable(Destination.Screen.UserFoodOrderDescriptionScreen.route){
+            val viewModel = hiltViewModel<FoodOrderDescriptionViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
-            FoodOrderScreen(
+            FoodOrderDescriptionScreen(
                 onEvent = viewModel.onEvent,
                 state = state
             )
+        }
+
+        composable(Destination.Screen.UserOrderCheckoutScreen.route){
+            OrderCheckoutScreen()
         }
 
         //Admin

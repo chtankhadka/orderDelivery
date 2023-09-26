@@ -1,6 +1,5 @@
-package com.chetan.orderdelivery.presentation.user.foodorder
+package com.chetan.orderdelivery.presentation.user.foodorderdescription
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.content.Context
@@ -27,10 +26,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -43,10 +40,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -56,109 +51,41 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.chetan.orderdelivery.presentation.common.components.requestpermission.RequestPermission
-import com.chetan.orderdelivery.presentation.common.utils.UserLocation
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import com.google.android.gms.tasks.CancellationTokenSource
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
 
 @SuppressLint("MissingPermission")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
     ExperimentalFoundationApi::class
 )
 @Composable
-fun FoodOrderScreen(onEvent: (event: FoodOrderEvent) -> Unit, state: FoodOrderState) {
+fun FoodOrderDescriptionScreen(
+    onEvent: (event: FoodOrderDescriptionEvent) -> Unit,
+    state: FoodOrderDescriptionState
+) {
 
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val locationClient = remember {
-        LocationServices.getFusedLocationProviderClient(context)
-    }
-
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-    var locationInfo by remember {
-        mutableStateOf("")
+    if (!isGpsEnabled) {
+        val locationSettingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        val requestCode = 0 // You can choose a unique request code
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            requestCode,
+            locationSettingsIntent,
+            PendingIntent.FLAG_IMMUTABLE // Use FLAG_IMMUTABLE to comply with Android S+
+        )
+        pendingIntent.send()
     }
-    var canOrder by remember {
-        mutableStateOf(false)
-    }
-    var hideDialog by remember {
-        mutableStateOf(false)
-    }
-    RequestPermission(permission = Manifest.permission.ACCESS_FINE_LOCATION, permissionGranted = {
-        canOrder = it
-    })
-    val locationSettingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
-    val requestCode = 0 // You can choose a unique request code
-    val pendingIntent = PendingIntent.getActivity(
-        context,
-        requestCode,
-        locationSettingsIntent,
-        PendingIntent.FLAG_IMMUTABLE // Use FLAG_IMMUTABLE to comply with Android S+
-    )
 
-    if (canOrder) {
-        if (!isGpsEnabled && !hideDialog) {
-            AlertDialog(title = {
-                Text(
-                    text = "Enable GPS", style = TextStyle(
-                        fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }, text = {
-                Text(text = "Please enable GPS for Ordering food.")
-            }, onDismissRequest = {
-
-            }, confirmButton = {
-                Button(onClick = {
-                    pendingIntent.send()
-                    hideDialog = true
-                }) {
-                    Text(text = "Enable GPS")
-                }
-            })
-        } else {
-            LaunchedEffect(key1 = Unit, block = {
-                scope.launch(Dispatchers.IO) {
-                    val priority = Priority.PRIORITY_HIGH_ACCURACY
-                    val result =
-                        locationClient.getCurrentLocation(priority, CancellationTokenSource().token)
-                            .await()
-                    result?.let { currentLocation ->
-                        locationInfo = "${currentLocation.latitude},${currentLocation.longitude}"
-
-                    }
-                }
-            })
-        }
-    }
-    if (canOrder && isGpsEnabled && locationInfo.isBlank()) {
-        AlertDialog(title = {
-
-        }, icon = {
-            Icon(imageVector = Icons.Default.LocationOn, contentDescription = "")
-        }, text = {
-            Text(text = "Location Updating...")
-        }, onDismissRequest = {
-
-        }, confirmButton = {
-
-        })
-    }
 
     var rating: Float by remember {
         mutableFloatStateOf(2f)
@@ -216,25 +143,29 @@ fun FoodOrderScreen(onEvent: (event: FoodOrderEvent) -> Unit, state: FoodOrderSt
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            HorizontalPager(state = pagerState ) { page ->
+            HorizontalPager(state = pagerState) { page ->
                 AsyncImage(
                     contentScale = ContentScale.FillWidth,
                     model = "https://png.pngtree.com/png-clipart/20230412/original/pngtree-modern-kitchen-food-boxed-cheese-lunch-pizza-png-image_9048155.png",
                     contentDescription = "",
                 )
             }
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
-                repeat(pageCount){iteration ->
-                    val color = if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                    Box(modifier = Modifier
-                        .padding(2.dp)
-                        .clip(CircleShape)
-                        .background(color = color)
-                        .size(20.dp))
+                repeat(pageCount) { iteration ->
+                    val color =
+                        if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                    Box(
+                        modifier = Modifier
+                            .padding(2.dp)
+                            .clip(CircleShape)
+                            .background(color = color)
+                            .size(20.dp)
+                    )
 
                 }
             }
@@ -320,11 +251,9 @@ fun FoodOrderScreen(onEvent: (event: FoodOrderEvent) -> Unit, state: FoodOrderSt
                     elevation = ButtonDefaults.buttonElevation(10.dp),
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
                     onClick = {
-                        onEvent(
-                            FoodOrderEvent.OrderFood(locationInfo)
-                        )
+
                     },
-                    enabled = locationInfo.isNotBlank()
+                    enabled = true
                 ) {
                     Text(text = "Order Now")
                 }

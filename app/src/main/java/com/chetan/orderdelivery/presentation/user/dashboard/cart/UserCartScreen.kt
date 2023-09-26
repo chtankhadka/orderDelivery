@@ -1,5 +1,10 @@
 package com.chetan.orderdelivery.presentation.user.dashboard.cart
 
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.location.LocationManager
+import android.provider.Settings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +27,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -40,14 +45,30 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.common.Constants
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserCartScreen() {
-
+fun UserCartScreen(navController: NavHostController) {
     val cartList = listOf("Pizza", "Jhol MoMo", "Fried Momo", "Buff Momo", "Chicken Momo")
+
+    val context = LocalContext.current
+    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+    if (!isGpsEnabled) {
+        val locationSettingsIntent = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)
+        val requestCode = 0 // You can choose a unique request code
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            requestCode,
+            locationSettingsIntent,
+            PendingIntent.FLAG_IMMUTABLE // Use FLAG_IMMUTABLE to comply with Android S+
+        )
+        pendingIntent.send()
+    }
+
     Scaffold(content = {
         Column(modifier = Modifier.padding(it)) {
             Row(
@@ -60,11 +81,9 @@ fun UserCartScreen() {
                     Checkbox(checked = true, onCheckedChange = {})
                     Text(text = "Select All")
                 }
-                Button(
-                    shape = RoundedCornerShape(10.dp),
-                    onClick = {
+                Button(shape = RoundedCornerShape(10.dp), onClick = {
 
-                    }) {
+                }) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = "")
                     Text(text = "Delete")
                 }
@@ -131,8 +150,7 @@ fun UserCartScreen() {
                                                 )
                                                 Row(
                                                     modifier = Modifier.padding(
-                                                        end = 10.dp,
-                                                        bottom = 5.dp
+                                                        end = 10.dp, bottom = 5.dp
                                                     ),
                                                     verticalAlignment = Alignment.CenterVertically,
                                                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -144,8 +162,7 @@ fun UserCartScreen() {
                                                         ),
                                                         elevation = CardDefaults.cardElevation(10.dp),
                                                     ) {
-                                                        IconButton(
-                                                            onClick = { }) {
+                                                        IconButton(onClick = { }) {
                                                             Icon(
                                                                 imageVector = Icons.Default.Remove,
                                                                 contentDescription = "Remove",
@@ -164,8 +181,7 @@ fun UserCartScreen() {
                                                         ),
                                                         elevation = CardDefaults.cardElevation(10.dp),
                                                     ) {
-                                                        IconButton(
-                                                            onClick = { }) {
+                                                        IconButton(onClick = { }) {
                                                             Icon(
                                                                 imageVector = Icons.Default.Add,
                                                                 contentDescription = "Add"
@@ -205,49 +221,48 @@ fun UserCartScreen() {
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.outline,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        ) {
-                            append("Delivery: Rs 120\n")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        ) {
-                            append("Total: ")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Red,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold
+                Text(text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.outline,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    ) {
+                        append("Delivery: Rs 120\n")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                        )
+                    ) {
+                        append("Total: ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
 
-                            )
-                        ) {
-                            append("Rs")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Red,
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        ) {
-                            append("120")
-                        }
+                        )
+                    ) {
+                        append("Rs")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    ) {
+                        append("120")
+                    }
 
-                    })
+                })
                 Button(
-                    onClick = { },
-                    shape = RoundedCornerShape(10.dp)
+                    onClick = {
+                              navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route)
+                    }, shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(text = "Check out (2)")
 
