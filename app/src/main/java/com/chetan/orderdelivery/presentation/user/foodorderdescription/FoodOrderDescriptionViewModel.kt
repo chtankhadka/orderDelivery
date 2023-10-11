@@ -21,7 +21,7 @@ class FoodOrderDescriptionViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is FoodOrderDescriptionEvent.OrderFood -> {
-                    firestoreUseCases.orderFood(event.value)
+
                 }
             }
         }

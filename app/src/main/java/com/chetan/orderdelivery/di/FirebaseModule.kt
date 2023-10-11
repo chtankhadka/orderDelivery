@@ -1,10 +1,16 @@
 package com.chetan.orderdelivery.di
 
 import com.chetan.orderdelivery.data.repositoryImpl.FirestoreRepositoryImpl
+import com.chetan.orderdelivery.data.repositoryImpl.RealtimeRepositoryImpl
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
+import com.chetan.orderdelivery.domain.repository.RealtimeRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
+import com.chetan.orderdelivery.domain.use_cases.realtime.GetItems
+import com.chetan.orderdelivery.domain.use_cases.realtime.Insert
+import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.FirebaseFirestoreKtxRegistrar
 import com.google.firebase.storage.FirebaseStorage
@@ -43,4 +49,24 @@ object FirebaseModule {
             orderFood = OrderFood(repository = repository),
             getFoodOrders = GetFoodOrders(repository = repository)
         )
+
+    @Singleton
+    @Provides
+    fun provideFirebaseRealtime() : FirebaseDatabase{
+        return FirebaseDatabase.getInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun provideFirebaseRealtimeRepository(realtime: FirebaseDatabase) : RealtimeRepository{
+        return RealtimeRepositoryImpl(realtime)
+    }
+
+    @Singleton
+    @Provides
+    fun provideFirebaseRealtimeUseCases(repository: RealtimeRepository) =
+            RealtimeUseCases(
+                insert = Insert(realtimeRepository = repository),
+                getItems = GetItems(realtimeRepository = repository)
+            )
 }

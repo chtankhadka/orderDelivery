@@ -62,14 +62,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.presentation.common.components.requestpermission.RequestPermission
-import com.chetan.orderdelivery.ui.theme.OrderDeliveryTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -89,7 +88,11 @@ import java.util.Locale
 @SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun OrderCheckoutScreen() {
+fun OrderCheckoutScreen(
+    navController: NavHostController,
+    onEvent: (event: OrderCheckoutEvent) -> Unit,
+    state: OrderCheckoutState
+) {
 
     val scope = rememberCoroutineScope()
     val cartList = listOf("Pizza", "Jhol MoMo", "Fried Momo", "Buff Momo", "Chicken Momo")
@@ -100,16 +103,8 @@ fun OrderCheckoutScreen() {
     var openMap by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState()
 
-    val markerPosition = LatLng(1.35, 103.87)
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(markerPosition, 18f)
-    }
-
-    var locationAddress by remember {
-        mutableStateOf("")
-    }
-    var location by remember {
-        mutableStateOf("")
+        position = CameraPosition.fromLatLngZoom(state.cameraLocation, 18f)
     }
 
     val ctx = LocalContext.current
@@ -143,7 +138,6 @@ fun OrderCheckoutScreen() {
         locationSettingsIntent,
         PendingIntent.FLAG_IMMUTABLE // Use FLAG_IMMUTABLE to comply with Android S+
     )
-
     if (canOrder) {
         if (!isGpsEnabled && !hideDialog) {
             AlertDialog(title = {
@@ -193,9 +187,6 @@ fun OrderCheckoutScreen() {
 
         })
     }
-
-
-
     if (showConfirmDialog) {
         Dialog(onDismissRequest = { showConfirmDialog = false }, content = {
             Card(
@@ -214,7 +205,7 @@ fun OrderCheckoutScreen() {
                     )
 
                     Text(
-                        text = locationAddress,
+                        text = state.locationAddress,
                         style = MaterialTheme.typography.bodyMedium.copy( textAlign = TextAlign.Center))
                     Text(
                         text = buildAnnotatedString {
@@ -245,6 +236,7 @@ fun OrderCheckoutScreen() {
                             modifier = Modifier.weight(1f),
                             elevation = ButtonDefaults.buttonElevation(10.dp),
                             onClick = {
+                                onEvent(OrderCheckoutEvent.OrderNow)
                                 showConfirmDialog = false
                             },
                         ) {
@@ -265,57 +257,19 @@ fun OrderCheckoutScreen() {
             }
         })
     }
-
     if (!openMap){
         LaunchedEffect(key1 = Unit, block = {
             if (!cameraPositionState.isMoving){
                 try {
-                    location = "${cameraPositionState.position.target.latitude},${cameraPositionState.position.target.longitude}"
+                   onEvent(OrderCheckoutEvent.Location("${cameraPositionState.position.target.latitude},${cameraPositionState.position.target.longitude}"))
                     val addressList = mGeocoder.getFromLocation(
                         cameraPositionState.position.target.latitude,
                         cameraPositionState.position.target.longitude,
                         5
                     )
-                    println(addressList)
-
-                    // use your lat, long value here
                     if (addressList != null && addressList.isNotEmpty()) {
                         val address = addressList[2].getAddressLine(0)
-                        println(address)
-                        locationAddress = address
-//                        val addressLines = address["addressLines"] as? List<String>
-//                        if (addressLines != null && addressLines.isNotEmpty()) {
-//                            val desiredAddress = addressLines[0]
-//                            println(desiredAddress)
-//                        } else {
-//                            println("Address lines are empty or missing for the selected index.")
-//                        }
-
-
-
-
-
-
-
-//                        val sb = StringBuilder()
-//                        for (i in 0 until address.maxAddressLineIndex) {
-//                            sb.append(address.getAddressLine(i)).append("\n")
-//                        }
-//
-//                        // Various Parameters of an Address are appended
-//                        // to generate a complete Address
-//                        if (address.premises != null)
-
-
-
-//                            sb.append(address.premises).append(", ")
-//
-//                        sb.append(address.subAdminArea).append("\n")
-//                        sb.append(address.featureName).append(",")
-//                        sb.append(address.thoroughfare).append(",")
-                        // StringBuilder sb is converted into a string
-                        // and this value is assigned to the
-                        // initially declared addressString string.
+                        onEvent(OrderCheckoutEvent.LocationAddress(address))
                     }
                 } catch (e: IOException) {
                     Toast.makeText(ctx, "Unable connect to Geocoder", Toast.LENGTH_LONG).show()
@@ -344,7 +298,6 @@ fun OrderCheckoutScreen() {
                                 mapType = MapType.NORMAL, isMyLocationEnabled = true
                             )
                         })
-                    Text(text = locationAddress)
                     Icon(
                         modifier = Modifier.align(Alignment.Center),
                         imageVector = Icons.Default.LocationOn,
@@ -407,7 +360,7 @@ fun OrderCheckoutScreen() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = locationAddress, modifier = Modifier.weight(1f))
+                    Text(text = state.locationAddress, modifier = Modifier.weight(1f))
                     IconButton(onClick = {
                         openMap = true
                     }) {
@@ -634,12 +587,4 @@ fun OrderCheckoutScreen() {
     }
 
     )
-}
-
-@Composable
-@Preview
-fun show() {
-    OrderDeliveryTheme {
-        OrderCheckoutScreen()
-    }
 }

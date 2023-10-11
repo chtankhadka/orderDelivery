@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -27,6 +28,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBarItem
@@ -37,6 +39,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -61,8 +64,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
+import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.favourite.UserFavouriteScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.history.UserHistoryScreen
@@ -107,7 +112,6 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
         )
     }
     val bottomNavController = rememberNavController()
-
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -122,6 +126,11 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                     .background(MaterialTheme.colorScheme.surface)
             ) {
 
+                Button(onClick = {
+                    navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
+                }) {
+                    Text(text = "Admin")
+                }
             }
         }) {
         Scaffold(modifier = Modifier,
@@ -188,7 +197,8 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                             }
 
                         }
-                    }, title = {
+                    },
+                    title = {
                         Text(
                             text = "MOMO BAR",
                             style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
@@ -206,50 +216,53 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                         val color =
                             if (isSelected) Color.White else MaterialTheme.colorScheme.outline
 
-
-                            NavigationBarItem(
-                                colors = NavigationBarItemDefaults.colors(
-                                    indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
-                                        LocalAbsoluteTonalElevation.current)
-                                ),
-                                icon = {
-                                    Card(
-                                        modifier = Modifier.size(34.dp),
-                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                                        elevation = CardDefaults.cardElevation(10.dp),
+                        CompositionLocalProvider(LocalContentColor provides color) {
+                        NavigationBarItem(
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                    LocalAbsoluteTonalElevation.current
+                                )
+                            ),
+                            icon = {
+                                Card(
+                                    modifier = Modifier.size(34.dp),
+                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                                    elevation = CardDefaults.cardElevation(10.dp),
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(2.dp)
                                     ) {
-                                        Box(
+                                        Icon(
+                                            modifier = Modifier
+                                                .align(Alignment.BottomCenter)
+                                                .size(20.dp),
+                                            imageVector = screen.icon,
+                                            tint = color,
+                                            contentDescription = ""
+                                        )
+                                        Text(
+                                            text = "12",
                                             modifier = Modifier
                                                 .fillMaxSize()
-                                                .padding(2.dp)
-                                        ) {
-                                            Icon(
-                                                modifier = Modifier
-                                                    .align(Alignment.BottomCenter)
-                                                    .size(20.dp),
-                                                imageVector = screen.icon,
-                                                tint = color,
-                                                contentDescription = ""
-                                            )
-                                            Text(
-                                                text = "12",
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .padding(end = 2.dp),
-                                                fontSize = 8.sp,
-                                                textAlign = TextAlign.Right,
-                                                fontWeight = FontWeight.Bold,
-                                                color = Color.White
-                                            )
-                                        }
-
+                                                .padding(end = 2.dp),
+                                            fontSize = 8.sp,
+                                            textAlign = TextAlign.Right,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.White
+                                        )
                                     }
-                                },
-                                selected = isSelected,
-                                onClick = { bottomNavController.bottomNavigate(screen.route) },
-                                label = {
-                                },
-                                alwaysShowLabel = false)
+
+                                }
+                            },
+                            selected = isSelected,
+                            onClick = { bottomNavController.bottomNavigate(screen.route) },
+                            label = {
+                            },
+                            alwaysShowLabel = false
+                        )
+                    }
 
 
 
@@ -268,9 +281,7 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                             navController = navController,
                             state = viewModel.state.collectAsStateWithLifecycle().value,
                             event = viewModel.onEvent
-
                         )
-
                     }
                     composable("favourite") {
                         UserFavouriteScreen()

@@ -7,9 +7,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.chetan.orderdelivery.presentation.common.google_sign_in.GoogleAuthUiClient
+import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeScreen
+import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeViewModel
 import com.chetan.orderdelivery.ui.theme.OrderDeliveryTheme
 import com.google.android.gms.auth.api.identity.Identity
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,7 +38,13 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-
+//                    val viewModel = hiltViewModel<UserHomeViewModel>()
+//                    UserHomeScreen(
+//                        navController = navController,
+//                        state = viewModel.state.collectAsStateWithLifecycle().value,
+//                        event = viewModel.onEvent
+//
+//                    )
                     AppNavHost(
                         navController = navController,
                         onBack = {

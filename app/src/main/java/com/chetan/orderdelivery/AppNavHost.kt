@@ -24,6 +24,7 @@ import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardScreen
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionScreen
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionViewModel
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
+import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
 import kotlinx.coroutines.launch
 
 @Composable
@@ -108,7 +109,13 @@ fun AppNavHost (
         }
 
         composable(Destination.Screen.UserOrderCheckoutScreen.route){
-            OrderCheckoutScreen()
+            val viewModel = hiltViewModel<OrderCheckoutViewModel>()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+            OrderCheckoutScreen(
+                navController = navController,
+                onEvent = viewModel.onEvent,
+                state = state
+            )
         }
 
         //Admin
