@@ -133,7 +133,8 @@ fun FoodOrderDescriptionScreen(
 
         )
 
-    }, content = {
+    },
+        content = {
         Column(
             modifier = Modifier
                 .padding(it)

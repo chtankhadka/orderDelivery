@@ -76,7 +76,8 @@ fun UserLocation(): String {
                         fontWeight = FontWeight.Bold
                     )
                 )
-            }, text = {
+            },
+                text = {
                 Text(text = "Please enable GPS for Ordering food.")
             }, onDismissRequest = {
 

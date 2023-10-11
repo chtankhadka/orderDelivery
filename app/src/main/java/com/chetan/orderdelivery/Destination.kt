@@ -11,6 +11,8 @@ open class Destination(open val route: String) {
 
         //Admin
         object AdminDashboardScreen : Destination("admin-dashboard-screen")
+        object AdminAddFoodScreen : Destination("admin-add-food-screen")
+        object AdminAddPopularScreen : Destination("admin-add-popular-screen")
 
 
         //User

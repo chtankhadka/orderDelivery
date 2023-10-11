@@ -16,6 +16,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardScreen
+import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodScreen
+import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodViewModel
+import com.chetan.orderdelivery.presentation.admin.food.addpopularfood.AddPopularFoodScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.GoogleAuthUiClient
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInViewModel
@@ -124,6 +127,17 @@ fun AppNavHost (
                 navController = navController,
                 onBack = onBack
             )
+        }
+        composable(Destination.Screen.AdminAddFoodScreen.route){
+            val viewModel = hiltViewModel<AddFoodViewModel>()
+            AddFoodScreen(
+                navController = navController,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                onEvent = viewModel.onEvent
+            )
+        }
+        composable(Destination.Screen.AdminAddPopularScreen.route){
+            AddPopularFoodScreen()
         }
     }
 }

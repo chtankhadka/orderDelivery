@@ -95,19 +95,24 @@ fun AdminDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
         drawerState = drawerState,
         scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         drawerContent = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
+            AdminDashboardModalDrawerPage(
+                onClick = {
+                    when(it){
+                        MenuItem.AddDrinks -> {
 
-                Button(onClick = {
-                    navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
-                }) {
-                    Text(text = "User")
-                }
-            }
+                        }
+                        MenuItem.AddFoodItem -> {
+                            navController.navigate(Destination.Screen.AdminAddFoodScreen.route)
+                        }
+                        MenuItem.AddPopularItem -> {
+                            navController.navigate(Destination.Screen.AdminAddPopularScreen.route)
+                        }
+
+                        MenuItem.User -> {
+                            navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
+                        }
+                    }
+                })
         }) {
         Scaffold(
             modifier = Modifier,
