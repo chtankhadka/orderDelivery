@@ -6,12 +6,15 @@ import com.chetan.orderdelivery.data.repositoryImpl.StorageRepositoryImpl
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.chetan.orderdelivery.domain.repository.RealtimeRepository
 import com.chetan.orderdelivery.domain.repository.StorageRepository
+import com.chetan.orderdelivery.domain.use_cases.firestore.AddFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
+import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
 import com.chetan.orderdelivery.domain.use_cases.realtime.GetItems
 import com.chetan.orderdelivery.domain.use_cases.realtime.Insert
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
+import com.chetan.orderdelivery.domain.use_cases.storage.DeleteImage
 import com.chetan.orderdelivery.domain.use_cases.storage.FirestorageUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.InsertImage
 import com.google.firebase.database.FirebaseDatabase
@@ -49,7 +52,8 @@ object FirebaseModule {
     @Provides
     fun provideStorageUseCases(repository: StorageRepository) =
         FirestorageUseCases(
-            insertImage = InsertImage(repository = repository)
+            insertImage = InsertImage(repository = repository),
+            deleteImage = DeleteImage(repository = repository)
         )
 
     @Singleton
@@ -63,7 +67,9 @@ object FirebaseModule {
     fun provideFirestoreUseCases(repository: FirestoreRepository) =
         FirestoreUseCases(
             orderFood = OrderFood(repository = repository),
-            getFoodOrders = GetFoodOrders(repository = repository)
+            getFoodOrders = GetFoodOrders(repository = repository),
+            addFood = AddFood(repository = repository),
+            rateIt = RateIt(repository = repository)
         )
 
     @Singleton
