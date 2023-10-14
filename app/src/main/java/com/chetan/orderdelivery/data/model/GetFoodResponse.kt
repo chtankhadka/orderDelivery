@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.data.model.order
+package com.chetan.orderdelivery.data.model
 
 data class GetFoodResponse(
     val foodId: String = "",
@@ -9,6 +9,7 @@ data class GetFoodResponse(
     val foodPrice: String = "",
     val foodDiscount: String = "",
     val foodRating: Float = 0f,
+    val newFoodRating: Float = 0f,
     val date: String = "",
 
 

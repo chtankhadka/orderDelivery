@@ -3,18 +3,12 @@ package com.chetan.orderdelivery.presentation.admin.dashboard
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.Button
 import androidx.compose.material3.DrawerValue
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -104,8 +98,8 @@ fun AdminDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                         MenuItem.AddFoodItem -> {
                             navController.navigate(Destination.Screen.AdminAddFoodScreen.route)
                         }
-                        MenuItem.AddPopularItem -> {
-                            navController.navigate(Destination.Screen.AdminAddPopularScreen.route)
+                        MenuItem.UpdateRating -> {
+                            navController.navigate(Destination.Screen.AdminRatingUpdateScreen.route)
                         }
 
                         MenuItem.User -> {

@@ -1,6 +1,6 @@
 package com.chetan.orderdelivery.data.model
 
-data class Rating(
+data class RatingRequestResponse(
     val userMail: String = "",
     val userName: String = "",
     val foodId: String = "",

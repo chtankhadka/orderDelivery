@@ -1,10 +1,12 @@
 package com.chetan.orderdelivery
 
 import android.content.Context
+import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -18,7 +20,8 @@ import androidx.navigation.compose.composable
 import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardScreen
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodScreen
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodViewModel
-import com.chetan.orderdelivery.presentation.admin.food.addpopularfood.AddPopularFoodScreen
+import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateScreen
+import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateViewModel
 import com.chetan.orderdelivery.presentation.common.google_sign_in.GoogleAuthUiClient
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInViewModel
@@ -30,6 +33,7 @@ import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScr
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppNavHost (
     navController: NavHostController,
@@ -136,8 +140,13 @@ fun AppNavHost (
                 onEvent = viewModel.onEvent
             )
         }
-        composable(Destination.Screen.AdminAddPopularScreen.route){
-            AddPopularFoodScreen()
+        composable(Destination.Screen.AdminRatingUpdateScreen.route){
+            val viewModel = hiltViewModel<RatingUpdateViewModel>()
+         RatingUpdateScreen(
+             navController = navController,
+             state = viewModel.state.collectAsStateWithLifecycle().value,
+             onEvent = viewModel.onEvent
+         )
         }
     }
 }

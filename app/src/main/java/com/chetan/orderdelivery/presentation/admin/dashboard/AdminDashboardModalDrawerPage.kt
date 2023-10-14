@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.LocalPizza
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.StarRate
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -26,7 +27,7 @@ fun AdminDashboardModalDrawerPage(
 
     val menuList = listOf(
         MenuItem.AddFoodItem,
-        MenuItem.AddPopularItem,
+        MenuItem.UpdateRating,
         MenuItem.AddDrinks,
         MenuItem.User
     )
@@ -56,7 +57,7 @@ fun AdminDashboardModalDrawerPage(
 
 sealed class MenuItem(val icon: ImageVector, val label: String){
     data object AddFoodItem: MenuItem(icon = Icons.Default.LocalPizza, label = "Add Food Item")
-    data object AddPopularItem: MenuItem(icon = Icons.Default.Favorite, label = "Add Popular Food")
+    data object UpdateRating: MenuItem(icon = Icons.Default.StarRate, label = "Update Rating")
     data object AddDrinks: MenuItem(icon = Icons.Default.LocalDrink, label = "Add Drinks")
     data object User: MenuItem(icon = Icons.Default.Person, label = "User")
 }

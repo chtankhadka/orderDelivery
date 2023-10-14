@@ -7,10 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.AddFoodRequest
 import com.chetan.orderdelivery.data.model.ImageStorageDetails
-import com.chetan.orderdelivery.data.model.Rating
+import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.FirestorageUseCases
-import com.chetan.orderdelivery.presentation.common.utils.GenerateRandomNumber
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -151,7 +150,7 @@ class AddFoodViewModel @Inject constructor(
 
                 AddFoodEvent.AddFood -> {
                     val rateit = firestoreUseCases.rateIt(
-                        data = Rating(
+                        data = RatingRequestResponse(
                             userName = "anita",
                             userMail = "anita" ,
                             foodId = state.value.foodId,

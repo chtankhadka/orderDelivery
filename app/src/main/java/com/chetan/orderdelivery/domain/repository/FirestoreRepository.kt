@@ -2,9 +2,9 @@ package com.chetan.orderdelivery.domain.repository
 
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.AddFoodRequest
-import com.chetan.orderdelivery.data.model.Rating
+import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.order.GetFoodOrder
-import com.chetan.orderdelivery.data.model.order.GetFoodResponse
+import com.chetan.orderdelivery.data.model.GetFoodResponse
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 
 interface FirestoreRepository {
@@ -13,10 +13,12 @@ interface FirestoreRepository {
     ) : Resource<Any>
 
     suspend fun rating(
-        data: Rating
+        data: RatingRequestResponse
     ) : Resource<Boolean>
 
     suspend fun getFoods() : Resource<List<GetFoodResponse>>
+    suspend fun getFoodsForUpdate() : Resource<List<GetFoodResponse>>
+    suspend fun getRating() : Resource<List<RatingRequestResponse>>
 
 
 
