@@ -58,6 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.common.Constants
+import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateEvent
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.ui.theme.OrderDeliveryTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,6 +139,21 @@ fun AddFoodScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(5.dp)
         ) {
+            state.infoMsg?.let {
+                MessageDialog(
+                    message = it,
+                    onDismissRequest = {
+                        if (onEvent != null && state.infoMsg.isCancellable == true){
+                            onEvent(AddFoodEvent.DismissInfoMsg)
+                        }
+                    },
+                    onPositive = {  },
+                    onNegative = {
+
+                    })
+            }
+
+
             Box(
                 modifier = Modifier.padding(10.dp)
             ) {

@@ -109,7 +109,10 @@ fun AppNavHost (
         composable(Destination.Screen.UserFoodOrderDescriptionScreen.route){
             val viewModel = hiltViewModel<FoodOrderDescriptionViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
+            val foodId = it.arguments?.getString("foodId")
             FoodOrderDescriptionScreen(
+                foodId = foodId,
+                navController = navController,
                 onEvent = viewModel.onEvent,
                 state = state
             )

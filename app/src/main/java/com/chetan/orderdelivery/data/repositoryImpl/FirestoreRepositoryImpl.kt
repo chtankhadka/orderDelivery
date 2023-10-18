@@ -78,6 +78,26 @@ class FirestoreRepositoryImpl @Inject constructor(
             Resource.Failure(e)
         }
     }
+
+    override suspend fun getFoodItem(foodId: String): Resource<GetFoodResponse> {
+        return try {
+            val foodItem: GetFoodResponse
+            val document = firestore
+                .collection("admin")
+                .document("foods")
+                .collection("foods")
+                .document(foodId)
+                .get()
+                .await()
+                .toObject<GetFoodResponse>()
+            foodItem = document ?: GetFoodResponse()
+            Resource.Success(foodItem)
+        }catch (e: Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
     override suspend fun getFoodsForUpdate(): Resource<List<GetFoodResponse>> {
         return try {
             val foodResponse = mutableListOf<GetFoodResponse>()
@@ -109,6 +129,7 @@ class FirestoreRepositoryImpl @Inject constructor(
                     val newValue = ratingResponseList.sumOf{ it.rateValue.toInt() }.toFloat() / ratingResponseList.size.toFloat()
                     foodResponse.add(data.copy(newFoodRating = newValue ))
                 }
+                ratingResponseList.clear()
             }
             Resource.Success(foodResponse)
         } catch (e: Exception) {

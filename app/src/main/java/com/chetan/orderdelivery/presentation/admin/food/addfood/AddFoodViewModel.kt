@@ -33,6 +33,13 @@ class AddFoodViewModel @Inject constructor(
     val onEvent: (event: AddFoodEvent) -> Unit = { event ->
         viewModelScope.launch {
             when (event) {
+
+                 AddFoodEvent.DismissInfoMsg -> {
+                     _state.update {
+                         it.copy(infoMsg = null)
+                     }
+                }
+
                 is AddFoodEvent.OnSelectedFoodTypeChange -> {
                     _state.update {
                         it.copy(

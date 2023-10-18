@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +43,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.common.Constants
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 
@@ -84,6 +87,18 @@ fun UserHomeScreen(
                     .verticalScroll(rememberScrollState())
                     .fillMaxSize(),
             ) {
+                state.infoMsg?.let {
+                    MessageDialog(
+                        message = it,
+                        onDismissRequest = {
+                            if (event != null && state.infoMsg.isCancellable == true) {
+                                event(UserHomeEvent.DismissInfoMsg)
+                            }
+                        },
+                        onPositive = { /*TODO*/ }) {
+
+                    }
+                }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -112,24 +127,27 @@ fun UserHomeScreen(
                     }
                 }
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(15.dp), content = {
-                    items(listOfItem) { foodItem ->
+                    items(state.allFoods) { foodItem ->
                         Column(
                             modifier = Modifier,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Card(
                                 modifier = Modifier.clickable {
-                                    navController.navigate(Destination.Screen.UserFoodOrderDescriptionScreen.route)
+                                    navController.navigate(Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                        "{foodId}", foodItem.foodId
+                                    ))
                                 },
-                                colors = CardDefaults.cardColors(Color.Transparent),
+                                colors = CardDefaults.cardColors(Color.Transparent)
                             ) {
                                 AsyncImage(
                                     modifier = Modifier
                                         .size(100.dp)
-                                        .padding(5.dp),
-                                    model = foodItem.image,
+                                        .padding(5.dp)
+                                        .clip(shape = CircleShape),
+                                    model = foodItem.faceImgUrl,
                                     contentDescription = null,
-                                    contentScale = ContentScale.Fit
+                                    contentScale = ContentScale.Crop
                                 )
                                 Text(
                                     modifier = Modifier.width(100.dp),

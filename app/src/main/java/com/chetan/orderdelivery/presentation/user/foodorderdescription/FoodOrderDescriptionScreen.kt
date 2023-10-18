@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
@@ -43,7 +44,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +55,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.gowtham.ratingbar.RatingBar
@@ -68,8 +69,14 @@ import com.gowtham.ratingbar.RatingBarStyle
 @Composable
 fun FoodOrderDescriptionScreen(
     onEvent: (event: FoodOrderDescriptionEvent) -> Unit,
-    state: FoodOrderDescriptionState
+    state: FoodOrderDescriptionState,
+    navController: NavHostController,
+    foodId: String?
 ) {
+
+    foodId?.let {
+        onEvent(FoodOrderDescriptionEvent.GetFoodItemDetails(foodId))
+    }
 
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -87,16 +94,34 @@ fun FoodOrderDescriptionScreen(
     }
 
 
-    var rating: Float by remember {
-        mutableFloatStateOf(2f)
-    }
-    val pagerState = rememberPagerState { 2 }
-    val pageCount = 2
-    Scaffold(topBar = {
-        TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = { }, navigationIcon = {
-            Icon(
-                modifier = Modifier, imageVector = Icons.Default.ArrowBack, contentDescription = ""
+    val pagerImages = mutableListOf(
+        state.foodItemDetails.faceImgUrl,
+        state.foodItemDetails.supportImgUrl2,
+        state.foodItemDetails.supportImgUrl3,
+        state.foodItemDetails.supportImgUrl4,
+    ).filter { it.isNotBlank() }
+
+    val pagerState = rememberPagerState { pagerImages.size }
+    val pageCount = pagerImages.size
+    Scaffold(
+        topBar = {
+        TopAppBar(modifier = Modifier.padding(horizontal = 5.dp),  title = {
+            Text(
+                text = "Food Description",
+                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
             )
+        }, navigationIcon = {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Icon(
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier,
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = ""
+                )
+            }
+
         }, actions = {
             Card(
                 modifier = Modifier.size(34.dp),
@@ -144,12 +169,25 @@ fun FoodOrderDescriptionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            HorizontalPager(state = pagerState) { page ->
-                AsyncImage(
-                    contentScale = ContentScale.FillWidth,
-                    model = "https://png.pngtree.com/png-clipart/20230412/original/pngtree-modern-kitchen-food-boxed-cheese-lunch-pizza-png-image_9048155.png",
-                    contentDescription = "",
-                )
+            if (pagerImages.size != 0){
+                HorizontalPager(
+                    state = pagerState) { page ->
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center)
+                    ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(shape = CircleShape),
+                        contentScale = ContentScale.Crop,
+                        model = pagerImages[page],
+                        contentDescription = "",
+                        alignment = Alignment.Center
+                    )}
+                }
             }
             Row(
                 modifier = Modifier
@@ -177,15 +215,15 @@ fun FoodOrderDescriptionScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 5.dp)
             ) {
-                Text(text = "Tasty Nepali Pizza", style = MaterialTheme.typography.headlineSmall)
+                Text(text = state.foodItemDetails.foodName, style = MaterialTheme.typography.headlineSmall)
 
                 RatingBar(
                     size = 15.dp,
-                    value = rating,
+                    value = state.foodItemDetails.foodRating,
                     spaceBetween = 2.dp,
                     style = RatingBarStyle.Default,
                     onValueChange = {
-                        rating = it
+
                     },
                     onRatingChanged = {
 
@@ -195,7 +233,7 @@ fun FoodOrderDescriptionScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = "Rs. 200.00", style = MaterialTheme.typography.headlineLarge.copy(
+                        text = "Rs. ${state.foodItemDetails.foodPrice}", style = MaterialTheme.typography.headlineLarge.copy(
                             fontWeight = FontWeight.ExtraBold,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -237,7 +275,7 @@ fun FoodOrderDescriptionScreen(
                     text = "About the food", style = MaterialTheme.typography.headlineSmall
                 )
                 Text(
-                    text = "This food is very good for those who becomes evil at the time fo hunger This food is very good for those who becomes evil at the time fo hunger",
+                    text = state.foodItemDetails.foodDetails,
                     style = MaterialTheme.typography.labelMedium.copy(MaterialTheme.colorScheme.outlineVariant)
                 )
 

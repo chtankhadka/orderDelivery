@@ -1,5 +1,8 @@
 package com.chetan.orderdelivery.presentation.admin.food.addfood
 
+import com.chetan.orderdelivery.presentation.common.components.OrderDeliveryScreenState
+import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
+
 
 data class ImageUrlDetail(
     val imageName : String =  "",
@@ -24,5 +27,6 @@ data class AddFoodState(
     val foodId : String = "",
     val foodDetails: String = "",
     val foodPrice: String = "",
-    val foodDiscountPrice : String = ""
-)
+    val foodDiscountPrice : String = "",
+    override val infoMsg: Message? = null
+) : OrderDeliveryScreenState(infoMsg)

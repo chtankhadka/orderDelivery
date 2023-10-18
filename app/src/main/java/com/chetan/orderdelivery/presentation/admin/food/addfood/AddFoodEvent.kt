@@ -3,6 +3,7 @@ package com.chetan.orderdelivery.presentation.admin.food.addfood
 import android.net.Uri
 
 sealed interface AddFoodEvent {
+    data object DismissInfoMsg: AddFoodEvent
     data class OnSelectedFoodTypeChange(val value: String) : AddFoodEvent
     data class OnSelectedFoodFamilyChange(val value: String) : AddFoodEvent
     data class OnFoodNameChange(val value: String) : AddFoodEvent

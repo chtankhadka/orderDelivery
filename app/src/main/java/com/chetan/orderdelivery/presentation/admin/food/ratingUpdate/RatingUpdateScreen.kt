@@ -131,14 +131,14 @@ fun UpdateRatingItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = data.foodRating.toString(), style = MaterialTheme.typography.headlineSmall)
+            Text(text = lastRatingValue.toString(), style = MaterialTheme.typography.headlineSmall)
             Text(
                 text = data.newFoodRating.toString(), style = MaterialTheme.typography.headlineSmall
             )
             Button(onClick = {
+                lastRatingValue = data.newFoodRating
                 onClick(data.foodId,data.newFoodRating)
             }) {
-                lastRatingValue = data.newFoodRating
                 Text(text = "Update")
             }
         }

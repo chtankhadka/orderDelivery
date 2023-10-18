@@ -17,6 +17,7 @@ interface FirestoreRepository {
     ) : Resource<Boolean>
 
     suspend fun getFoods() : Resource<List<GetFoodResponse>>
+    suspend fun getFoodItem(foodId: String) : Resource<GetFoodResponse>
     suspend fun getFoodsForUpdate() : Resource<List<GetFoodResponse>>
     suspend fun getRating() : Resource<List<RatingRequestResponse>>
 

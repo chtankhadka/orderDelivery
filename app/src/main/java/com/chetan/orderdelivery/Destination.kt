@@ -17,7 +17,7 @@ open class Destination(open val route: String) {
 
         //User
         object UserDashboardScreen : Destination("user-dashboard-screen")
-        object UserFoodOrderDescriptionScreen : Destination("user-food-order-description-screen")
+        object UserFoodOrderDescriptionScreen : Destination("user-food-order-description-screen/{foodId}")
         object UserOrderCheckoutScreen: Destination("user-order-checkout-screen")
     }
 }
