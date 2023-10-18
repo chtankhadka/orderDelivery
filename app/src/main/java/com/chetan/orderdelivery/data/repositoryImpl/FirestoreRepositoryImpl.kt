@@ -155,4 +155,19 @@ class FirestoreRepositoryImpl @Inject constructor(
             Resource.Failure(e)
         }
     }
+
+    override suspend fun updateRating(foodId: String, foodRating: Float) : Resource<Boolean> {
+        return try {
+            firestore.collection("admin")
+                .document("foods")
+                .collection("foods")
+                .document(foodId)
+                .update("foodRating", foodRating)
+                .await()
+            Resource.Success(true)
+        } catch (e : Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
 }

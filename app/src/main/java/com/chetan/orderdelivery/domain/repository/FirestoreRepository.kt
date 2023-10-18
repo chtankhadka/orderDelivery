@@ -27,4 +27,9 @@ interface FirestoreRepository {
     suspend fun addFood(
         data: AddFoodRequest
     ): Resource<Boolean>
+
+    suspend fun updateRating(
+        foodId : String,
+        foodRating: Float
+    ) : Resource<Boolean>
 }

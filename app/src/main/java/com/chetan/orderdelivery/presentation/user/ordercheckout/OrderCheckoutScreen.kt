@@ -324,14 +324,17 @@ fun OrderCheckoutScreen(
 
         })
     }
-    Scaffold(topBar = {
+    Scaffold(
+        topBar = {
         TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
             Text(
                 text = "Check Out",
                 style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
             )
         }, navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
                 Icon(
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier,
@@ -341,7 +344,8 @@ fun OrderCheckoutScreen(
             }
 
         })
-    }, content = {
+    },
+        content = {
         Column(
             modifier = Modifier
                 .padding(it)

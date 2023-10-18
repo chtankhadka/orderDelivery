@@ -17,34 +17,47 @@ class RatingUpdateViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(RatingUpdateState())
-    val state : StateFlow<RatingUpdateState> = _state
+    val state: StateFlow<RatingUpdateState> = _state
 
     init {
         getFoods()
     }
-
-
-    val onEvent : (event : RatingUpdateEvent) -> Unit = {event ->
+    val onEvent: (event: RatingUpdateEvent) -> Unit = { event ->
         viewModelScope.launch {
-            when(event){
+            when (event) {
                 is RatingUpdateEvent.UpdateThis -> {
+                    val updateRating = repository.updateRating(
+                        foodId = event.foodId,
+                        foodRating = event.foodRating
+                    )
+                    when (updateRating) {
+                        is Resource.Failure -> {
 
+                        }
+
+                        Resource.Loading -> {
+
+                        }
+
+                        is Resource.Success -> {
+
+                        }
+                    }
                 }
             }
         }
     }
-
-
-    private fun getFoods(){
+    private fun getFoods() {
         viewModelScope.launch {
             val foodList = repository.getFoodsForUpdate()
-            when(foodList){
+            when (foodList) {
                 is Resource.Failure -> {
 
                 }
                 Resource.Loading -> {
 
                 }
+
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
