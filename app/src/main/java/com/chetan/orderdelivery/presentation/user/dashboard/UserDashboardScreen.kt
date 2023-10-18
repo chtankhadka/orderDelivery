@@ -119,20 +119,28 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
         drawerState = drawerState,
         scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         drawerContent = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
+            UserDashboardModalDrawerPage(onClick = {menuItem ->
+                when(menuItem){
+                    MenuItem.Admin -> {
+                        navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
+                    }
 
-                Button(onClick = {
-                    navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
-                }) {
-                    Text(text = "Admin")
+                    MenuItem.Contacts -> {
+
+                    }
+                    MenuItem.Logout -> {
+
+                    }
+                    MenuItem.Setting -> {
+
+                    }
                 }
-            }
-        }) {
+
+            })
+        }
+
+
+    ) {
         Scaffold(modifier = Modifier,
             topBar = {
                 TopAppBar(

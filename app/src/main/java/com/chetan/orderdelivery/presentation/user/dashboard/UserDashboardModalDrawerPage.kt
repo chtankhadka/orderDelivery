@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.admin.dashboard
+package com.chetan.orderdelivery.presentation.user.dashboard
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.LocalPizza
@@ -35,17 +36,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun AdminDashboardModalDrawerPage(
+fun UserDashboardModalDrawerPage(
     onClick: (MenuItem) -> Unit,
 ) {
 
-    val menuList = listOf(
-        MenuItem.AddFoodItem,
-        MenuItem.UpdateRating,
-        MenuItem.AddDrinks,
-        MenuItem.User
+    val topMenuList = listOf(
+        MenuItem.Admin
     )
-    val bottomMenuItem = listOf(
+    val bottomMenuList = listOf(
+        MenuItem.Contacts,
         MenuItem.Setting,
         MenuItem.Logout
     )
@@ -70,6 +69,7 @@ fun AdminDashboardModalDrawerPage(
             ),
             elevation = CardDefaults.cardElevation(10.dp)
         ) {
+
         }
         Spacer(modifier = Modifier.height(10.dp))
         Column(
@@ -78,7 +78,7 @@ fun AdminDashboardModalDrawerPage(
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            menuList.forEach { menuItem ->
+            topMenuList.forEach { menuItem ->
                 ElevatedCard(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -120,11 +120,10 @@ fun AdminDashboardModalDrawerPage(
 
             }
         }
-
         Spacer(modifier = Modifier.height(10.dp))
         Divider()
 
-        bottomMenuItem.forEach {item ->
+        bottomMenuList.forEach {item ->
             ElevatedCard(
                 modifier = Modifier
                     .clickable {
@@ -133,35 +132,31 @@ fun AdminDashboardModalDrawerPage(
                 shape = RoundedCornerShape(5.dp),
                 elevation = CardDefaults.cardElevation(0.dp)
             ) {
-                Row(
-                    modifier = Modifier.padding(5.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        imageVector = item.icon,
-                        contentDescription = item.label,
-                        tint = MaterialTheme.colorScheme.primary,
-                    )
-                    Text(
-                        text = item.label,
-                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
-                    )
-                }
+                    Row(
+                        modifier = Modifier.padding(5.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = item.icon,
+                            contentDescription = item.label,
+                            tint = MaterialTheme.colorScheme.primary,
+                        )
+                        Text(
+                            text = item.label,
+                            style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+                        )
+                    }
             }
             Spacer(modifier = Modifier.height(5.dp))
         }
 
-
     }
 }
 
-
 sealed class MenuItem(val icon: ImageVector, val label: String) {
-    data object AddFoodItem : MenuItem(icon = Icons.Default.LocalPizza, label = "Add Food Item")
-    data object UpdateRating : MenuItem(icon = Icons.Default.StarRate, label = "Update Rating")
-    data object AddDrinks : MenuItem(icon = Icons.Default.LocalDrink, label = "Add Drinks")
-    data object User : MenuItem(icon = Icons.Default.Person, label = "User")
+    data object Admin : MenuItem(icon = Icons.Default.Person, label = "Admin")
+    data object Contacts: MenuItem(icon = Icons.Default.Contacts, label = "Contacts")
     data object Setting : MenuItem(icon = Icons.Default.Settings, label = "Setting")
     data object Logout : MenuItem(icon = Icons.Default.Logout, label = "LogOut")
 }

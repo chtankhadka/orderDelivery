@@ -105,6 +105,12 @@ fun AdminDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
                         MenuItem.User -> {
                             navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
                         }
+
+                        MenuItem.Logout -> {
+                        }
+                        MenuItem.Setting -> {
+
+                        }
                     }
                 })
         }) {

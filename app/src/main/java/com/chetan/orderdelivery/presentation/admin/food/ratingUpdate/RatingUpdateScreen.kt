@@ -20,12 +20,17 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,6 +70,19 @@ fun RatingUpdateScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
+            state.infoMsg?.let {
+                MessageDialog(
+                    message = it,
+                    onDismissRequest = {
+                                       if (onEvent != null && state.infoMsg.isCancellable == true){
+                                           onEvent(RatingUpdateEvent.DismissInfoMsg)
+                                       }
+                    },
+                    onPositive = {  },
+                    onNegative = {
+
+                    })
+            }
             state.foodList.forEach { foodItemDetails ->
                 UpdateRatingItem(data = foodItemDetails,
                     onClick = { id,rating ->
@@ -83,6 +101,9 @@ fun UpdateRatingItem(
     data: GetFoodResponse,
     onClick: (String,Float) -> Unit,
 ) {
+    var lastRatingValue by remember{
+        mutableFloatStateOf(data.foodRating)
+    }
     Card(
         modifier = modifier,
         ) {
@@ -117,6 +138,7 @@ fun UpdateRatingItem(
             Button(onClick = {
                 onClick(data.foodId,data.newFoodRating)
             }) {
+                lastRatingValue = data.newFoodRating
                 Text(text = "Update")
             }
         }
