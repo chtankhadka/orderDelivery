@@ -1,6 +1,7 @@
 package com.chetan.orderdelivery
 
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -17,7 +18,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.chetan.orderdelivery.common.ApplicationAction
 import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardScreen
+import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardViewModel
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodScreen
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodViewModel
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateScreen
@@ -27,6 +30,7 @@ import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInViewModel
 import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardScreen
+import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardViewModel
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionScreen
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionViewModel
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
@@ -35,13 +39,13 @@ import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppNavHost (
+fun AppNavHost(
     navController: NavHostController,
     onBack: () -> Unit,
     googleAuthUiClient: GoogleAuthUiClient,
     lifecycleScope: LifecycleCoroutineScope,
     applicationContext: Context
-){
+) {
     NavHost(
         navController = navController,
         startDestination = Destination.Screen.CommonSignInScreen.route
@@ -52,11 +56,11 @@ fun AppNavHost (
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             LaunchedEffect(key1 = Unit, block = {
-                if (googleAuthUiClient.getSignedInUser() != null){
+                if (googleAuthUiClient.getSignedInUser() != null) {
                     println(googleAuthUiClient.getSignedInUser()!!.userEmail)
-                    if (googleAuthUiClient.getSignedInUser()!!.userEmail == "chtankhadka12@gmail.com"){
+                    if (googleAuthUiClient.getSignedInUser()!!.userEmail == "chtankhadka12@gmail.com") {
                         navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
-                    }else{
+                    } else {
                         navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
                     }
                 }
@@ -96,17 +100,34 @@ fun AppNavHost (
         }
 
 
-
-
         // User
-        composable(Destination.Screen.UserDashboardScreen.route){
+        composable(Destination.Screen.UserDashboardScreen.route) {
+            val viewModel = hiltViewModel<UserDashboardViewModel>()
             UserDashboardScreen(
                 onBack = onBack,
-                navController = navController
+                navController = navController,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                onEvent = viewModel.onEvent,
+                onAction = { applicationAction ->
+                    when (applicationAction) {
+                        ApplicationAction.Restart -> {
+                            val intent = Intent(applicationContext, MainActivity::class.java)
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            applicationContext.startActivity(intent)
+                        }
+                        ApplicationAction.Logout -> {
+                            lifecycleScope.launch {
+                                googleAuthUiClient.signOut()
+                                navController.cleanNavigate(Destination.Screen.CommonSignInScreen.route)
+                            }
+                        }
+                    }
+                }
             )
         }
 
-        composable(Destination.Screen.UserFoodOrderDescriptionScreen.route){
+        composable(Destination.Screen.UserFoodOrderDescriptionScreen.route) {
             val viewModel = hiltViewModel<FoodOrderDescriptionViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
             val foodId = it.arguments?.getString("foodId")
@@ -118,7 +139,7 @@ fun AppNavHost (
             )
         }
 
-        composable(Destination.Screen.UserOrderCheckoutScreen.route){
+        composable(Destination.Screen.UserOrderCheckoutScreen.route) {
             val viewModel = hiltViewModel<OrderCheckoutViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
             OrderCheckoutScreen(
@@ -129,13 +150,32 @@ fun AppNavHost (
         }
 
         //Admin
-        composable(Destination.Screen.AdminDashboardScreen.route){
+        composable(Destination.Screen.AdminDashboardScreen.route) {
+            val viewModel = hiltViewModel<AdminDashboardViewModel>()
             AdminDashboardScreen(
                 navController = navController,
-                onBack = onBack
+                onBack = onBack,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                onEvent = viewModel.onEvent,
+                onAction = { applicationAction ->
+                    when (applicationAction) {
+                        ApplicationAction.Restart -> {
+                            val intent = Intent(applicationContext, MainActivity::class.java)
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            applicationContext.startActivity(intent)
+                        }
+                        ApplicationAction.Logout -> {
+                            lifecycleScope.launch {
+                                googleAuthUiClient.signOut()
+                                navController.cleanNavigate(Destination.Screen.CommonSignInScreen.route)
+                            }
+                        }
+                    }
+                }
             )
         }
-        composable(Destination.Screen.AdminAddFoodScreen.route){
+        composable(Destination.Screen.AdminAddFoodScreen.route) {
             val viewModel = hiltViewModel<AddFoodViewModel>()
             AddFoodScreen(
                 navController = navController,
@@ -143,13 +183,13 @@ fun AppNavHost (
                 onEvent = viewModel.onEvent
             )
         }
-        composable(Destination.Screen.AdminRatingUpdateScreen.route){
+        composable(Destination.Screen.AdminRatingUpdateScreen.route) {
             val viewModel = hiltViewModel<RatingUpdateViewModel>()
-         RatingUpdateScreen(
-             navController = navController,
-             state = viewModel.state.collectAsStateWithLifecycle().value,
-             onEvent = viewModel.onEvent
-         )
+            RatingUpdateScreen(
+                navController = navController,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                onEvent = viewModel.onEvent
+            )
         }
     }
 }

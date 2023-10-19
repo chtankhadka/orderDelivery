@@ -3,11 +3,14 @@ package com.chetan.orderdelivery.presentation.user.dashboard
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,6 +24,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
@@ -43,11 +47,13 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
@@ -56,6 +62,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -66,6 +73,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.R
+import com.chetan.orderdelivery.common.ApplicationAction
+import com.chetan.orderdelivery.common.Constants
+import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
 import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartScreen
@@ -83,7 +93,13 @@ data class UserInnerPage(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
+fun UserDashboardScreen(
+    onBack: () -> Unit,
+    navController: NavHostController,
+    state: UserDashboardState,
+    onEvent: (event: UserDashboardEvent) -> Unit,
+    onAction: (ApplicationAction) -> Unit
+) {
     var backPressCount by remember {
         mutableIntStateOf(0)
     }
@@ -94,6 +110,69 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
             backPressCount = 0
         }
     })
+    var showApplyThemeDialog by remember {
+        mutableStateOf(false)
+    }
+
+    if (showApplyThemeDialog){
+        Dialog(onDismissRequest = {
+        }) {
+            Column(
+                Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Action Needed",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge
+                )
+//            AsyncImage(
+//                model = message.image,
+//                modifier = Modifier.size(145.dp),
+//                contentDescription = null
+//            )
+
+                    LoadLottieAnimation(
+                        modifier = Modifier.size(200.dp) ,
+                        image = R.raw.loading_food)
+
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Please restart the app to apply the theme.",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.outline)
+                )
+                Spacer(modifier = Modifier.height(34.dp))
+
+                    Row(modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(5.dp).also { Arrangement.Center }){
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                onAction(ApplicationAction.Restart)
+                            },
+                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                            ) {
+                            Text(text = "Restart")
+                        }
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = {
+                                      showApplyThemeDialog = false
+                            },
+                            colors = ButtonDefaults.buttonColors(Constants.dark_primaryContainer)
+                            ) {
+                            Text(text = "Cancel")
+                        }
+                    }
+
+            }
+        }
+    }
 
     BackHandler {
         if (backPressCount == 0) {
@@ -119,7 +198,9 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
         drawerState = drawerState,
         scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         drawerContent = {
-            UserDashboardModalDrawerPage(onClick = {menuItem ->
+            UserDashboardModalDrawerPage(
+                state = state,
+                onClick = {menuItem ->
                 when(menuItem){
                     MenuItem.Admin -> {
                         navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
@@ -129,10 +210,15 @@ fun UserDashboardScreen(onBack: () -> Unit, navController: NavHostController) {
 
                     }
                     MenuItem.Logout -> {
-
+                        onAction(ApplicationAction.Logout)
                     }
                     MenuItem.Setting -> {
 
+                    }
+
+                    MenuItem.DarkMode -> {
+                        showApplyThemeDialog = true
+                        onEvent(UserDashboardEvent.ChangeDarkMode)
                     }
                 }
 

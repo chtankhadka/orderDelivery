@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.LocalPizza
@@ -27,6 +28,8 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,6 +40,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun AdminDashboardModalDrawerPage(
     onClick: (MenuItem) -> Unit,
+    state: AdminDashboardState,
 ) {
 
     val menuList = listOf(
@@ -124,6 +128,43 @@ fun AdminDashboardModalDrawerPage(
         Spacer(modifier = Modifier.height(10.dp))
         Divider()
 
+        ElevatedCard(
+            modifier = Modifier,
+            shape = RoundedCornerShape(5.dp),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = com.chetan.orderdelivery.presentation.user.dashboard.MenuItem.DarkMode.icon,
+                        contentDescription = com.chetan.orderdelivery.presentation.user.dashboard.MenuItem.DarkMode.label,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = com.chetan.orderdelivery.presentation.user.dashboard.MenuItem.DarkMode.label,
+                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+                    )
+                }
+                Switch(
+                    checked = state.darkMode, onCheckedChange = {
+                        onClick(MenuItem.DarkMode)
+                    }, colors = SwitchDefaults.colors(
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(5.dp))
+
         bottomMenuItem.forEach {item ->
             ElevatedCard(
                 modifier = Modifier
@@ -162,6 +203,7 @@ sealed class MenuItem(val icon: ImageVector, val label: String) {
     data object UpdateRating : MenuItem(icon = Icons.Default.StarRate, label = "Update Rating")
     data object AddDrinks : MenuItem(icon = Icons.Default.LocalDrink, label = "Add Drinks")
     data object User : MenuItem(icon = Icons.Default.Person, label = "User")
+    data object DarkMode : MenuItem(icon = Icons.Default.DarkMode, label = "Dark Mode")
     data object Setting : MenuItem(icon = Icons.Default.Settings, label = "Setting")
     data object Logout : MenuItem(icon = Icons.Default.Logout, label = "LogOut")
 }
