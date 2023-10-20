@@ -33,6 +33,8 @@ import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardViewModel
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionScreen
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionViewModel
+import com.chetan.orderdelivery.presentation.user.morefood.MoreFoodScreen
+import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
 import kotlinx.coroutines.launch
@@ -147,6 +149,13 @@ fun AppNavHost(
                 onEvent = viewModel.onEvent,
                 state = state
             )
+        }
+
+        composable(Destination.Screen.UserNotificationScreen.route){
+            NotificationScreen()
+        }
+        composable(Destination.Screen.UserMoreFoodScreen.route){
+            MoreFoodScreen()
         }
 
         //Admin
