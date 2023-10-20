@@ -24,7 +24,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -134,9 +133,11 @@ fun UserHomeScreen(
                         ) {
                             Card(
                                 modifier = Modifier.clickable {
-                                    navController.navigate(Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
-                                        "{foodId}", foodItem.foodId
-                                    ))
+                                    navController.navigate(
+                                        Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                            "{foodId}", foodItem.foodId
+                                        )
+                                    )
                                 },
                                 colors = CardDefaults.cardColors(Color.Transparent)
                             ) {
@@ -161,8 +162,6 @@ fun UserHomeScreen(
                                     )
                                 )
                             }
-
-
                         }
                     }
                 })

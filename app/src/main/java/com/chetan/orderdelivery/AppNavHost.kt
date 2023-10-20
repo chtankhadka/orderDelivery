@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -129,10 +130,10 @@ fun AppNavHost(
             )
         }
 
-        composable(Destination.Screen.UserFoodOrderDescriptionScreen.route) {
+        composable(Destination.Screen.UserFoodOrderDescriptionScreen.route) {it->
+            val foodId = it.arguments?.getString("foodId")!!
             val viewModel = hiltViewModel<FoodOrderDescriptionViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
-            val foodId = it.arguments?.getString("foodId")
             FoodOrderDescriptionScreen(
                 foodId = foodId,
                 navController = navController,

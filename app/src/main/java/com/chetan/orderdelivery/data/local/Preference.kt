@@ -25,11 +25,22 @@ class Preference constructor(
         private const val PREFERENCE_NAME = "PREFERENCE_NAME"
         private const val USER_NAME = "USER_NAME"
         private const val IS_DARK_MODE = "IS_DARK_MODE"
+        private const val TABLE_NAME = "TABLE_NAME"
     }
 
     var isDarkMode
         get() = mutableStateOf(sharedPreference.getBoolean(IS_DARK_MODE, false))
         set(value) {sharedPreference.edit().putBoolean(IS_DARK_MODE,value.value).apply()}
+
+    var userName
+        get() = sharedPreference.getString(USER_NAME,"")
+        set(value) {
+            sharedPreference.edit().putString(USER_NAME,value).apply()
+        }
+    var tableName
+        get() = sharedPreference.getString(TABLE_NAME,"")
+        set(value) {sharedPreference.edit().putString(TABLE_NAME,value).apply()}
+
 
 
 

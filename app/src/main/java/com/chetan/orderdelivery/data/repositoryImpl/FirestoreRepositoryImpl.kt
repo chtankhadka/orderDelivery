@@ -2,6 +2,7 @@ package com.chetan.orderdelivery.data.repositoryImpl
 
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.AddFoodRequest
+import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.order.GetFoodOrder
 import com.chetan.orderdelivery.data.model.GetFoodResponse
@@ -140,6 +141,45 @@ class FirestoreRepositoryImpl @Inject constructor(
 
     override suspend fun getRating(): Resource<List<RatingRequestResponse>> {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun addToCart(foodItem: GetCartItemModel): Resource<Boolean> {
+        return try {
+            firestore
+                .collection("users")
+                .document("d")
+                .collection("myCart")
+                .document(foodItem.foodId)
+                .set(foodItem)
+                .await()
+            Resource.Success(true)
+        }catch (e: Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun getCartItems(): Resource<List<GetCartItemModel>> {
+        return try {
+            val cartItemlist = mutableListOf<GetCartItemModel>()
+            val docRef = firestore
+                .collection("users")
+                .document("d")
+                .collection("myCart")
+                .get()
+                .await()
+
+            for (document in docRef){
+                val data = document.toObject<GetCartItemModel>()
+                data?.let {
+                    cartItemlist.add(data)
+                }
+            }
+            Resource.Success(cartItemlist)
+        } catch (e: Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
     }
 
 

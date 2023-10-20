@@ -8,6 +8,7 @@ import android.location.LocationManager
 import android.provider.Settings
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,10 +42,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,10 +50,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
@@ -71,13 +70,13 @@ fun FoodOrderDescriptionScreen(
     onEvent: (event: FoodOrderDescriptionEvent) -> Unit,
     state: FoodOrderDescriptionState,
     navController: NavHostController,
-    foodId: String?
+    foodId: String
 ) {
 
-    foodId?.let {
+    if (state.foodItemDetails.foodId.isBlank()){
         onEvent(FoodOrderDescriptionEvent.GetFoodItemDetails(foodId))
     }
-
+    println("sdjklsdjkl;")
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -103,9 +102,8 @@ fun FoodOrderDescriptionScreen(
 
     val pagerState = rememberPagerState { pagerImages.size }
     val pageCount = pagerImages.size
-    Scaffold(
-        topBar = {
-        TopAppBar(modifier = Modifier.padding(horizontal = 5.dp),  title = {
+    Scaffold(topBar = {
+        TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
             Text(
                 text = "Food Description",
                 style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
@@ -124,7 +122,11 @@ fun FoodOrderDescriptionScreen(
 
         }, actions = {
             Card(
-                modifier = Modifier.size(34.dp),
+                modifier = Modifier
+                    .size(34.dp)
+                    .clickable {
+
+                    },
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
                 elevation = CardDefaults.cardElevation(10.dp),
             ) {
@@ -142,7 +144,7 @@ fun FoodOrderDescriptionScreen(
                         contentDescription = ""
                     )
                     Text(
-                        text = "20",
+                        text = state.totalCartItem.toString(),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(end = 2.dp),
@@ -158,8 +160,7 @@ fun FoodOrderDescriptionScreen(
 
         )
 
-    },
-        content = {
+    }, content = {
         Column(
             modifier = Modifier
                 .padding(it)
@@ -169,24 +170,42 @@ fun FoodOrderDescriptionScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            if (pagerImages.size != 0){
+
+            state.infoMsg?.let {
+                MessageDialog(
+                    message = it,
+                    onDismissRequest = {
+                        if (onEvent != null && state.infoMsg.isCancellable == true) {
+                            onEvent(FoodOrderDescriptionEvent.DismissInfoMsg)
+                        }
+                    },
+                    onPositive = { },
+                    onNegative = {
+
+                    })
+            }
+
+
+            if (pagerImages.size != 0) {
                 HorizontalPager(
-                    state = pagerState) { page ->
+                    state = pagerState
+                ) { page ->
 
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
                             .wrapContentSize(Alignment.Center)
                     ) {
-                    AsyncImage(
-                        modifier = Modifier
-                            .size(150.dp)
-                            .clip(shape = CircleShape),
-                        contentScale = ContentScale.Crop,
-                        model = pagerImages[page],
-                        contentDescription = "",
-                        alignment = Alignment.Center
-                    )}
+                        AsyncImage(
+                            modifier = Modifier
+                                .size(150.dp)
+                                .clip(shape = CircleShape),
+                            contentScale = ContentScale.Crop,
+                            model = pagerImages[page],
+                            contentDescription = "",
+                            alignment = Alignment.Center
+                        )
+                    }
                 }
             }
             Row(
@@ -215,10 +234,12 @@ fun FoodOrderDescriptionScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 5.dp)
             ) {
-                Text(text = state.foodItemDetails.foodName, style = MaterialTheme.typography.headlineSmall)
+                Text(
+                    text = state.foodItemDetails.foodName,
+                    style = MaterialTheme.typography.headlineSmall
+                )
 
-                RatingBar(
-                    size = 15.dp,
+                RatingBar(size = 15.dp,
                     value = state.foodItemDetails.foodRating,
                     spaceBetween = 2.dp,
                     style = RatingBarStyle.Default,
@@ -232,39 +253,65 @@ fun FoodOrderDescriptionScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(
-                        text = "Rs. ${state.foodItemDetails.foodPrice}", style = MaterialTheme.typography.headlineLarge.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            color = MaterialTheme.colorScheme.primary
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Text(
+                            text = "Rs. ${state.foodPrice * state.foodQuantity}",
+                            style = MaterialTheme.typography.headlineLarge.copy(
+                                fontWeight = FontWeight.ExtraBold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
                         )
-                    )
+                        Text(
+                            text = "Rs. ${state.foodDiscount * state.foodQuantity}",
+
+                            style = MaterialTheme.typography.titleMedium.copy(
+                                color = MaterialTheme.colorScheme.outline,
+                                textDecoration = TextDecoration.LineThrough
+                            )
+                        )
+                    }
+
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Card(
-                            modifier = Modifier.size(34.dp),
-                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                        ) {
-                            IconButton(
-                                onClick = { }) {
-                                Icon(
-                                    imageVector = Icons.Default.Remove,
-                                    contentDescription = "Remove",
-                                    tint = Color.White
-                                )
+                        if (state.foodQuantity > 1) {
+                            Card(
+                                modifier = Modifier.size(34.dp),
+                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                                elevation = CardDefaults.cardElevation(10.dp),
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        onEvent(FoodOrderDescriptionEvent.DecreaseQuantity)
+                                    }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Remove,
+                                        contentDescription = "Remove",
+                                        tint = Color.White
+                                    )
+                                }
                             }
                         }
-                        Text(text = "2", style = MaterialTheme.typography.headlineSmall)
+
+                        Text(
+                            text = "${state.foodQuantity}",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
                         Card(
                             modifier = Modifier.size(34.dp),
                             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
                             elevation = CardDefaults.cardElevation(10.dp),
                         ) {
-                            IconButton(
-                                onClick = { }) {
-                                Icon(imageVector = Icons.Default.Add, contentDescription = "Add")
+                            IconButton(onClick = {
+                                onEvent(FoodOrderDescriptionEvent.IncreaseQuantity)
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Add, contentDescription = "Add"
+                                )
                             }
                         }
 
@@ -300,7 +347,7 @@ fun FoodOrderDescriptionScreen(
                     modifier = Modifier.weight(1f),
                     elevation = ButtonDefaults.buttonElevation(10.dp),
                     onClick = {
-
+                        onEvent(FoodOrderDescriptionEvent.AddToCart(state.foodItemDetails.foodId))
                     },
                     enabled = true
                 ) {

@@ -6,6 +6,10 @@ data class FirestoreUseCases(
     val getFoodItem: GetFoodItem,
     val getFoodOrders : GetFoodOrders,
     val addFood : AddFood,
+
+    val getCartItems : GetCartItems,
+    val addToCart : AddToCart,
+
     val rateIt : RateIt,
     val updateRating: UpdateRating,
     val getFoodsForUpdate : GetFoodsForUpdate

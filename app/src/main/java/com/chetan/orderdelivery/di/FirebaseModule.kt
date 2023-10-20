@@ -7,7 +7,9 @@ import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.chetan.orderdelivery.domain.repository.RealtimeRepository
 import com.chetan.orderdelivery.domain.repository.StorageRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddFood
+import com.chetan.orderdelivery.domain.use_cases.firestore.AddToCart
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetCartItems
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoods
@@ -75,6 +77,10 @@ object FirebaseModule {
             getFoodItem = GetFoodItem(repository = repository),
             getFoods = GetFoods(repository = repository),
             addFood = AddFood(repository = repository),
+
+            getCartItems =GetCartItems(repository = repository),
+            addToCart = AddToCart(repository = repository),
+
             rateIt = RateIt(repository = repository),
             updateRating = UpdateRating(repository = repository),
             getFoodsForUpdate = GetFoodsForUpdate(repository = repository)
