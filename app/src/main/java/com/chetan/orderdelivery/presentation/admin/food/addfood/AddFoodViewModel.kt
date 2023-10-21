@@ -173,6 +173,7 @@ class AddFoodViewModel @Inject constructor(
                             foodDetails = state.value.foodDetails,
                             foodPrice = state.value.foodPrice,
                             foodDiscount = state.value.foodDiscountPrice,
+                            foodNewPrice = state.value.foodPrice.toInt() - state.value.foodDiscountPrice.toInt(),
                             foodRating = 0f,
                             date = LocalDateTime.now().format(
                                 DateTimeFormatter.ofPattern("yyyy-MM-dd")

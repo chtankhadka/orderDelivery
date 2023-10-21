@@ -1,6 +1,7 @@
 package com.chetan.orderdelivery.data.repositoryImpl
 
 import com.chetan.orderdelivery.data.Resource
+import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.model.AddFoodRequest
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
@@ -18,7 +19,8 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FirestoreRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore
+    private val firestore: FirebaseFirestore,
+    private val preference: Preference
 ) : FirestoreRepository {
     override suspend fun orderFood(data: List<RequestFoodOrder>): Resource<Any> {
         return try {
@@ -147,7 +149,7 @@ class FirestoreRepositoryImpl @Inject constructor(
         return try {
             firestore
                 .collection("users")
-                .document("d")
+                .document(preference.tableName!!)
                 .collection("myCart")
                 .document(foodItem.foodId)
                 .set(foodItem)
@@ -164,7 +166,7 @@ class FirestoreRepositoryImpl @Inject constructor(
             val cartItemlist = mutableListOf<GetCartItemModel>()
             val docRef = firestore
                 .collection("users")
-                .document("d")
+                .document(preference.tableName!!)
                 .collection("myCart")
                 .get()
                 .await()

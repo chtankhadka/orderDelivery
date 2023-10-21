@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.user.dashboard.cart
+package com.chetan.orderdelivery.presentation.user.outCart
 
 import android.app.PendingIntent
 import android.content.Context
@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
@@ -27,11 +28,13 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,9 +43,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -51,14 +52,16 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.common.Constants
-import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionEvent
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun UserCartScreen(
+fun OutUserCartScreen(
     navController: NavHostController,
-    state: UserCartState,
-    event: (event: UserCartEvent) -> Unit
+    state: OutUserCartState,
+    event: (event: OutUserCartEvent) -> Unit
 ) {
+    val cartList = listOf("Pizza", "Jhol MoMo", "Fried Momo", "Buff Momo", "Chicken Momo")
+
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -74,7 +77,33 @@ fun UserCartScreen(
         pendingIntent.send()
     }
 
-    Scaffold(content = {
+    Scaffold(
+      topBar = {
+            TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
+                Text(
+                    text = "Food Description",
+                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+                )
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier,
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = ""
+                    )
+                }
+
+            }, actions = {
+
+            }
+
+            )
+
+        },
+        content = {
         Column(modifier = Modifier.padding(it)) {
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
@@ -100,7 +129,7 @@ fun UserCartScreen(
                 .padding(end = 15.dp, start = 5.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 content = {
-                    items(state.cartItemList) { food ->
+                    items(cartList) {
                         Row(
                             modifier = Modifier
                                 .height(120.dp)
@@ -126,13 +155,14 @@ fun UserCartScreen(
                                     ) {
                                         Column {
                                             Text(
-                                                text = food.foodName,
+                                                text = "Title",
                                                 style = MaterialTheme.typography.headlineMedium.copy(
 
                                                 )
                                             )
+
                                             Text(
-                                                text = food.foodDetails,
+                                                text = "Description asdf asd asdf aasd asd asdfa  asdf a",
                                                 maxLines = 2,
                                                 style = MaterialTheme.typography.bodyMedium.copy(
                                                     color = MaterialTheme.colorScheme.outline,
@@ -145,28 +175,13 @@ fun UserCartScreen(
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Row(
-                                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                                    verticalAlignment = Alignment.Bottom
-                                                ) {
-                                                    Text(
-                                                        text = "${food.foodNewPrice * food.quantity}",
-                                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                                            color = Color.Red,
-                                                            fontWeight = FontWeight.Bold,
-                                                            fontSize = 18.sp
-                                                        )
+                                                Text(
+                                                    text = "Rs 200",
+                                                    style = MaterialTheme.typography.bodyMedium.copy(
+                                                        color = Color.Red,
+                                                        fontWeight = FontWeight.SemiBold
                                                     )
-                                                    Text(
-                                                        text = "${food.foodPrice.toInt() * food.quantity}",
-                                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                                            color = MaterialTheme.colorScheme.outline,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            textDecoration = TextDecoration.LineThrough
-                                                        )
-                                                    )
-                                                }
-
+                                                )
                                                 Row(
                                                     modifier = Modifier.padding(
                                                         end = 10.dp, bottom = 5.dp
@@ -174,40 +189,36 @@ fun UserCartScreen(
                                                     verticalAlignment = Alignment.CenterVertically,
                                                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                                                 ) {
-                                                    if (food.quantity > 1) {
-                                                        Card(
-                                                            modifier = Modifier.size(34.dp),
-                                                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
-                                                            elevation = CardDefaults.cardElevation(10.dp),
-                                                        ) {
-                                                            IconButton(
-                                                                onClick = {
-//                                                                    onEvent(
-//                                                                        FoodOrderDescriptionEvent.DecreaseQuantity)
-                                                                }) {
-                                                                Icon(
-                                                                    imageVector = Icons.Default.Remove,
-                                                                    contentDescription = "Remove",
-                                                                    tint = Color.White
-                                                                )
-                                                            }
+                                                    Card(
+                                                        modifier = Modifier.size(34.dp),
+                                                        colors = CardDefaults.cardColors(
+                                                            MaterialTheme.colorScheme.onPrimaryContainer
+                                                        ),
+                                                        elevation = CardDefaults.cardElevation(10.dp),
+                                                    ) {
+                                                        IconButton(onClick = { }) {
+                                                            Icon(
+                                                                imageVector = Icons.Default.Remove,
+                                                                contentDescription = "Remove",
+                                                                tint = Color.White
+                                                            )
                                                         }
                                                     }
-
                                                     Text(
-                                                        text = "${food.quantity}",
+                                                        text = "2",
                                                         style = MaterialTheme.typography.headlineSmall
                                                     )
                                                     Card(
                                                         modifier = Modifier.size(34.dp),
-                                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                                                        colors = CardDefaults.cardColors(
+                                                            MaterialTheme.colorScheme.primary
+                                                        ),
                                                         elevation = CardDefaults.cardElevation(10.dp),
                                                     ) {
-                                                        IconButton(onClick = {
-//                                                            onEvent(FoodOrderDescriptionEvent.IncreaseQuantity)
-                                                        }) {
+                                                        IconButton(onClick = { }) {
                                                             Icon(
-                                                                imageVector = Icons.Default.Add, contentDescription = "Add"
+                                                                imageVector = Icons.Default.Add,
+                                                                contentDescription = "Add"
                                                             )
                                                         }
                                                     }

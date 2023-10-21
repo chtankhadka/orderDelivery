@@ -76,9 +76,11 @@ import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.common.ApplicationAction
 import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
 import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartScreen
+import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartViewModel
 import com.chetan.orderdelivery.presentation.user.dashboard.favourite.UserFavouriteScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.history.UserHistoryScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeScreen
@@ -364,6 +366,19 @@ fun UserDashboardScreen(
                 }
             },
             content = {
+
+                state.infoMsg?.let {
+                    MessageDialog(
+                        message = it,
+                        onDismissRequest = {
+                            if (onEvent != null && state.infoMsg.isCancellable == true) {
+                                onEvent(UserDashboardEvent.DismissInfoMsg)
+                            }
+                        },
+                        onPositive = { /*TODO*/ }) {
+
+                    }
+                }
                 NavHost(
                     modifier = Modifier.padding(it),
                     navController = bottomNavController,
@@ -384,7 +399,10 @@ fun UserDashboardScreen(
                         UserHistoryScreen()
                     }
                     composable("cart"){
-                        UserCartScreen(navController = navController)
+                        val viewModel = hiltViewModel<UserCartViewModel>()
+                        UserCartScreen(navController = navController,
+                            state = viewModel.state.collectAsStateWithLifecycle().value,
+                            event = viewModel.onEvent)
                     }
 
                 }

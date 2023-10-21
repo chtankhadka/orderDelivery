@@ -1,5 +1,7 @@
 package com.chetan.orderdelivery.di
 
+import android.app.Application
+import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.repositoryImpl.FirestoreRepositoryImpl
 import com.chetan.orderdelivery.data.repositoryImpl.RealtimeRepositoryImpl
 import com.chetan.orderdelivery.data.repositoryImpl.StorageRepositoryImpl
@@ -37,6 +39,12 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object FirebaseModule {
 
+    @Provides
+    @Singleton
+    fun providePreference(application: Application): Preference {
+        return Preference(application)
+    }
+
     @Singleton
     @Provides
     fun provideFirebaseFirestore(): FirebaseFirestore{
@@ -64,8 +72,8 @@ object FirebaseModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseFirestoreRepository(firestore: FirebaseFirestore): FirestoreRepository{
-        return FirestoreRepositoryImpl(firestore)
+    fun provideFirebaseFirestoreRepository(firestore: FirebaseFirestore, preference: Preference): FirestoreRepository{
+        return FirestoreRepositoryImpl(firestore, preference)
     }
 
     @Singleton

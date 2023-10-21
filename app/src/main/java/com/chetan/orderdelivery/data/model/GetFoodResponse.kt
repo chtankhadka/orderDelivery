@@ -8,6 +8,7 @@ data class GetFoodResponse(
     val foodDetails: String = "",
     val foodPrice: String = "",
     val foodDiscount: String = "",
+    val foodNewPrice: Int = 0,
     val foodRating: Float = 0f,
     val newFoodRating: Float = 0f,
     val date: String = "",

@@ -1,6 +1,11 @@
-package com.chetan.orderdelivery.data.model
+package com.chetan.orderdelivery.domain.model
 
-data class AddFoodRequest(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
+data class AllFoods(
+    @PrimaryKey val id: Int = 1,
     val foodId: String = "",
     val foodType: String = "",
     val foodFamily: String = "",
@@ -10,9 +15,9 @@ data class AddFoodRequest(
     val foodDiscount: String = "",
     val foodNewPrice: Int = 0,
     val foodRating: Float = 0f,
+    val newFoodRating: Float = 0f,
+    val quantity: Int = 0,
     val date: String = "",
-
-
     val faceImgName: String = "",
     val faceImgUrl: String = "",
     val faceImgPath: String = "",

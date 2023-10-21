@@ -8,6 +8,7 @@ import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.domain.repository.DBRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FoodOrderDescriptionViewModel @Inject constructor(
-    private val firestoreUseCases: FirestoreUseCases
+    private val firestoreUseCases: FirestoreUseCases,
+    private val dbRepository: DBRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FoodOrderDescriptionState())
@@ -40,29 +42,15 @@ class FoodOrderDescriptionViewModel @Inject constructor(
                     }
                 }
                 is FoodOrderDescriptionEvent.GetFoodItemDetails -> {
+                    val data = dbRepository.getAllFoods().find { it.foodId == event.value }!!
                     _state.update {
                         it.copy(
-                            infoMsg = Message.Loading(lottieImage = R.raw.loading_food, title = "Loading", description = "Fetching Details...", yesNoRequired = false, isCancellable = false)
+                            foodItemDetails = data,
+                            foodPrice = data.foodPrice.toInt() - data.foodDiscount.toInt(),
+                            foodDiscount = data.foodPrice.toInt()
                         )
                     }
-                    when(val foodItemDetailsResponse = firestoreUseCases.getFoodItem(event.value)){
-                        is Resource.Failure -> {
-
-                        }
-                        Resource.Loading -> {
-
-                        }
-                        is Resource.Success -> {
-                            _state.update {
-                                it.copy(
-                                    foodItemDetails = foodItemDetailsResponse.data,
-                                    infoMsg = null,
-                                )
-                            }
-                        }
-                    }
                 }
-
                 FoodOrderDescriptionEvent.DecreaseQuantity -> {
                     _state.update {
                         it.copy(
@@ -97,7 +85,7 @@ class FoodOrderDescriptionViewModel @Inject constructor(
                     }
                     when (firestoreUseCases.addToCart(
                         foodItem = GetCartItemModel(
-                            foodId = "3333",
+                            foodId = state.value.foodItemDetails.foodId,
                             foodQuantity = state.value.foodQuantity,
                             date = LocalDateTime.now().format(
                                 DateTimeFormatter.ofPattern("yyyy-MM-dd")

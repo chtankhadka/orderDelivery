@@ -11,7 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -38,6 +37,8 @@ import com.chetan.orderdelivery.presentation.user.morefood.MoreFoodScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
+import com.chetan.orderdelivery.presentation.user.outCart.OutUserCartScreen
+import com.chetan.orderdelivery.presentation.user.outCart.OutUserCartViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -55,7 +56,7 @@ fun AppNavHost(
     ) {
         // common
         composable(Destination.Screen.CommonSignInScreen.route) {
-            val viewModel = viewModel<SignInViewModel>()
+            val viewModel = hiltViewModel<SignInViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
 
             LaunchedEffect(key1 = Unit, block = {
@@ -158,6 +159,16 @@ fun AppNavHost(
         composable(Destination.Screen.UserMoreFoodScreen.route){
             MoreFoodScreen()
         }
+        composable(Destination.Screen.UserOutCartScreen.route){
+            val viewModel = hiltViewModel<OutUserCartViewModel>()
+            val state = viewModel.state.collectAsStateWithLifecycle().value
+            OutUserCartScreen(
+                navController = navController,
+                state = state,
+                event = viewModel.onEvent
+            )
+        }
+
 
         //Admin
         composable(Destination.Screen.AdminDashboardScreen.route) {

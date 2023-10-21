@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.gowtham.ratingbar.RatingBar
@@ -62,7 +63,7 @@ import com.gowtham.ratingbar.RatingBarStyle
 
 @SuppressLint("MissingPermission")
 @OptIn(
-    ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class,
+    ExperimentalMaterial3Api::class,
     ExperimentalFoundationApi::class
 )
 @Composable
@@ -76,7 +77,6 @@ fun FoodOrderDescriptionScreen(
     if (state.foodItemDetails.foodId.isBlank()){
         onEvent(FoodOrderDescriptionEvent.GetFoodItemDetails(foodId))
     }
-    println("sdjklsdjkl;")
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -102,7 +102,8 @@ fun FoodOrderDescriptionScreen(
 
     val pagerState = rememberPagerState { pagerImages.size }
     val pageCount = pagerImages.size
-    Scaffold(topBar = {
+    Scaffold(
+        topBar = {
         TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
             Text(
                 text = "Food Description",
@@ -125,7 +126,7 @@ fun FoodOrderDescriptionScreen(
                 modifier = Modifier
                     .size(34.dp)
                     .clickable {
-
+                        navController.navigate(Destination.Screen.UserOutCartScreen.route)
                     },
                 colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
                 elevation = CardDefaults.cardElevation(10.dp),

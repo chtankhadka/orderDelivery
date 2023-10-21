@@ -42,6 +42,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.common.Constants
+import com.chetan.orderdelivery.data.model.GetFoodResponse
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
@@ -52,7 +53,9 @@ data class TestItem(
 
 @Composable
 fun UserHomeScreen(
-    navController: NavHostController, state: UserHomeState, event: (event: UserHomeEvent) -> Unit
+    navController: NavHostController,
+    state: UserHomeState,
+    event: (event: UserHomeEvent) -> Unit,
 ) {
     val listOfItem = listOf(
         TestItem(

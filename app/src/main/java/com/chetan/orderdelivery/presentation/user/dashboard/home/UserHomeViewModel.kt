@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.RealtimeModelResponse
+import com.chetan.orderdelivery.domain.repository.DBRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserHomeViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases,
-    private val realtimeUseCases: RealtimeUseCases
+    private val realtimeUseCases: RealtimeUseCases,
+    private val dbRepository: DBRepository
 ) : ViewModel(){
     private val _state = MutableStateFlow(UserHomeState())
     val state: StateFlow<UserHomeState> = _state
@@ -38,9 +40,18 @@ class UserHomeViewModel @Inject constructor(
                         _state.update { it.copy(name = data.data) }
                     }
                 }
-                println("_____________________________________________")
             }
         }
+    }
+    private fun getAllFoods(){
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    allFoods = dbRepository.getAllFoods()
+                )
+            }
+        }
+
     }
 
 
@@ -50,6 +61,7 @@ class UserHomeViewModel @Inject constructor(
         viewModelScope.launch {
             when(event){
                 UserHomeEvent.DismissInfoMsg -> {
+
                     _state.update {
                         it.copy(
                             infoMsg = null
@@ -70,36 +82,6 @@ class UserHomeViewModel @Inject constructor(
 
     }
 
-    fun getAllFoods(){
-        viewModelScope.launch {
-            _state.update {
-                it.copy(
-                    infoMsg = Message.Loading(
-                        lottieImage = R.raw.loading_food,
-                        yesNoRequired = false,
-                        isCancellable = false,
-                        title = "Loading",
-                        description = "Please Wait... Getting all foods"
-                    )
-                )
-            }
-            when(val getAllFoodsResponse = firestoreUseCases.getFoods()){
-                is Resource.Failure -> {
 
-                }
-                Resource.Loading -> {
-
-                }
-                is Resource.Success -> {
-                    _state.update {
-                        it.copy(
-                            allFoods = getAllFoodsResponse.data,
-                            infoMsg = null
-                        )
-                    }
-                }
-            }
-        }
-    }
 
 }

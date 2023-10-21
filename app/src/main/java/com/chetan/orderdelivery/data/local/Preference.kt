@@ -4,20 +4,14 @@ import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.compose.runtime.mutableStateOf
+import com.chetan.orderdelivery.data.model.GetFoodResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class Preference constructor(
+class Preference @Inject constructor(
     val context : Context
 ) {
-    @Inject
-    constructor(
-        application: Application
-    ): this (
-        application.applicationContext
-    )
-
     private val sharedPreference: SharedPreferences =
         context.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
 
@@ -26,6 +20,7 @@ class Preference constructor(
         private const val USER_NAME = "USER_NAME"
         private const val IS_DARK_MODE = "IS_DARK_MODE"
         private const val TABLE_NAME = "TABLE_NAME"
+        private const val GMAIL_PROFILE = "GMAIL_PROFILE"
     }
 
     var isDarkMode
@@ -37,13 +32,12 @@ class Preference constructor(
         set(value) {
             sharedPreference.edit().putString(USER_NAME,value).apply()
         }
+
+    var gmailProfile
+        get() = sharedPreference.getString(GMAIL_PROFILE, "")
+        set(value) {sharedPreference.edit().putString(GMAIL_PROFILE, value).apply()}
     var tableName
         get() = sharedPreference.getString(TABLE_NAME,"")
         set(value) {sharedPreference.edit().putString(TABLE_NAME,value).apply()}
-
-
-
-
-
 
 }
