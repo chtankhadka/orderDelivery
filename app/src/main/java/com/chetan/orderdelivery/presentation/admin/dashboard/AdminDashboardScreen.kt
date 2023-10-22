@@ -5,9 +5,11 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,15 +21,20 @@ import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -40,12 +47,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -65,12 +74,13 @@ import com.chetan.orderdelivery.presentation.admin.dashboard.map.MapScreen
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
 import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
+import com.chetan.orderdelivery.presentation.common.utils.PlayNotificationSound
 import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardEvent
 import kotlinx.coroutines.delay
 
 
 data class AdminInnerPage(
-    val route: String, val label: Int, val icon: ImageVector
+    val route: String, val label: Int, val icon: ImageVector, val isBadge: Boolean = false
 )
 
 @SuppressLint("MissingPermission")
@@ -169,13 +179,29 @@ fun AdminDashboardScreen(
     val items: List<AdminInnerPage> = remember {
         listOf(
             AdminInnerPage("home", R.string.home, Icons.Default.Home),
-            AdminInnerPage("map", R.string.map, Icons.Default.LocationOn)
+            AdminInnerPage("map", R.string.map, Icons.Default.LocationOn,true)
         )
     }
 
     val bottomNavController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+
+    // ui
+
+    var totalNewRequest by remember {
+        mutableIntStateOf(0)
+    }
+    LaunchedEffect(key1 = state.newRequestList, block = {
+        totalNewRequest = state.newRequestList.filter { it.item.newOrder }.size
+        if (totalNewRequest >0){
+            PlayNotificationSound(context)
+        }
+
+    })
+
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -223,22 +249,54 @@ fun AdminDashboardScreen(
                         val isSelected =
                             navBackStackEntry?.destination?.hierarchy?.any { it.route == screen.route } == true
                         val color =
-                            if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline
+                            if (isSelected) Color.White else MaterialTheme.colorScheme.outline
                         CompositionLocalProvider(LocalContentColor provides color) {
-                            NavigationBarItem(icon = {
-                                Icon(
-                                    screen.icon,
-                                    contentDescription = null
-                                )
-                            },
-                                label = {
-                                    Text(
-                                        stringResource(screen.label),
-                                        style = MaterialTheme.typography.labelSmall
+                            NavigationBarItem(
+                                colors = NavigationBarItemDefaults.colors(
+                                    indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
+                                        LocalAbsoluteTonalElevation.current
                                     )
+                                ),
+                                icon = {
+                                    Card(
+                                        modifier = Modifier.size(34.dp),
+                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                                        elevation = CardDefaults.cardElevation(10.dp),
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(2.dp)
+                                        ) {
+                                            Icon(
+                                                modifier = Modifier
+                                                    .align(Alignment.BottomCenter)
+                                                    .size(20.dp),
+                                                imageVector = screen.icon,
+                                                tint = color,
+                                                contentDescription = ""
+                                            )
+
+                                            Text(
+                                                text = if (screen.isBadge) totalNewRequest.toString() else "",
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .padding(end = 2.dp),
+                                                fontSize = 8.sp,
+                                                textAlign = TextAlign.Right,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color.White
+                                            )
+                                        }
+
+                                    }
                                 },
                                 selected = isSelected,
-                                onClick = { bottomNavController.bottomNavigate(screen.route) })
+                                onClick = { bottomNavController.bottomNavigate(screen.route) },
+                                label = {
+                                },
+                                alwaysShowLabel = false
+                            )
                         }
                     }
 

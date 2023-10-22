@@ -1,19 +1,23 @@
 package com.chetan.orderdelivery.presentation.admin.dashboard
 
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.local.Preference
+import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AdminDashboardViewModel @Inject constructor(
-    private val preference: Preference
+    private val preference: Preference,
+    private val realtimeUseCases: RealtimeUseCases
 ): ViewModel() {
 
     private val _state = MutableStateFlow(AdminDashboardState())
@@ -27,6 +31,22 @@ class AdminDashboardViewModel @Inject constructor(
                 darkMode = preference.isDarkMode.value
             )
         }
+        viewModelScope.launch {
+            realtimeUseCases.getItems().collect{data ->
+                when(data){
+                    is Resource.Failure -> {
+
+                    }
+                    Resource.Loading -> {
+
+                    }
+                    is Resource.Success -> {
+                        _state.update { it.copy(newRequestList = data.data) }
+                    }
+                }
+            }
+        }
+
     }
 
     val onEvent : (event : AdminDashboardEvent) -> Unit = {event ->

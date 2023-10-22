@@ -5,37 +5,68 @@ import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.model.AddFoodRequest
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
-import com.chetan.orderdelivery.data.model.order.GetFoodOrder
 import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.data.model.SetLatLng
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.toObject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class FirestoreRepositoryImpl @Inject constructor(
     private val firestore: FirebaseFirestore,
     private val preference: Preference
 ) : FirestoreRepository {
-    override suspend fun orderFood(data: List<RequestFoodOrder>): Resource<Any> {
+    override suspend fun orderFood(data: RequestFoodOrder): Resource<Boolean> {
         return try {
-            withContext(Dispatchers.IO) {
-                data.map { order ->
-                    async {
-                        firestore.collection("users")
-                            .document("chetan")
-                            .set(order)
-                            .await()
-                    }
-                }.awaitAll()
-            }
+//            withContext(Dispatchers.IO) {
+//                data.map { order ->
+//                    async {
+//                        firestore.collection("admin")
+//                            .document("foods")
+//                            .collection("orders")
+//                            .document(preference.tableName.toString())
+//                            .collection("orders")
+//                            .document(order.orderId)
+//                            .set(order)
+//                            .await()
+//                    }
+//                }.awaitAll()
+//            }
 
-            Resource.Success(Unit)
+            var success = false
+            firestore.collection("admin")
+                .document("foods")
+                .collection("orders")
+                .document(preference.tableName.toString())
+                .collection("orders")
+                .document(data.orderId)
+                .set(data)
+                .addOnSuccessListener {
+                    success = true
+                }
+                .await()
+            Resource.Success(success)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun setAddress(address: SetLatLng): Resource<Boolean> {
+        return try {
+            var success = false
+            firestore.collection("admin")
+                .document("foods")
+                .collection("orders")
+                .document(preference.tableName.toString())
+                .set(address)
+                .addOnSuccessListener {
+                    success = true
+                }
+                .await()
+            Resource.Success(success)
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
@@ -196,6 +227,7 @@ class FirestoreRepositoryImpl @Inject constructor(
                 .addOnSuccessListener {
                    isSuccess = true
                 }
+                .await()
             Resource.Success(isSuccess)
         }catch (e: Exception){
             e.printStackTrace()
@@ -205,12 +237,17 @@ class FirestoreRepositoryImpl @Inject constructor(
 
 
     //admin
-    override suspend fun getFoodOrders(): Resource<List<GetFoodOrder>> {
+    override suspend fun getFoodOrders(): Resource<List<RequestFoodOrder>> {
         return try {
-            val orderList = mutableListOf<GetFoodOrder>()
-            val querySnapshot = firestore.collection("users").get().await()
+            val orderList = mutableListOf<RequestFoodOrder>()
+            val querySnapshot = firestore
+                .collection("admin")
+                .document("foods")
+                .collection("orders")
+                .get()
+                .await()
             for (document in querySnapshot.documents) {
-                val order = document.toObject<GetFoodOrder>()
+                val order = document.toObject<RequestFoodOrder>()
                 order?.let {
                     orderList.add(it)
                 }

@@ -11,6 +11,8 @@ import android.provider.Settings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,9 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.presentation.common.components.requestpermission.RequestPermission
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -50,7 +56,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 @SuppressLint("MissingPermission")
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn( ExperimentalPermissionsApi::class)
 @Composable
 fun MapScreen(state: AdminMapState, onEvent: (event: AdminMapEvent) -> Unit) {
     val context = LocalContext.current
@@ -124,6 +130,23 @@ fun MapScreen(state: AdminMapState, onEvent: (event: AdminMapEvent) -> Unit) {
         })
     }
 
+    var showUserDetails by remember {
+        mutableStateOf(false)
+    }
+    if (showUserDetails){
+        Dialog(onDismissRequest = {
+            showUserDetails = false
+        }) {
+            AsyncImage(
+                modifier = Modifier
+                    .size(150.dp)
+                    .clip(shape = CircleShape)
+                ,
+                model = state.userDetails.googleProfileUrl,
+                contentDescription = "")
+        }
+    }
+
 
     Scaffold(modifier = Modifier, topBar = {}, bottomBar = {}, content = {
         Column(
@@ -153,20 +176,21 @@ fun MapScreen(state: AdminMapState, onEvent: (event: AdminMapEvent) -> Unit) {
             ) {
 
                 state.orderedUserList.forEach { userData ->
-                    val lok = userData.location.split(",")
                     Marker(
-                        state = rememberMarkerState(position = LatLng(lok.first().toDouble(),lok.last().toDouble()), ),
+                        state = rememberMarkerState(position = LatLng(userData.locationLat.toDouble(),userData.locationLng.toDouble()), ),
                         draggable = false,
-                        title = "Nepalgunj",
-                        snippet = "Nepalgunj Momo bar",
+                        title = userData.userName.ifBlank { userData.googleUserName },
+                        snippet = userData.userContactNo,
                         icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE),
                         onInfoWindowLongClick = {
-                            val uri = Uri.parse("google.navigation:q=${lok.first()},${lok.last()}&origin=${locationInfo}")
+                            val uri = Uri.parse("google.navigation:q=${userData.locationLat},${userData.locationLng}&origin=${locationInfo}")
                             val mapIntent = Intent(Intent.ACTION_VIEW, uri)
                             mapIntent.setPackage("com.google.android.apps.maps")
-
                             // Start the navigation intent
                             context.startActivity(mapIntent)
+                        },
+                        onInfoWindowClick = {
+                                            showUserDetails = true
                         },
                         onClick = {
                             it.showInfoWindow()

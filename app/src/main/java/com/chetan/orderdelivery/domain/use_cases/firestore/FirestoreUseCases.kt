@@ -1,6 +1,8 @@
 package com.chetan.orderdelivery.domain.use_cases.firestore
 
 data class FirestoreUseCases(
+    val setAddress: SetAddress,
+
     val orderFood: OrderFood,
     val getFoods: GetFoods,
     val getFoodItem: GetFoodItem,

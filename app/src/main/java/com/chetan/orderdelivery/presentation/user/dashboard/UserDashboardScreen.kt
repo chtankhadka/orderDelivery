@@ -90,7 +90,7 @@ import kotlinx.coroutines.launch
 
 
 data class UserInnerPage(
-    val route: String, val label: Int, val icon: ImageVector, val count: String = ""
+    val route: String, val label: Int, val icon: ImageVector, val count: String = "",val isBadge: Boolean = false
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -189,7 +189,7 @@ fun UserDashboardScreen(
         listOf(
             UserInnerPage("home", R.string.home, Icons.Default.Home),
             UserInnerPage("favourite", R.string.favourite, Icons.Default.Favorite),
-            UserInnerPage("cart", R.string.cart, Icons.Default.ShoppingCart),
+            UserInnerPage("cart", R.string.cart, Icons.Default.ShoppingCart, isBadge = true),
             UserInnerPage("history", R.string.history, Icons.Default.History)
         )
     }
@@ -340,7 +340,7 @@ fun UserDashboardScreen(
                                             contentDescription = ""
                                         )
                                         Text(
-                                            text = "12",
+                                            text = if (screen.isBadge) "" else "",
                                             modifier = Modifier
                                                 .fillMaxSize()
                                                 .padding(end = 2.dp),

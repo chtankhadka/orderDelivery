@@ -3,9 +3,14 @@ package com.chetan.orderdelivery.presentation.user.ordercheckout
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
+import com.chetan.orderdelivery.data.local.Preference
+import com.chetan.orderdelivery.data.model.RealtimeModelResponse
+import com.chetan.orderdelivery.data.model.SetLatLng
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
+import com.chetan.orderdelivery.presentation.common.utils.GenerateRandomNumber
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class OrderCheckoutViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases,
-    private val dbUseCases: DBUseCases
+    private val dbUseCases: DBUseCases,
+    private val realtimeUseCases: RealtimeUseCases,
+    private val preference: Preference
 ): ViewModel() {
     private val _state = MutableStateFlow(OrderCheckoutState())
     val state : StateFlow<OrderCheckoutState> = _state
@@ -46,7 +53,6 @@ class OrderCheckoutViewModel @Inject constructor(
     val onEvent : (event: OrderCheckoutEvent) -> Unit = {event ->
         viewModelScope.launch{
             when(event) {
-
                 is OrderCheckoutEvent.Location -> {
                     _state.update {
                         it.copy(
@@ -62,14 +68,65 @@ class OrderCheckoutViewModel @Inject constructor(
                     }
                 }
                 OrderCheckoutEvent.OrderNow -> {
-                    firestoreUseCases.orderFood(data = listOf(
-                        RequestFoodOrder(
-                            location = state.value.location,
-                            locationAddress = state.value.locationAddress
+                    val location = state.value.location.split(",")
+                    val setAddress = firestoreUseCases.setAddress(
+                        SetLatLng(
+                            locationLat = location.first(),
+                            locationLng = location.last(),
+                            locationAddress = state.value.locationAddress,
+                            userName = "" ,
+                            userContactNo = "",
+                            googleProfileUrl = preference.gmailProfile?:"",
+                            dbProfileUrl = "",
+                            googleUserName = preference.userName?:"",
                         )
-                    ))
-                }
+                    )
+                    when(setAddress){
+                        is Resource.Failure -> {}
+                        Resource.Loading -> {
 
+                        }
+                        is Resource.Success -> {
+                            if (setAddress.data){
+                                val orderRequest = firestoreUseCases.orderFood(data =
+                                RequestFoodOrder(
+                                    orderId = GenerateRandomNumber.generateRandomNumber(11111111..99999999).toString(),
+                                    locationLat = location.first(),
+                                    locationLng = location.last(),
+                                    userName = "" ,
+                                    userContactNo = "",
+                                    googleProfileUrl = preference.gmailProfile?:"",
+                                    dbProfileUrl = "",
+                                    googleUserName = preference.userName?:"",
+                                    locationAddress = state.value.locationAddress
+                                )
+                                )
+
+                                when(orderRequest){
+                                    is Resource.Failure -> {
+
+                                    }
+                                    Resource.Loading -> {
+
+                                    }
+                                    is Resource.Success -> {
+                                        realtimeUseCases.insert(
+                                            RealtimeModelResponse.RealTimeNewOrderRequest(
+                                            true,""
+                                        ))
+                                        for (food in state.value.orderList) {
+                                            if (food.isSelected) {
+                                                firestoreUseCases.deleteCartItem(food.foodId)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+
+                }
 
             }
         }

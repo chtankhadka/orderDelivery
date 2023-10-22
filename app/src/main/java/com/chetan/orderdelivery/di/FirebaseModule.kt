@@ -19,7 +19,9 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoods
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodsForUpdate
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
+import com.chetan.orderdelivery.domain.use_cases.firestore.SetAddress
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateRating
+import com.chetan.orderdelivery.domain.use_cases.realtime.DeleteOrders
 import com.chetan.orderdelivery.domain.use_cases.realtime.GetItems
 import com.chetan.orderdelivery.domain.use_cases.realtime.Insert
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
@@ -81,6 +83,7 @@ object FirebaseModule {
     @Provides
     fun provideFirestoreUseCases(repository: FirestoreRepository) =
         FirestoreUseCases(
+            setAddress = SetAddress(repository = repository),
             orderFood = OrderFood(repository = repository),
             getFoodOrders = GetFoodOrders(repository = repository),
             getFoodItem = GetFoodItem(repository = repository),
@@ -113,6 +116,7 @@ object FirebaseModule {
     fun provideFirebaseRealtimeUseCases(repository: RealtimeRepository) =
             RealtimeUseCases(
                 insert = Insert(realtimeRepository = repository),
-                getItems = GetItems(realtimeRepository = repository)
+                getItems = GetItems(realtimeRepository = repository),
+                deleteOrders = DeleteOrders(realtimeRepository = repository)
             )
 }

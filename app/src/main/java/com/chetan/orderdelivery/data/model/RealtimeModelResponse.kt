@@ -1,10 +1,11 @@
 package com.chetan.orderdelivery.data.model
 
 data class RealtimeModelResponse(
-    val item: RealtimeItems,
+    val item: RealTimeNewOrderRequest,
     val key: String = ""
 ){
-    data class RealtimeItems(
+    data class RealTimeNewOrderRequest(
+        val newOrder : Boolean = false,
         val title: String = "",
         val description: String = ""
     )

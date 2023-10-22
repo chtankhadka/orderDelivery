@@ -335,316 +335,311 @@ fun OrderCheckoutScreen(
 
         })
     }
-    Scaffold(
-        topBar = {
-            TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
-                Text(
-                    text = "Check Out",
-                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+    Scaffold(topBar = {
+        TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
+            Text(
+                text = "Check Out",
+                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+            )
+        }, navigationIcon = {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
+                Icon(
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier,
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = ""
                 )
-            }, navigationIcon = {
-                IconButton(onClick = {
-                    navController.popBackStack()
-                }) {
-                    Icon(
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier,
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = ""
-                    )
-                }
+            }
 
-            })
-        },
-        content = {
-                Column(
+        })
+    }, content = {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .fillMaxSize()
+        ) {
+            Divider()
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp),
+                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
+            ) {
+                Row(
                     modifier = Modifier
-                        .padding(it)
-                        .fillMaxSize()
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Divider()
+                    Text(text = state.locationAddress, modifier = Modifier.weight(1f))
+                    IconButton(onClick = {
+                        openMap = true
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.LocationOn,
+                            contentDescription = "location"
+                        )
+                    }
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 15.dp, start = 5.dp)
+                    .verticalScroll(rememberScrollState()),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Spacer(modifier = Modifier.height(5.dp))
+                state.orderList.forEach { food ->
+                    Box(
+                        modifier = Modifier
+                            .height(120.dp)
+                            .fillMaxWidth(),
+                    ) {
+                        Card(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 15.dp, start = 50.dp),
+                            elevation = CardDefaults.cardElevation(10.dp),
+                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(start = 60.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column {
+                                    Text(
+                                        text = food.foodName,
+                                        style = MaterialTheme.typography.headlineMedium.copy()
+                                    )
+
+                                    Text(
+                                        text = food.foodDetails,
+                                        maxLines = 2,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = MaterialTheme.colorScheme.outline,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(end = 10.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                            verticalAlignment = Alignment.Bottom
+                                        ) {
+                                            Text(
+                                                text = "${food.foodNewPrice * food.quantity}",
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    color = Color.Red,
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 18.sp
+                                                )
+                                            )
+                                            Text(
+                                                text = "${food.foodPrice.toInt() * food.quantity}",
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    color = MaterialTheme.colorScheme.outline,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    textDecoration = TextDecoration.LineThrough
+                                                )
+                                            )
+                                        }
+                                        Text(
+                                            text = "Qty: ${food.quantity}",
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        Card(
+                            modifier = Modifier.align(Alignment.TopStart), shape = CircleShape
+                        ) {
+                            AsyncImage(
+                                modifier = Modifier
+                                    .size(100.dp)
+                                    .border(
+                                        border = BorderStroke(
+                                            width = 2.dp, color = Color.White
+                                        ), shape = CircleShape
+                                    ),
+                                model = food.faceImgUrl,
+                                contentDescription = "",
+                                contentScale = ContentScale.Crop
+
+                            )
+                        }
+
+                    }
+                }
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp),
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+                    elevation = CardDefaults.cardElevation(10.dp)
+                ) {
+                    Text(
+                        text = "Order Summary",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                    )
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp),
-                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
+                        modifier = Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primary.copy(
+                                alpha = 0.1f
+                            )
+                        ),
                     ) {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 10.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
-                            Text(text = state.locationAddress, modifier = Modifier.weight(1f))
-                            IconButton(onClick = {
-                                openMap = true
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.LocationOn,
-                                    contentDescription = "location"
-                                )
-                            }
-                        }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 15.dp, start = 5.dp)
-                            .verticalScroll(rememberScrollState()),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                    ) {
-                        Spacer(modifier = Modifier.height(5.dp))
-                        state.orderList.forEach { food ->
-                            Box(
-                                modifier = Modifier
-                                    .height(120.dp)
-                                    .fillMaxWidth(),
-                            ) {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(top = 15.dp, start = 50.dp),
-                                    elevation = CardDefaults.cardElevation(10.dp),
-                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(start = 60.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Column {
-                                            Text(
-                                                text = food.foodName,
-                                                style = MaterialTheme.typography.headlineMedium.copy()
-                                            )
-
-                                            Text(
-                                                text = food.foodDetails,
-                                                maxLines = 2,
-                                                style = MaterialTheme.typography.bodyMedium.copy(
-                                                    color = MaterialTheme.colorScheme.outline,
-                                                    fontWeight = FontWeight.Bold
-                                                ),
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(end = 10.dp),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Row(
-                                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                                    verticalAlignment = Alignment.Bottom
-                                                ) {
-                                                    Text(
-                                                        text = "${food.foodNewPrice * food.quantity}",
-                                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                                            color = Color.Red,
-                                                            fontWeight = FontWeight.Bold,
-                                                            fontSize = 18.sp
-                                                        )
-                                                    )
-                                                    Text(
-                                                        text = "${food.foodPrice.toInt() * food.quantity}",
-                                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                                            color = MaterialTheme.colorScheme.outline,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            textDecoration = TextDecoration.LineThrough
-                                                        )
-                                                    )
-                                                }
-                                                Text(
-                                                    text = "Qty: ${food.quantity}",
-                                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                                        fontWeight = FontWeight.SemiBold
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                                Card(
-                                    modifier = Modifier
-                                        .align(Alignment.TopStart),
-                                    shape = CircleShape
-                                ) {
-                                    AsyncImage(
-                                        modifier = Modifier
-                                            .size(100.dp)
-                                            .border(
-                                                border = BorderStroke(
-                                                    width = 2.dp, color = Color.White
-                                                ), shape = CircleShape
-                                            ),
-                                        model = food.faceImgUrl,
-                                        contentDescription = "",
-                                        contentScale = ContentScale.Crop
-
-                                    )
-                                }
-
-                            }
-                        }
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 10.dp),
-                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
-                            elevation = CardDefaults.cardElevation(10.dp)
+                                .padding(5.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Order Summary",
-                                style = MaterialTheme.typography.headlineSmall,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 10.dp)
+                                text = "Items Total",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
                             )
-                            Card(
-                                modifier = Modifier
-                                    .padding(10.dp)
-                                    .fillMaxWidth(),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primary.copy(
-                                        alpha = 0.1f
-                                    )
-                                ),
-                            ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "Items Total",
-                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                                    )
-                                    Text(
-                                        text = "Rs. $totalCost",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.error
-                                        )
-                                    )
-                                }
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "Delivery Fee",
-                                        style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
-                                    )
-                                    Text(
-                                        text = "Rs. 0",
-                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.error
-                                        )
-                                    )
-                                }
-
-                                Divider()
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(5.dp),
-                                    horizontalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Text(
-                                        text = "Total Payment",
-                                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
-                                    )
-                                    Text(
-                                        text = "Rs. $totalCost",
-                                        style = MaterialTheme.typography.bodyLarge.copy(
-                                            fontWeight = FontWeight.SemiBold,
-                                            color = MaterialTheme.colorScheme.error
-                                        )
-                                    )
-                                }
-
-                            }
+                            Text(
+                                text = "Rs. $totalCost",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            )
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 10.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.outline,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            ) {
-                                append("Delivery: Rs 0\n")
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    fontSize = 18.sp, fontWeight = FontWeight.SemiBold
-                                )
-                            ) {
-                                append("Total: ")
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Red,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold
-
-                                )
-                            ) {
-                                append("Rs")
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = Color.Red,
-                                    fontSize = 18.sp,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                            ) {
-                                append(totalCost)
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.outline, fontSize = 12.sp
-
-                                )
-                            ) {
-                                append("Rs ")
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = MaterialTheme.colorScheme.outline,
-                                    fontSize = 12.sp,
-                                    textDecoration = TextDecoration.LineThrough
-                                )
-                            ) {
-                                append(state.orderList.sumOf { it.foodPrice.toInt() * it.quantity }
-                                    .toString())
-                            }
-                        })
-                        Button(
-                            onClick = {
-                                showConfirmDialog = true
-                            }, shape = RoundedCornerShape(10.dp)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "Order Now (${state.orderList.size})")
+                            Text(
+                                text = "Delivery Fee",
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold)
+                            )
+                            Text(
+                                text = "Rs. 0",
+                                style = MaterialTheme.typography.bodyMedium.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            )
                         }
-                    }
 
+                        Divider()
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "Total Payment",
+                                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold)
+                            )
+                            Text(
+                                text = "Rs. $totalCost",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = MaterialTheme.colorScheme.error
+                                )
+                            )
+                        }
+
+                    }
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.outline,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    ) {
+                        append("Delivery: Rs 0\n")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                        )
+                    ) {
+                        append("Total: ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+
+                        )
+                    ) {
+                        append("Rs")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    ) {
+                        append(totalCost)
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.outline, fontSize = 12.sp
+
+                        )
+                    ) {
+                        append("Rs ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.outline,
+                            fontSize = 12.sp,
+                            textDecoration = TextDecoration.LineThrough
+                        )
+                    ) {
+                        append(state.orderList.sumOf { it.foodPrice.toInt() * it.quantity }
+                            .toString())
+                    }
+                })
+                Button(
+                    onClick = {
+                        showConfirmDialog = true
+                    }, shape = RoundedCornerShape(10.dp)
+                ) {
+                    Text(text = "Order Now (${state.orderList.size})")
+                }
+            }
+
         }
+    }
 
     )
 }

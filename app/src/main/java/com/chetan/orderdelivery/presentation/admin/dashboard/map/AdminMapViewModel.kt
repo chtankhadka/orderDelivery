@@ -3,7 +3,9 @@ package com.chetan.orderdelivery.presentation.admin.dashboard.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
+import com.chetan.orderdelivery.data.model.RealtimeModelResponse
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,12 +15,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AdminMapViewModel @Inject constructor(
-    private val firestoreUseCases: FirestoreUseCases
+    private val firestoreUseCases: FirestoreUseCases,
+    private val realtimeUseCases: RealtimeUseCases
 ): ViewModel(){
     private val _state = MutableStateFlow(AdminMapState())
     val state : StateFlow<AdminMapState> =_state
 
     init {
+        viewModelScope.launch {
+            realtimeUseCases.deleteOrders()
+        }
 
         getFoodOrders()
     }
@@ -46,8 +52,13 @@ class AdminMapViewModel @Inject constructor(
     val onEvent :(event:  AdminMapEvent) -> Unit = {event ->
         viewModelScope.launch {
             when(event){
-
-                else -> {}
+                is AdminMapEvent.OnClickWindoInfo -> {
+                    _state.update {
+                        it.copy(
+                            userDetails = state.value.orderedUserList.find { it.orderId == event.orderId }!!
+                        )
+                    }
+                }
             }
         }
     }

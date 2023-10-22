@@ -8,5 +8,5 @@ import javax.inject.Inject
 class OrderFood @Inject constructor(
     private val repository: FirestoreRepository
 ) {
-    suspend operator fun invoke(data: List<RequestFoodOrder>) = repository.orderFood(data)
+    suspend operator fun invoke(data: RequestFoodOrder) = repository.orderFood(data)
 }

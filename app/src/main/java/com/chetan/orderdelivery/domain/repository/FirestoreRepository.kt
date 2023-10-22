@@ -4,14 +4,18 @@ import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.AddFoodRequest
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
-import com.chetan.orderdelivery.data.model.order.GetFoodOrder
 import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.data.model.SetLatLng
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 
 interface FirestoreRepository {
     suspend fun orderFood(
-        data : List<RequestFoodOrder>
-    ) : Resource<Any>
+        data : RequestFoodOrder
+    ) : Resource<Boolean>
+
+    suspend fun setAddress(
+        address: SetLatLng
+    ) : Resource<Boolean>
 
     suspend fun rating(
         data: RatingRequestResponse
@@ -28,7 +32,7 @@ interface FirestoreRepository {
 
 
     //admin
-    suspend fun getFoodOrders(): Resource<List<GetFoodOrder>>
+    suspend fun getFoodOrders(): Resource<List<RequestFoodOrder>>
     suspend fun addFood(
         data: AddFoodRequest
     ): Resource<Boolean>

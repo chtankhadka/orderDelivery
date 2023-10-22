@@ -7,9 +7,10 @@ import kotlinx.coroutines.flow.Flow
 interface RealtimeRepository {
 
     suspend fun insert(
-        item: RealtimeModelResponse.RealtimeItems
+        item: RealtimeModelResponse.RealTimeNewOrderRequest
     ) : Resource<String>
 
     fun getItems() : Flow<Resource<List<RealtimeModelResponse>>>
 
+    suspend fun deleteOrders() : Resource<Boolean>
 }
