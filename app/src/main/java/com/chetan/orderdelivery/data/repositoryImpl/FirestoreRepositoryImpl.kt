@@ -184,6 +184,25 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteCartItem(foodId: String): Resource<Boolean> {
+        return try {
+            var isSuccess = false
+            firestore
+                .collection("users")
+                .document(preference.tableName!!)
+                .collection("myCart")
+                .document(foodId)
+                .delete()
+                .addOnSuccessListener {
+                   isSuccess = true
+                }
+            Resource.Success(isSuccess)
+        }catch (e: Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
 
     //admin
     override suspend fun getFoodOrders(): Resource<List<GetFoodOrder>> {

@@ -83,9 +83,9 @@ class UserDashboardViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
+                    println(getAllFoodsResponse)
                     dbRepository.insertFoodList(getAllFoodsResponse.data.map {
                         AllFoods(
-                            id = 1,
                             foodId = it.foodId,
                             foodType = it.foodType,
                             foodFamily = it.foodFamily,
@@ -112,8 +112,6 @@ class UserDashboardViewModel @Inject constructor(
                             supportImgName4 = it.supportImgName4,
                             supportImgUrl4 = it.supportImgUrl4,
                             supportImgPath4 = it.supportImgPath4,
-
-
                             )
                     })
                     _state.update {
@@ -122,6 +120,7 @@ class UserDashboardViewModel @Inject constructor(
                             infoMsg = null
                         )
                     }
+                    println(getAllFoodsResponse.data)
                 }
             }
         }

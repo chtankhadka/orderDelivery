@@ -8,6 +8,7 @@ data class FirestoreUseCases(
     val addFood : AddFood,
 
     val getCartItems : GetCartItems,
+    val deleteCartItem: DeleteCartItem,
     val addToCart : AddToCart,
 
     val rateIt : RateIt,

@@ -10,6 +10,7 @@ import com.chetan.orderdelivery.domain.repository.RealtimeRepository
 import com.chetan.orderdelivery.domain.repository.StorageRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddToCart
+import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteCartItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetCartItems
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodItem
@@ -88,6 +89,7 @@ object FirebaseModule {
 
             getCartItems =GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),
+            deleteCartItem = DeleteCartItem(repository = repository),
 
             rateIt = RateIt(repository = repository),
             updateRating = UpdateRating(repository = repository),

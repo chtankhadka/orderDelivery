@@ -1,5 +1,9 @@
 package com.chetan.orderdelivery.domain.use_cases.db
 
 data class DBUseCases(
-    val getAllFoods: GetAllFoods
+    val getAllFoods: GetAllFoods,
+    val insertFoodList: InsertFoodList,
+    val getAllCheckoutFoods :GetAllCheckoutFoods,
+    val insertAllCheckoutFoodList: InsertAllCheckoutFoodList,
+    val removeAllCheckoutFoods : RemoveAllCheckoutFoods
 )

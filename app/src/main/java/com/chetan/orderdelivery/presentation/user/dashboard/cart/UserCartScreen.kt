@@ -5,10 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.location.LocationManager
 import android.provider.Settings
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,6 +28,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
@@ -33,31 +39,38 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.Destination
+import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.common.Constants
-import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionEvent
+import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 
 @Composable
 fun UserCartScreen(
-    navController: NavHostController,
-    state: UserCartState,
-    event: (event: UserCartEvent) -> Unit
+    navController: NavHostController, state: UserCartState, event: (event: UserCartEvent) -> Unit
 ) {
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
@@ -74,25 +87,98 @@ fun UserCartScreen(
         pendingIntent.send()
     }
 
-    Scaffold(content = {
-        Column(modifier = Modifier.padding(it)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+    var isShowAlertDialog by remember {
+        mutableStateOf(false)
+    }
+    if (isShowAlertDialog) {
+        Dialog(onDismissRequest = {}) {
+            Column(
+                Modifier
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.background)
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Delete from cart",
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge
+                )
+//            AsyncImage(
+//                model = message.image,
+//                modifier = Modifier.size(145.dp),
+//                contentDescription = null
+//            )
+
+                LoadLottieAnimation(
+                    modifier = Modifier.size(200.dp), image = R.raw.delete
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Are you sure want to delete item(s)?",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.outline)
+                )
+                Spacer(modifier = Modifier.height(34.dp))
+
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        .also { Arrangement.Center }) {
+                    Button(
+                        modifier = Modifier.weight(1f), onClick = {
+                            event(UserCartEvent.DeleteItems)
+                            isShowAlertDialog = false
+                        }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                    ) {
+                        Text(text = "Yes")
+                    }
+                    Button(
+                        modifier = Modifier.weight(1f), onClick = {
+                            isShowAlertDialog = false
+                        }, colors = ButtonDefaults.buttonColors(Constants.dark_primaryContainer)
+                    ) {
+                        Text(text = "No")
+                    }
+                }
+
+            }
+        }
+    }
+    Scaffold(content = {
+        state.infoMsg?.let {
+            MessageDialog(message = it, onDismissRequest = {
+                if (event != null && state.infoMsg.isCancellable == true) {
+                    event(UserCartEvent.DismissInfoMsg)
+                }
+            }, onPositive = { /*TODO*/ }) {
+
+            }
+        }
+        Column(modifier = Modifier.padding(it)) {
+            if (state.cartItemList.isNotEmpty()){
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Checkbox(checked = true, onCheckedChange = {})
-                    Text(text = "Select All")
-                }
-                Button(shape = RoundedCornerShape(10.dp), onClick = {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(checked = state.cartItemList.size == state.cartItemList.filter { it.isSelected }.size,
+                            onCheckedChange = {
+                                event(UserCartEvent.SelectAllCheckBox(it))
+                            })
+                        Text(text = "Select All")
+                    }
+                    Button(shape = RoundedCornerShape(10.dp), onClick = {
+                        isShowAlertDialog = true
+                    }) {
+                        Icon(imageVector = Icons.Default.Delete, contentDescription = "")
+                        Text(text = "Delete")
+                    }
 
-                }) {
-                    Icon(imageVector = Icons.Default.Delete, contentDescription = "")
-                    Text(text = "Delete")
                 }
-
             }
             Divider()
             LazyColumn(modifier = Modifier
@@ -107,7 +193,12 @@ fun UserCartScreen(
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Checkbox(checked = false, onCheckedChange = {
+                            Checkbox(checked = food.isSelected, onCheckedChange = {
+                                event(
+                                    UserCartEvent.ItemSelected(
+                                        isItemSelected = it, item = food.foodId
+                                    )
+                                )
 
                             })
                             Box(
@@ -116,7 +207,14 @@ fun UserCartScreen(
                                 Card(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(top = 15.dp, start = 50.dp),
+                                        .padding(top = 15.dp, start = 50.dp)
+                                        .clickable {
+                                            navController.navigate(
+                                                Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                                    "{foodId}", food.foodId
+                                                )
+                                            )
+                                        },
                                     elevation = CardDefaults.cardElevation(10.dp),
                                     colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
                                 ) {
@@ -177,14 +275,21 @@ fun UserCartScreen(
                                                     if (food.quantity > 1) {
                                                         Card(
                                                             modifier = Modifier.size(34.dp),
-                                                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
-                                                            elevation = CardDefaults.cardElevation(10.dp),
+                                                            colors = CardDefaults.cardColors(
+                                                                MaterialTheme.colorScheme.onPrimaryContainer
+                                                            ),
+                                                            elevation = CardDefaults.cardElevation(
+                                                                10.dp
+                                                            ),
                                                         ) {
-                                                            IconButton(
-                                                                onClick = {
-//                                                                    onEvent(
-//                                                                        FoodOrderDescriptionEvent.DecreaseQuantity)
-                                                                }) {
+                                                            IconButton(onClick = {
+                                                                event(
+                                                                    UserCartEvent.DecreaseQuantity(
+                                                                        foodId = food.foodId,
+                                                                        food.quantity
+                                                                    )
+                                                                )
+                                                            }) {
                                                                 Icon(
                                                                     imageVector = Icons.Default.Remove,
                                                                     contentDescription = "Remove",
@@ -200,14 +305,22 @@ fun UserCartScreen(
                                                     )
                                                     Card(
                                                         modifier = Modifier.size(34.dp),
-                                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                                                        colors = CardDefaults.cardColors(
+                                                            MaterialTheme.colorScheme.primary
+                                                        ),
                                                         elevation = CardDefaults.cardElevation(10.dp),
                                                     ) {
                                                         IconButton(onClick = {
-//                                                            onEvent(FoodOrderDescriptionEvent.IncreaseQuantity)
+                                                            event(
+                                                                UserCartEvent.IncreaseQuantity(
+                                                                    foodId = food.foodId,
+                                                                    food.quantity
+                                                                )
+                                                            )
                                                         }) {
                                                             Icon(
-                                                                imageVector = Icons.Default.Add, contentDescription = "Add"
+                                                                imageVector = Icons.Default.Add,
+                                                                contentDescription = "Add"
                                                             )
                                                         }
                                                     }
@@ -218,13 +331,18 @@ fun UserCartScreen(
                                     }
                                 }
                                 Card(
-                                    modifier = Modifier
-                                        .align(Alignment.TopStart)
-                                        .size(100.dp),
+                                    modifier = Modifier.align(Alignment.TopStart),
                                     shape = CircleShape
                                 ) {
                                     AsyncImage(
-                                        model = Constants.testFoodUrl,
+                                        modifier = Modifier
+                                            .size(100.dp)
+                                            .border(
+                                                border = BorderStroke(
+                                                    width = 2.dp, color = Color.White
+                                                ), shape = CircleShape
+                                            ),
+                                        model = food.faceImgUrl,
                                         contentDescription = "",
                                         contentScale = ContentScale.Crop
 
@@ -237,61 +355,83 @@ fun UserCartScreen(
                     }
                 })
             Divider()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = MaterialTheme.colorScheme.outline,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    ) {
-                        append("Delivery: Rs 120\n")
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            fontSize = 18.sp, fontWeight = FontWeight.SemiBold
-                        )
-                    ) {
-                        append("Total: ")
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Red,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold
-
-                        )
-                    ) {
-                        append("Rs")
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.Red,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    ) {
-                        append("120")
-                    }
-
-                })
-                Button(
-                    onClick = {
-                              navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route)
-                    }, shape = RoundedCornerShape(10.dp)
+            if (state.cartItemList.filter { it.isSelected }.isNotEmpty()){
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Check out (2)")
+                    Text(text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.outline,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        ) {
+                            append("Delivery: Rs 0\n")
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                            )
+                        ) {
+                            append("Total: ")
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.Red, fontSize = 18.sp, fontWeight = FontWeight.SemiBold
 
+                            )
+                        ) {
+                            append("Rs ")
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                color = Color.Red, fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                            )
+                        ) {
+                            append(state.cartItemList.filter { it.isSelected }
+                                .sumOf { it.foodNewPrice * it.quantity }.toString())
+                        }
+
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.outline, fontSize = 12.sp
+
+                            )
+                        ) {
+                            append("Rs ")
+                        }
+                        withStyle(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.outline,
+                                fontSize = 12.sp,
+                                textDecoration = TextDecoration.LineThrough
+                            )
+                        ) {
+                            append(state.cartItemList.filter { it.isSelected }.sumOf { it.foodPrice.toInt() * it.quantity }.toString())
+                        }
+
+                    })
+                    Button(
+                        onClick = {
+                            event(UserCartEvent.Checkout)
+                            navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route.replace(
+                                "{totalCost}", state.cartItemList.filter { it.isSelected }
+                                    .sumOf { it.foodNewPrice * it.quantity }.toString()
+                            ))
+                        }, shape = RoundedCornerShape(10.dp)
+                    ) {
+                        Text(text = "Check out(${state.cartItemList.filter { it.isSelected }.size})")
+
+                    }
                 }
+                Divider()
             }
-            Divider()
+
 
         }
     })

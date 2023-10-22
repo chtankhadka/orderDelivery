@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.LifecycleCoroutineScope
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -144,9 +143,11 @@ fun AppNavHost(
         }
 
         composable(Destination.Screen.UserOrderCheckoutScreen.route) {
+            val totalCost = it.arguments?.getString("totalCost")!!
             val viewModel = hiltViewModel<OrderCheckoutViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
             OrderCheckoutScreen(
+                totalCost = totalCost,
                 navController = navController,
                 onEvent = viewModel.onEvent,
                 state = state

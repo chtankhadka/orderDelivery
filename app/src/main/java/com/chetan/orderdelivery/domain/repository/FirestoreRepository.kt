@@ -24,7 +24,7 @@ interface FirestoreRepository {
 
     suspend fun addToCart(foodItem: GetCartItemModel) : Resource<Boolean>
     suspend fun getCartItems() : Resource<List<GetCartItemModel>>
-
+    suspend fun deleteCartItem(foodId: String): Resource<Boolean>
 
 
     //admin

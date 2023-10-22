@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity
-data class AllFoods(
+data class CheckoutFoods(
     @PrimaryKey
     val foodId: String = "",
     val foodType: String = "",
@@ -21,17 +21,4 @@ data class AllFoods(
     val date: String = "",
     val faceImgName: String = "",
     val faceImgUrl: String = "",
-    val faceImgPath: String = "",
-
-    val supportImgName2: String = "",
-    val supportImgUrl2: String = "",
-    val supportImgPath2: String = "",
-
-    val supportImgName3: String = "",
-    val supportImgUrl3: String = "",
-    val supportImgPath3: String = "",
-
-    val supportImgName4: String = "",
-    val supportImgUrl4: String = "",
-    val supportImgPath4: String = "",
 )

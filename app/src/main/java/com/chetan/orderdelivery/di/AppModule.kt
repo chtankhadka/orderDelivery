@@ -6,7 +6,11 @@ import com.chetan.orderdelivery.data.data_source.OrderDeliveryDatabase
 import com.chetan.orderdelivery.data.repositoryImpl.DBRepositoryImpl
 import com.chetan.orderdelivery.domain.repository.DBRepository
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
+import com.chetan.orderdelivery.domain.use_cases.db.GetAllCheckoutFoods
 import com.chetan.orderdelivery.domain.use_cases.db.GetAllFoods
+import com.chetan.orderdelivery.domain.use_cases.db.InsertAllCheckoutFoodList
+import com.chetan.orderdelivery.domain.use_cases.db.InsertFoodList
+import com.chetan.orderdelivery.domain.use_cases.db.RemoveAllCheckoutFoods
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,7 +39,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provdeOrderDeliveryUseCases(repository: DBRepository) = DBUseCases(
-        getAllFoods = GetAllFoods(dbRepository = repository)
+        getAllFoods = GetAllFoods(dbRepository = repository),
+        insertFoodList = InsertFoodList(dbRepository = repository),
+
+        insertAllCheckoutFoodList = InsertAllCheckoutFoodList(dbRepository = repository),
+        getAllCheckoutFoods = GetAllCheckoutFoods(dbRepository = repository),
+        removeAllCheckoutFoods = RemoveAllCheckoutFoods(dbRepository = repository)
     )
 
 }

@@ -118,7 +118,8 @@ fun UserDashboardScreen(
 
     if (showApplyThemeDialog){
         Dialog(onDismissRequest = {
-        }) {
+        })
+        {
             Column(
                 Modifier
                     .clip(RoundedCornerShape(16.dp))

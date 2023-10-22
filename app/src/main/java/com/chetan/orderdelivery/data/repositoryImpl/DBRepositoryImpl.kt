@@ -3,6 +3,7 @@ package com.chetan.orderdelivery.data.repositoryImpl
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.data_source.AllFoodsDao
 import com.chetan.orderdelivery.domain.model.AllFoods
+import com.chetan.orderdelivery.domain.model.CheckoutFoods
 import com.chetan.orderdelivery.domain.repository.DBRepository
 import kotlinx.coroutines.flow.Flow
 
@@ -15,5 +16,17 @@ class DBRepositoryImpl(
 
     override suspend fun insertFoodList(noteList: List<AllFoods>) {
         dao.insertFoodList(noteList)
+    }
+
+    override suspend fun getAllCheckoutFoods(): List<CheckoutFoods> {
+        return dao.getAllCheckoutFoods()
+    }
+
+    override suspend fun insertAllCheckoutFoods(checkList: List<CheckoutFoods>) {
+        dao.insertAllCheckedoutFoods(checkList)
+    }
+
+    override suspend fun removeAllCheckoutFoods() {
+        dao.removeAllCheckoutFoods()
     }
 }
