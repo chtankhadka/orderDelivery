@@ -24,6 +24,8 @@ import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodScreen
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodViewModel
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateScreen
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateViewModel
+import com.chetan.orderdelivery.presentation.admin.orderdetails.AdminOrderDetailScreen
+import com.chetan.orderdelivery.presentation.admin.orderdetails.AdminOrderDetailViewModel
 import com.chetan.orderdelivery.presentation.common.google_sign_in.GoogleAuthUiClient
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInViewModel
@@ -211,6 +213,16 @@ fun AppNavHost(
                 navController = navController,
                 state = viewModel.state.collectAsStateWithLifecycle().value,
                 onEvent = viewModel.onEvent
+            )
+        }
+        composable(Destination.Screen.AdminOrderDetailScreen.route){
+            val user = it.arguments?.getString("user")!!
+            val viewModel = hiltViewModel<AdminOrderDetailViewModel>()
+            AdminOrderDetailScreen(
+                navController = navController,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                event = viewModel.onEvent,
+                user = user
             )
         }
     }

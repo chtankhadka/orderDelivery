@@ -32,7 +32,8 @@ interface FirestoreRepository {
 
 
     //admin
-    suspend fun getFoodOrders(): Resource<List<RequestFoodOrder>>
+    suspend fun getFoodOrders(): Resource<List<SetLatLng>>
+    suspend fun getFoodOrderDetails(user: String) : Resource<List<RequestFoodOrder>>
     suspend fun addFood(
         data: AddFoodRequest
     ): Resource<Boolean>

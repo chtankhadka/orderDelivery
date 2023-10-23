@@ -3,7 +3,6 @@ package com.chetan.orderdelivery.presentation.admin.dashboard.map
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
-import com.chetan.orderdelivery.data.model.RealtimeModelResponse
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -55,7 +54,7 @@ class AdminMapViewModel @Inject constructor(
                 is AdminMapEvent.OnClickWindoInfo -> {
                     _state.update {
                         it.copy(
-                            userDetails = state.value.orderedUserList.find { it.orderId == event.orderId }!!
+                            userDetails = state.value.orderedUserList.find { it.userMail == event.userMail }!!
                         )
                     }
                 }

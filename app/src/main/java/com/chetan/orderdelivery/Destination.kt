@@ -13,6 +13,7 @@ open class Destination(open val route: String) {
         object AdminDashboardScreen : Destination("admin-dashboard-screen")
         object AdminAddFoodScreen : Destination("admin-add-food-screen")
         object AdminRatingUpdateScreen : Destination("admin-rating-update-screen")
+        object AdminOrderDetailScreen : Destination("admin-order-detail-screen/{user}")
 
 
         //User

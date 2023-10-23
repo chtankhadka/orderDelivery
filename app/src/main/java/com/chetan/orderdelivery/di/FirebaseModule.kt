@@ -14,6 +14,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteCartItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetCartItems
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodItem
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrderDetails
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoods
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodsForUpdate
@@ -86,6 +87,7 @@ object FirebaseModule {
             setAddress = SetAddress(repository = repository),
             orderFood = OrderFood(repository = repository),
             getFoodOrders = GetFoodOrders(repository = repository),
+            getFoodOrderDetails = GetFoodOrderDetails(repository = repository),
             getFoodItem = GetFoodItem(repository = repository),
             getFoods = GetFoods(repository = repository),
             addFood = AddFood(repository = repository),

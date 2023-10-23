@@ -40,7 +40,7 @@ class FirestoreRepositoryImpl @Inject constructor(
                 .document("foods")
                 .collection("orders")
                 .document(preference.tableName.toString())
-                .collection("orders")
+                .collection("orderDetails")
                 .document(data.orderId)
                 .set(data)
                 .addOnSuccessListener {
@@ -237,9 +237,9 @@ class FirestoreRepositoryImpl @Inject constructor(
 
 
     //admin
-    override suspend fun getFoodOrders(): Resource<List<RequestFoodOrder>> {
+    override suspend fun getFoodOrders(): Resource<List<SetLatLng>> {
         return try {
-            val orderList = mutableListOf<RequestFoodOrder>()
+            val orderList = mutableListOf<SetLatLng>()
             val querySnapshot = firestore
                 .collection("admin")
                 .document("foods")
@@ -247,13 +247,37 @@ class FirestoreRepositoryImpl @Inject constructor(
                 .get()
                 .await()
             for (document in querySnapshot.documents) {
-                val order = document.toObject<RequestFoodOrder>()
+                val order = document.toObject<SetLatLng>()
                 order?.let {
                     orderList.add(it)
                 }
             }
             Resource.Success(orderList)
         } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun getFoodOrderDetails(user: String): Resource<List<RequestFoodOrder>> {
+        return try {
+            val orderDetailsList = mutableListOf<RequestFoodOrder>()
+            val documentRef = firestore
+                .collection("admin")
+                .document("foods")
+                .collection("orders")
+                .document(user)
+                .collection("orderDetails")
+                .get()
+                .await()
+            for (document in documentRef.documents){
+                val data = document.toObject<RequestFoodOrder>()
+                data?.let {
+                    orderDetailsList.add(data)
+                }
+            }
+            Resource.Success(orderDetailsList)
+        } catch (e: Exception){
             e.printStackTrace()
             Resource.Failure(e)
         }

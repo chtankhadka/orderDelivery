@@ -18,13 +18,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MenuOpen
+import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalAbsoluteTonalElevation
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +38,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
@@ -50,9 +56,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -68,21 +74,24 @@ import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.common.ApplicationAction
 import com.chetan.orderdelivery.common.Constants
+import com.chetan.orderdelivery.presentation.admin.dashboard.home.AdminHomeViewModel
 import com.chetan.orderdelivery.presentation.admin.dashboard.home.HomeScreen
 import com.chetan.orderdelivery.presentation.admin.dashboard.map.AdminMapViewModel
 import com.chetan.orderdelivery.presentation.admin.dashboard.map.MapScreen
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
 import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.common.utils.PlayNotificationSound
-import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardEvent
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 data class AdminInnerPage(
     val route: String, val label: Int, val icon: ImageVector, val isBadge: Boolean = false
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("MissingPermission")
 @Composable
 fun AdminDashboardScreen(
@@ -241,7 +250,79 @@ fun AdminDashboardScreen(
         }) {
         Scaffold(
             modifier = Modifier,
-            topBar = {},
+            topBar = {
+                TopAppBar(
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp),
+                    navigationIcon = {
+                        Card(
+                            modifier = Modifier.size(34.dp),
+                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                            shape = RoundedCornerShape(10.dp),
+                            elevation = CardDefaults.cardElevation(10.dp)
+                        ) {
+                            IconButton(
+//                        colors = IconButtonDefaults.iconButtonColors(Color.White),
+                                onClick = {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
+                                }) {
+                                Icon(
+                                    tint = Color.White,
+                                    imageVector = Icons.Default.MenuOpen,
+                                    contentDescription = "Menu"
+                                )
+                            }
+
+                        }
+                    },
+                    actions = {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+
+                        }
+                        Card(
+                            modifier = Modifier.size(34.dp),
+                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                            elevation = CardDefaults.cardElevation(10.dp),
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(2.dp)
+                            ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomCenter)
+                                        .size(20.dp),
+                                    imageVector = Icons.Default.NotificationsActive,
+                                    tint = Color.White,
+                                    contentDescription = ""
+                                )
+                                Text(
+                                    text = "201",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(end = 2.dp),
+                                    fontSize = 8.sp,
+                                    textAlign = TextAlign.Right,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.White
+                                )
+                            }
+
+                        }
+                    },
+                    title = {
+                        Text(
+                            text = "MOMO BAR",
+                            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    })
+            },
             bottomBar = {
                 BottomAppBar {
                     val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
@@ -303,13 +384,30 @@ fun AdminDashboardScreen(
                 }
             },
             content = {
+
+                state.infoMsg?.let {
+                    MessageDialog(
+                        message = it,
+                        onDismissRequest = {
+                            if (onEvent != null && state.infoMsg.isCancellable == true) {
+                                onEvent(AdminDashboardEvent.DismissInfoMsg)
+                            }
+                        },
+                        onPositive = { /*TODO*/ }) {
+
+                    }
+                }
                 NavHost(
                     navController = bottomNavController,
                     startDestination = "home",
                     modifier = Modifier.padding(it)
                 ) {
                     composable("home") {
+                        val viewModel = hiltViewModel<AdminHomeViewModel>()
                         HomeScreen(
+                            navController = navController,
+                            event = viewModel.onEvent,
+                            state = viewModel.state.collectAsStateWithLifecycle().value
                         )
                     }
                     composable("map") {

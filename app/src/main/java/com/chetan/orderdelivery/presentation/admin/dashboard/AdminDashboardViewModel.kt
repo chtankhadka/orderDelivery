@@ -59,6 +59,14 @@ class AdminDashboardViewModel @Inject constructor(
                     )
                 }
             }
+
+            AdminDashboardEvent.DismissInfoMsg -> {
+                _state.update {
+                    it.copy(
+                        infoMsg = null
+                    )
+                }
+            }
         }
     }
 }

@@ -190,6 +190,7 @@ fun MapScreen(state: AdminMapState, onEvent: (event: AdminMapEvent) -> Unit) {
                             context.startActivity(mapIntent)
                         },
                         onInfoWindowClick = {
+                            onEvent(AdminMapEvent.OnClickWindoInfo(userData.userMail))
                                             showUserDetails = true
                         },
                         onClick = {

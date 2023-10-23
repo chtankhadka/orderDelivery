@@ -7,6 +7,7 @@ data class SetLatLng(
     val userName: String = "",
     val googleUserName: String = "",
     val userContactNo: String = "",
+    val userMail: String = "",
     val googleProfileUrl: String = "",
-    val dbProfileUrl: String = "",
+    val dbProfileUrl: String = ""
 )
