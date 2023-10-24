@@ -235,6 +235,28 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getMyHistory(): Resource<List<RequestFoodOrder>> {
+        return try {
+            val orderList = mutableListOf<RequestFoodOrder>()
+            val querySnapshot = firestore
+                .collection("users")
+                .document(preference.tableName?:"")
+                .collection("history")
+                .get()
+                .await()
+            for (document in querySnapshot.documents) {
+                val order = document.toObject<RequestFoodOrder>()
+                order?.let {
+                    orderList.add(it)
+                }
+            }
+            Resource.Success(orderList)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
 
     //admin
     override suspend fun getFoodOrders(): Resource<List<SetLatLng>> {
@@ -298,6 +320,97 @@ class FirestoreRepositoryImpl @Inject constructor(
             Resource.Failure(e)
         }
     }
+
+    override suspend fun orderDelivered(data: RequestFoodOrder): Resource<Boolean> {
+        return try {
+            var isTrue = false
+            val ref = firestore.collection("admin")
+                .document("foods")
+                .collection("orders")
+                .document(data.userMail)
+                .collection("orderDetails")
+                .document(data.orderId)
+                .delete()
+                .addOnSuccessListener {
+                    isTrue = true
+                }
+                .addOnFailureListener {
+                    isTrue = false
+                }
+                .await()
+            Resource.Success(isTrue)
+        } catch (e: Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun removeUser(user: String): Resource<Boolean> {
+        return try {
+            var isTrue = false
+            val ref = firestore.collection("admin")
+                .document("foods")
+                .collection("orders")
+                .document(user)
+                .delete()
+                .addOnSuccessListener {
+                    isTrue = true
+                }
+                .addOnFailureListener {
+                    isTrue = false
+                }
+                .await()
+            Resource.Success(isTrue)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun updateUserHistory(data: RequestFoodOrder): Resource<Boolean> {
+        return try {
+            var isTrue = false
+            val ref = firestore.collection("users")
+                .document(data.userMail)
+                .collection("history")
+                .document(data.orderId)
+                .set(data)
+                .addOnSuccessListener {
+                    isTrue = true
+                }
+                .addOnFailureListener {
+                    isTrue = false
+                }
+                .await()
+            Resource.Success(isTrue)
+        } catch (e: Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun updateDeliveredHistroy(data: RequestFoodOrder): Resource<Boolean> {
+        return try {
+            var isTrue = false
+            val ref = firestore.collection("admin")
+                .document("foods")
+                .collection("orderHistory")
+                .document(data.orderId)
+                .set(data)
+                .addOnSuccessListener {
+                    isTrue = true
+                }
+                .addOnFailureListener {
+                    isTrue = false
+                }
+                .await()
+            Resource.Success(isTrue)
+        } catch (e: Exception){
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
 
     override suspend fun updateRating(foodId: String, foodRating: Float) : Resource<Boolean> {
         return try {

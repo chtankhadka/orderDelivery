@@ -90,7 +90,8 @@ fun AddFoodScreen(
                     fontWeight = FontWeight.Bold
                 )
             )
-        }, text = {
+        },
+            text = {
             Text(text = "Are you sure?")
         }, onDismissRequest = {
 

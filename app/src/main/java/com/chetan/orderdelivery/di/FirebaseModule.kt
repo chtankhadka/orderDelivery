@@ -18,10 +18,15 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrderDetails
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoods
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodsForUpdate
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetMyHistory
+import com.chetan.orderdelivery.domain.use_cases.firestore.OrderDelivered
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
+import com.chetan.orderdelivery.domain.use_cases.firestore.RemoveUserOrder
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetAddress
+import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateDeliveredHistroy
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateRating
+import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateUserHistory
 import com.chetan.orderdelivery.domain.use_cases.realtime.DeleteOrders
 import com.chetan.orderdelivery.domain.use_cases.realtime.GetItems
 import com.chetan.orderdelivery.domain.use_cases.realtime.Insert
@@ -31,7 +36,6 @@ import com.chetan.orderdelivery.domain.use_cases.storage.FirestorageUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.InsertImage
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.FirebaseFirestoreKtxRegistrar
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -51,21 +55,22 @@ object FirebaseModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseFirestore(): FirebaseFirestore{
+    fun provideFirebaseFirestore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
     }
 
     @Singleton
     @Provides
-    fun provideFirebaseStorage() : FirebaseStorage{
+    fun provideFirebaseStorage(): FirebaseStorage {
         return FirebaseStorage.getInstance()
     }
 
     @Singleton
     @Provides
-    fun provideFirebaseStorageRepository(storage: FirebaseStorage) : StorageRepository{
+    fun provideFirebaseStorageRepository(storage: FirebaseStorage): StorageRepository {
         return StorageRepositoryImpl(storage)
     }
+
     @Singleton
     @Provides
     fun provideStorageUseCases(repository: StorageRepository) =
@@ -76,7 +81,10 @@ object FirebaseModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseFirestoreRepository(firestore: FirebaseFirestore, preference: Preference): FirestoreRepository{
+    fun provideFirebaseFirestoreRepository(
+        firestore: FirebaseFirestore,
+        preference: Preference
+    ): FirestoreRepository {
         return FirestoreRepositoryImpl(firestore, preference)
     }
 
@@ -91,8 +99,13 @@ object FirebaseModule {
             getFoodItem = GetFoodItem(repository = repository),
             getFoods = GetFoods(repository = repository),
             addFood = AddFood(repository = repository),
+            removeUserOrder = RemoveUserOrder(repository = repository),
+            updateUserHistory = UpdateUserHistory(repository = repository),
+            orderDelivered = OrderDelivered(repository = repository),
+            updateDeliveredHistory = UpdateDeliveredHistroy(repository = repository),
+            getMyHistory = GetMyHistory(repository = repository),
 
-            getCartItems =GetCartItems(repository = repository),
+            getCartItems = GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),
             deleteCartItem = DeleteCartItem(repository = repository),
 
@@ -103,22 +116,22 @@ object FirebaseModule {
 
     @Singleton
     @Provides
-    fun provideFirebaseRealtime() : FirebaseDatabase{
+    fun provideFirebaseRealtime(): FirebaseDatabase {
         return FirebaseDatabase.getInstance()
     }
 
     @Singleton
     @Provides
-    fun provideFirebaseRealtimeRepository(realtime: FirebaseDatabase) : RealtimeRepository{
+    fun provideFirebaseRealtimeRepository(realtime: FirebaseDatabase): RealtimeRepository {
         return RealtimeRepositoryImpl(realtime)
     }
 
     @Singleton
     @Provides
     fun provideFirebaseRealtimeUseCases(repository: RealtimeRepository) =
-            RealtimeUseCases(
-                insert = Insert(realtimeRepository = repository),
-                getItems = GetItems(realtimeRepository = repository),
-                deleteOrders = DeleteOrders(realtimeRepository = repository)
-            )
+        RealtimeUseCases(
+            insert = Insert(realtimeRepository = repository),
+            getItems = GetItems(realtimeRepository = repository),
+            deleteOrders = DeleteOrders(realtimeRepository = repository)
+        )
 }

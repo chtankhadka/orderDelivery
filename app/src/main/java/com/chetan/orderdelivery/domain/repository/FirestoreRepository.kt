@@ -29,6 +29,7 @@ interface FirestoreRepository {
     suspend fun addToCart(foodItem: GetCartItemModel) : Resource<Boolean>
     suspend fun getCartItems() : Resource<List<GetCartItemModel>>
     suspend fun deleteCartItem(foodId: String): Resource<Boolean>
+    suspend fun getMyHistory(): Resource<List<RequestFoodOrder>>
 
 
     //admin
@@ -37,6 +38,11 @@ interface FirestoreRepository {
     suspend fun addFood(
         data: AddFoodRequest
     ): Resource<Boolean>
+
+    suspend fun orderDelivered(data : RequestFoodOrder): Resource<Boolean>
+    suspend fun removeUser(user : String): Resource<Boolean>
+    suspend fun updateUserHistory(data : RequestFoodOrder): Resource<Boolean>
+    suspend fun updateDeliveredHistroy(data: RequestFoodOrder) : Resource<Boolean>
 
     suspend fun updateRating(
         foodId : String,

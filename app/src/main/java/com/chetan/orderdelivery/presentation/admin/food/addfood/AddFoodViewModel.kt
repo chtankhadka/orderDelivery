@@ -156,14 +156,6 @@ class AddFoodViewModel @Inject constructor(
 
 
                 AddFoodEvent.AddFood -> {
-                    val rateit = firestoreUseCases.rateIt(
-                        data = RatingRequestResponse(
-                            userName = "anita",
-                            userMail = "anita" ,
-                            foodId = state.value.foodId,
-                            rateValue = 4f,
-                        )
-                    )
                     val addFoodRequest = firestoreUseCases.addFood(
                         data = AddFoodRequest(
                             foodId = state.value.foodId,

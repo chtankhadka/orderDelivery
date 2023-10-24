@@ -83,6 +83,7 @@ import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartViewModel
 import com.chetan.orderdelivery.presentation.user.dashboard.favourite.UserFavouriteScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.history.UserHistoryScreen
+import com.chetan.orderdelivery.presentation.user.dashboard.history.UserHistoryViewModel
 import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeViewModel
 import kotlinx.coroutines.delay
@@ -397,7 +398,12 @@ fun UserDashboardScreen(
                         UserFavouriteScreen()
                     }
                     composable("history") {
-                        UserHistoryScreen()
+                        val viewModel = hiltViewModel<UserHistoryViewModel>()
+                        UserHistoryScreen(
+                            navController = navController,
+                            state = viewModel.state.collectAsStateWithLifecycle().value,
+                            event = viewModel.onEvent
+                        )
                     }
                     composable("cart"){
                         val viewModel = hiltViewModel<UserCartViewModel>()
