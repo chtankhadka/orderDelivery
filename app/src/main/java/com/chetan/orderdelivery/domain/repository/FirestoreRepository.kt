@@ -2,6 +2,7 @@ package com.chetan.orderdelivery.domain.repository
 
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.AddFoodRequest
+import com.chetan.orderdelivery.data.model.FavouriteModel
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
@@ -30,6 +31,10 @@ interface FirestoreRepository {
     suspend fun getCartItems() : Resource<List<GetCartItemModel>>
     suspend fun deleteCartItem(foodId: String): Resource<Boolean>
     suspend fun getMyHistory(): Resource<List<RequestFoodOrder>>
+    suspend fun deleteMyHistory(orderId: String): Resource<Boolean>
+
+    suspend fun setFavourite(isFavourite: Boolean, foodId: String): Resource<Boolean>
+    suspend fun getFavouriteList(): Resource<List<FavouriteModel>>
 
 
     //admin

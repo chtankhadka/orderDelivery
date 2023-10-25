@@ -177,12 +177,12 @@ fun UserHistoryScreen(
                                 tint = MaterialTheme.colorScheme.primary
                             )
                             Text(
-                                text = history.orderId,
+                                text = history.dateTime,
                                 style = MaterialTheme.typography.headlineSmall.copy(color = MaterialTheme.colorScheme.primary)
                             )
                         }
                         IconButton(onClick = {
-
+                            event(UserHistoryEvent.DeleteMyHistory(history.orderId))
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Delete,

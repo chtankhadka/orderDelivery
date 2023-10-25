@@ -17,59 +17,75 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserHistoryViewModel @Inject constructor(
-    private val firestoreUseCases: FirestoreUseCases,
-    private val preference: Preference
-) : ViewModel(){
+    private val firestoreUseCases: FirestoreUseCases, private val preference: Preference
+) : ViewModel() {
     private val _state = MutableStateFlow(UserHistoryState())
-    val state : StateFlow<UserHistoryState> = _state
+    val state: StateFlow<UserHistoryState> = _state
 
     init {
         getMyHistories()
     }
 
-    private fun getMyHistories(){
+    private fun getMyHistories() {
         viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    infoMsg = Message.Loading(
+                        title = "History",
+                        description = "Deleting Item...",
+                        lottieImage = R.raw.delete,
+                        yesNoRequired = false,
+                        isCancellable = false
+                    )
+                )
+            }
             val histories = firestoreUseCases.getMyHistory()
-            when(histories){
+            when (histories) {
                 is Resource.Failure -> {
 
                 }
+
                 Resource.Loading -> {
 
                 }
+
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
-                            historyList = histories.data
+                            historyList = histories.data,
+                            infoMsg = null
                         )
                     }
                 }
             }
         }
     }
-    val onEvent : (event: UserHistoryEvent) -> Unit = {event ->
+
+    val onEvent: (event: UserHistoryEvent) -> Unit = { event ->
         viewModelScope.launch {
-            when(event){
+            when (event) {
                 is UserHistoryEvent.RateIt -> {
                     _state.update {
                         it.copy(
-                            infoMsg = Message.Loading(title = "Rating", description = "Please wait...",
+                            infoMsg = Message.Loading(
+                                title = "Rating",
+                                description = "Please wait...",
                                 isCancellable = false,
                                 yesNoRequired = false,
                                 lottieImage = R.raw.rating_update
-                                )
+                            )
                         )
                     }
                     val rateit = firestoreUseCases.rateIt(
                         data = RatingRequestResponse(
-                            userName = preference.userName?:"",
-                            userMail = preference.tableName?:"" ,
+                            userName = preference.userName ?: "",
+                            userMail = preference.tableName ?: "",
                             foodId = event.id,
                             rateValue = event.value,
                             url = event.url
                         )
                     )
-                    when(rateit){
+                    when (rateit) {
                         is Resource.Failure -> {}
                         Resource.Loading -> {}
                         is Resource.Success -> {
@@ -83,9 +99,44 @@ class UserHistoryViewModel @Inject constructor(
                 }
 
                 UserHistoryEvent.DismissInfoMsg -> {
-
+                    _state.update {
+                        it.copy(
+                            infoMsg = null
+                        )
+                    }
                 }
 
+                is UserHistoryEvent.DeleteMyHistory -> {
+                    _state.update {
+                        it.copy(
+                            infoMsg = Message.Loading(
+                                title = "History",
+                                description = "Deleting Item...",
+                                lottieImage = R.raw.delete,
+                                yesNoRequired = false,
+                                isCancellable = false
+                            )
+                        )
+                    }
+
+
+                    val deleteHistory = firestoreUseCases.deleteMyHistory(event.id)
+                    when (deleteHistory) {
+                        is Resource.Failure -> {
+
+                        }
+
+                        Resource.Loading -> {}
+                        is Resource.Success -> {
+                            if (deleteHistory.data) {
+                                _state.update {
+                                    it.copy(infoMsg = null,
+                                        historyList = state.value.historyList.filter { it.orderId != event.id })
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 

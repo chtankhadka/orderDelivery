@@ -2,9 +2,11 @@ package com.chetan.orderdelivery.presentation.admin.dashboard.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,16 +28,40 @@ class AdminHomeViewModel @Inject constructor(
 
     private fun getOrders(){
         viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    infoMsg = Message.Loading(
+                        title = "Orders",
+                        description = "Getting orders...",
+                        lottieImage = R.raw.loading_food,
+                        yesNoRequired = false,
+                        isCancellable = false
+                    )
+                )
+            }
             val orderList = firestoreUseCases.getFoodOrders()
             when(orderList){
-                is Resource.Failure -> {}
+                is Resource.Failure -> {
+                    _state.update {
+                        it.copy(
+                            infoMsg = Message.Loading(
+                                title = "Error",
+                                description = "Something went wrong...",
+                                lottieImage = R.raw.loading_food,
+                                yesNoRequired = false,
+                                isCancellable = true
+                            )
+                        )
+                    }
+                }
                 Resource.Loading -> {
 
                 }
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
-                            orderList = orderList.data
+                            orderList = orderList.data,
+                            infoMsg = null
                         )
                     }
                 }
@@ -55,6 +81,49 @@ class AdminHomeViewModel @Inject constructor(
                         it.copy(
                             infoMsg = null
                         )
+                    }
+                }
+
+                is AdminHomeEvent.RemoveUser -> {
+                    _state.update {
+                        it.copy(
+                            infoMsg = Message.Loading(
+                                title = "Orders",
+                                description = "Deleting Order...",
+                                lottieImage = R.raw.delete,
+                                yesNoRequired = false,
+                                isCancellable = false
+                            )
+                        )
+                    }
+                    val deleteUser = firestoreUseCases.removeUserOrder(event.user)
+                    when(deleteUser){
+                        is Resource.Failure -> {
+                            _state.update {
+                                it.copy(
+                                    infoMsg = Message.Loading(
+                                        title = "Error",
+                                        description = "Something went wrong...",
+                                        lottieImage = R.raw.delete,
+                                        yesNoRequired = false,
+                                        isCancellable = true
+                                    )
+                                )
+                            }
+                        }
+                        Resource.Loading -> {
+                        }
+                        is Resource.Success -> {
+                            if(deleteUser.data){
+                                _state.update {
+                                    it.copy(
+                                        orderList = state.value.orderList.filter { it.userMail != event.user },
+                                        infoMsg = null,
+                                    )
+                                }
+
+                            }
+                        }
                     }
                 }
             }

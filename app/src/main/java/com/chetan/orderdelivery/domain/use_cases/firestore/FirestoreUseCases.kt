@@ -13,6 +13,9 @@ data class FirestoreUseCases(
     val orderDelivered : OrderDelivered,
     val updateDeliveredHistory: UpdateDeliveredHistroy,
     val getMyHistory: GetMyHistory,
+    val deleteMyHistory: DeleteMyHistory,
+    val setFavourite: SetFavourite,
+    val getFavouriteList: GetFavouriteList,
 
     val addFood : AddFood,
 

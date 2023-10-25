@@ -24,6 +24,7 @@ class UserHomeViewModel @Inject constructor(
     val state: StateFlow<UserHomeState> = _state
 
     init {
+        getFavList()
         getAllFoods()
     }
     private fun getAllFoods(){
@@ -36,9 +37,26 @@ class UserHomeViewModel @Inject constructor(
         }
 
     }
+    private fun getFavList(){
+        viewModelScope.launch {
+            val allFavList = firestoreUseCases.getFavouriteList()
+            when(allFavList){
+                is Resource.Failure -> {
 
+                }
+                Resource.Loading -> {
 
-
+                }
+                is Resource.Success -> {
+                    _state.update {
+                        it.copy(
+                            favouriteList = allFavList.data
+                        )
+                    }
+                }
+            }
+        }
+    }
 
     val onEvent : (event: UserHomeEvent) -> Unit ={ event ->
         viewModelScope.launch {
@@ -59,7 +77,22 @@ class UserHomeViewModel @Inject constructor(
 
                 }
 
+                is UserHomeEvent.SetFavourite -> {
+                    val setFav = firestoreUseCases.setFavourite(foodId = event.foodId, isFavourite = event.isFav)
+                    when(setFav){
+                        is Resource.Failure -> {
 
+                        }
+                        Resource.Loading -> {
+
+                        }
+                        is Resource.Success -> {
+                            if (setFav.data){
+                                getFavList()
+                            }
+                        }
+                    }
+                }
             }
         }
 

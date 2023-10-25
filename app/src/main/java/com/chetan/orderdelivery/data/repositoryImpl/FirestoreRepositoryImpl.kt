@@ -3,6 +3,7 @@ package com.chetan.orderdelivery.data.repositoryImpl
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.model.AddFoodRequest
+import com.chetan.orderdelivery.data.model.FavouriteModel
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
@@ -15,8 +16,7 @@ import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class FirestoreRepositoryImpl @Inject constructor(
-    private val firestore: FirebaseFirestore,
-    private val preference: Preference
+    private val firestore: FirebaseFirestore, private val preference: Preference
 ) : FirestoreRepository {
     override suspend fun orderFood(data: RequestFoodOrder): Resource<Boolean> {
         return try {
@@ -36,17 +36,11 @@ class FirestoreRepositoryImpl @Inject constructor(
 //            }
 
             var success = false
-            firestore.collection("admin")
-                .document("foods")
-                .collection("orders")
-                .document(preference.tableName.toString())
-                .collection("orderDetails")
-                .document(data.orderId)
-                .set(data)
-                .addOnSuccessListener {
+            firestore.collection("admin").document("foods").collection("orders")
+                .document(preference.tableName.toString()).collection("orderDetails")
+                .document(data.orderId).set(data).addOnSuccessListener {
                     success = true
-                }
-                .await()
+                }.await()
             Resource.Success(success)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -57,15 +51,10 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun setAddress(address: SetLatLng): Resource<Boolean> {
         return try {
             var success = false
-            firestore.collection("admin")
-                .document("foods")
-                .collection("orders")
-                .document(preference.tableName.toString())
-                .set(address)
-                .addOnSuccessListener {
+            firestore.collection("admin").document("foods").collection("orders")
+                .document(preference.tableName.toString()).set(address).addOnSuccessListener {
                     success = true
-                }
-                .await()
+                }.await()
             Resource.Success(success)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -75,14 +64,8 @@ class FirestoreRepositoryImpl @Inject constructor(
 
     override suspend fun rating(data: RatingRequestResponse): Resource<Boolean> {
         return try {
-            firestore
-                .collection("admin")
-                .document("foods")
-                .collection("foods")
-                .document(data.foodId)
-                .collection("rating")
-                .document(data.userMail)
-                .set(data)
+            firestore.collection("admin").document("foods").collection("foods")
+                .document(data.foodId).collection("rating").document(data.userMail).set(data)
                 .await()
             Resource.Success(true)
         } catch (e: Exception) {
@@ -94,13 +77,9 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun getFoods(): Resource<List<GetFoodResponse>> {
         return try {
             val foodResponse = mutableListOf<GetFoodResponse>()
-            val documentRef = firestore
-                .collection("admin")
-                .document("foods")
-                .collection("foods")
-                .get()
-                .await()
-            for (document in documentRef.documents){
+            val documentRef =
+                firestore.collection("admin").document("foods").collection("foods").get().await()
+            for (document in documentRef.documents) {
                 val data = document.toObject<GetFoodResponse>()
                 data?.let {
                     foodResponse.add(data)
@@ -116,17 +95,12 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun getFoodItem(foodId: String): Resource<GetFoodResponse> {
         return try {
             val foodItem: GetFoodResponse
-            val document = firestore
-                .collection("admin")
-                .document("foods")
-                .collection("foods")
-                .document(foodId)
-                .get()
-                .await()
-                .toObject<GetFoodResponse>()
+            val document =
+                firestore.collection("admin").document("foods").collection("foods").document(foodId)
+                    .get().await().toObject<GetFoodResponse>()
             foodItem = document ?: GetFoodResponse()
             Resource.Success(foodItem)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -136,32 +110,24 @@ class FirestoreRepositoryImpl @Inject constructor(
         return try {
             val foodResponse = mutableListOf<GetFoodResponse>()
             val ratingResponseList = mutableListOf<RatingRequestResponse>()
-            val documentRef = firestore
-                .collection("admin")
-                .document("foods")
-                .collection("foods")
-                .get()
-                .await()
-            for (document in documentRef.documents){
+            val documentRef =
+                firestore.collection("admin").document("foods").collection("foods").get().await()
+            for (document in documentRef.documents) {
                 val data = document.toObject<GetFoodResponse>()
                 data?.let {
-                    val ratingRef = firestore
-                        .collection("admin")
-                        .document("foods")
-                        .collection("foods")
-                        .document(it.foodId)
-                        .collection("rating")
-                        .get()
-                        .await()
+                    val ratingRef =
+                        firestore.collection("admin").document("foods").collection("foods")
+                            .document(it.foodId).collection("rating").get().await()
 
-                    for (documentRating in ratingRef.documents){
+                    for (documentRating in ratingRef.documents) {
                         val newData = documentRating.toObject<RatingRequestResponse>()
                         newData?.let { ratingResponse ->
                             ratingResponseList.add(newData)
                         }
                     }
-                    val newValue = ratingResponseList.sumOf{ it.rateValue.toInt() }.toFloat() / ratingResponseList.size.toFloat()
-                    foodResponse.add(data.copy(newFoodRating = newValue ))
+                    val newValue = ratingResponseList.sumOf { it.rateValue.toInt() }
+                        .toFloat() / ratingResponseList.size.toFloat()
+                    foodResponse.add(data.copy(newFoodRating = newValue))
                 }
                 ratingResponseList.clear()
             }
@@ -178,15 +144,10 @@ class FirestoreRepositoryImpl @Inject constructor(
 
     override suspend fun addToCart(foodItem: GetCartItemModel): Resource<Boolean> {
         return try {
-            firestore
-                .collection("users")
-                .document(preference.tableName!!)
-                .collection("myCart")
-                .document(foodItem.foodId)
-                .set(foodItem)
-                .await()
+            firestore.collection("users").document(preference.tableName!!).collection("myCart")
+                .document(foodItem.foodId).set(foodItem).await()
             Resource.Success(true)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -195,21 +156,18 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun getCartItems(): Resource<List<GetCartItemModel>> {
         return try {
             val cartItemlist = mutableListOf<GetCartItemModel>()
-            val docRef = firestore
-                .collection("users")
-                .document(preference.tableName!!)
-                .collection("myCart")
-                .get()
-                .await()
+            val docRef =
+                firestore.collection("users").document(preference.tableName!!).collection("myCart")
+                    .get().await()
 
-            for (document in docRef){
+            for (document in docRef) {
                 val data = document.toObject<GetCartItemModel>()
                 data?.let {
                     cartItemlist.add(data)
                 }
             }
             Resource.Success(cartItemlist)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -218,18 +176,12 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun deleteCartItem(foodId: String): Resource<Boolean> {
         return try {
             var isSuccess = false
-            firestore
-                .collection("users")
-                .document(preference.tableName!!)
-                .collection("myCart")
-                .document(foodId)
-                .delete()
-                .addOnSuccessListener {
-                   isSuccess = true
-                }
-                .await()
+            firestore.collection("users").document(preference.tableName!!).collection("myCart")
+                .document(foodId).delete().addOnSuccessListener {
+                    isSuccess = true
+                }.await()
             Resource.Success(isSuccess)
-        }catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -238,36 +190,80 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun getMyHistory(): Resource<List<RequestFoodOrder>> {
         return try {
             val orderList = mutableListOf<RequestFoodOrder>()
-            val querySnapshot = firestore
-                .collection("users")
-                .document(preference.tableName?:"")
-                .collection("history")
-                .get()
-                .await()
+            val querySnapshot = firestore.collection("users").document(preference.tableName ?: "")
+                .collection("history").get().await()
             for (document in querySnapshot.documents) {
                 val order = document.toObject<RequestFoodOrder>()
                 order?.let {
                     orderList.add(it)
                 }
             }
-            Resource.Success(orderList)
+            Resource.Success(orderList.reversed())
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
     }
 
+    override suspend fun deleteMyHistory(orderId: String): Resource<Boolean> {
+        return try {
+            var isSuccess = false
+            firestore.collection("users").document(preference.tableName!!).collection("history")
+                .document(orderId).delete().addOnSuccessListener {
+                    isSuccess = true
+                }.await()
+            Resource.Success(isSuccess)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun setFavourite(
+        isFavourite: Boolean, foodId: String
+    ): Resource<Boolean> {
+        return try {
+            var isDone: Boolean
+            if (isFavourite) {
+                firestore.collection("users")
+                    .document(preference.tableName!!).collection("favourite")
+                    .document(foodId).set(FavouriteModel(foodId)).await()
+                isDone = true
+            } else {
+                firestore.collection("users").document(preference.tableName!!).collection("favourite")
+                    .document(foodId).delete().await()
+                isDone = true
+            }
+            Resource.Success(isDone)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+    override suspend fun getFavouriteList(): Resource<List<FavouriteModel>> {
+        return try {
+            val favList = mutableListOf<FavouriteModel>()
+            val coll = firestore.collection("users").document(preference.tableName ?: "")
+                .collection("favourite").get().await()
+            for (document in coll.documents) {
+                val data = document.toObject<FavouriteModel>()
+                data?.let {
+                    favList.add(it)
+                }
+            }
+            Resource.Success(favList)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
 
     //admin
     override suspend fun getFoodOrders(): Resource<List<SetLatLng>> {
         return try {
             val orderList = mutableListOf<SetLatLng>()
-            val querySnapshot = firestore
-                .collection("admin")
-                .document("foods")
-                .collection("orders")
-                .get()
-                .await()
+            val querySnapshot =
+                firestore.collection("admin").document("foods").collection("orders").get().await()
             for (document in querySnapshot.documents) {
                 val order = document.toObject<SetLatLng>()
                 order?.let {
@@ -284,22 +280,17 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun getFoodOrderDetails(user: String): Resource<List<RequestFoodOrder>> {
         return try {
             val orderDetailsList = mutableListOf<RequestFoodOrder>()
-            val documentRef = firestore
-                .collection("admin")
-                .document("foods")
-                .collection("orders")
-                .document(user)
-                .collection("orderDetails")
-                .get()
-                .await()
-            for (document in documentRef.documents){
+            val documentRef =
+                firestore.collection("admin").document("foods").collection("orders").document(user)
+                    .collection("orderDetails").get().await()
+            for (document in documentRef.documents) {
                 val data = document.toObject<RequestFoodOrder>()
                 data?.let {
                     orderDetailsList.add(data)
                 }
             }
             Resource.Success(orderDetailsList)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -307,13 +298,8 @@ class FirestoreRepositoryImpl @Inject constructor(
 
     override suspend fun addFood(data: AddFoodRequest): Resource<Boolean> {
         return try {
-            firestore
-                .collection("admin")
-                .document("foods")
-                .collection("foods")
-                .document(data.foodId)
-                .set(data)
-                .await()
+            firestore.collection("admin").document("foods").collection("foods")
+                .document(data.foodId).set(data).await()
             Resource.Success(true)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -324,22 +310,15 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun orderDelivered(data: RequestFoodOrder): Resource<Boolean> {
         return try {
             var isTrue = false
-            val ref = firestore.collection("admin")
-                .document("foods")
-                .collection("orders")
-                .document(data.userMail)
-                .collection("orderDetails")
-                .document(data.orderId)
-                .delete()
+            val ref = firestore.collection("admin").document("foods").collection("orders")
+                .document(data.userMail).collection("orderDetails").document(data.orderId).delete()
                 .addOnSuccessListener {
                     isTrue = true
-                }
-                .addOnFailureListener {
+                }.addOnFailureListener {
                     isTrue = false
-                }
-                .await()
+                }.await()
             Resource.Success(isTrue)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -348,18 +327,13 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun removeUser(user: String): Resource<Boolean> {
         return try {
             var isTrue = false
-            val ref = firestore.collection("admin")
-                .document("foods")
-                .collection("orders")
-                .document(user)
-                .delete()
-                .addOnSuccessListener {
-                    isTrue = true
-                }
-                .addOnFailureListener {
-                    isTrue = false
-                }
-                .await()
+            val ref =
+                firestore.collection("admin").document("foods").collection("orders").document(user)
+                    .delete().addOnSuccessListener {
+                        isTrue = true
+                    }.addOnFailureListener {
+                        isTrue = false
+                    }.await()
             Resource.Success(isTrue)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -370,20 +344,14 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun updateUserHistory(data: RequestFoodOrder): Resource<Boolean> {
         return try {
             var isTrue = false
-            val ref = firestore.collection("users")
-                .document(data.userMail)
-                .collection("history")
-                .document(data.orderId)
-                .set(data)
-                .addOnSuccessListener {
+            val ref = firestore.collection("users").document(data.userMail).collection("history")
+                .document(data.orderId).set(data).addOnSuccessListener {
                     isTrue = true
-                }
-                .addOnFailureListener {
+                }.addOnFailureListener {
                     isTrue = false
-                }
-                .await()
+                }.await()
             Resource.Success(isTrue)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
@@ -392,36 +360,26 @@ class FirestoreRepositoryImpl @Inject constructor(
     override suspend fun updateDeliveredHistroy(data: RequestFoodOrder): Resource<Boolean> {
         return try {
             var isTrue = false
-            val ref = firestore.collection("admin")
-                .document("foods")
-                .collection("orderHistory")
-                .document(data.orderId)
-                .set(data)
-                .addOnSuccessListener {
+            val ref = firestore.collection("admin").document("foods").collection("orderHistory")
+                .document(data.orderId).set(data).addOnSuccessListener {
                     isTrue = true
-                }
-                .addOnFailureListener {
+                }.addOnFailureListener {
                     isTrue = false
-                }
-                .await()
+                }.await()
             Resource.Success(isTrue)
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }
     }
 
 
-    override suspend fun updateRating(foodId: String, foodRating: Float) : Resource<Boolean> {
+    override suspend fun updateRating(foodId: String, foodRating: Float): Resource<Boolean> {
         return try {
-            firestore.collection("admin")
-                .document("foods")
-                .collection("foods")
-                .document(foodId)
-                .update("foodRating", foodRating)
-                .await()
+            firestore.collection("admin").document("foods").collection("foods").document(foodId)
+                .update("foodRating", foodRating).await()
             Resource.Success(true)
-        } catch (e : Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
         }

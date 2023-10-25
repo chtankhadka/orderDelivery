@@ -14,8 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -85,6 +89,7 @@ fun HomeScreen(
                                     Text(
                                         text = orders.locationAddress,
                                         maxLines = 2,
+                                        minLines = 2,
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             color = MaterialTheme.colorScheme.outline,
                                             fontWeight = FontWeight.Bold
@@ -119,6 +124,16 @@ fun HomeScreen(
 
                             )
                         }
+                        IconButton(
+                            modifier = Modifier.align(Alignment.CenterEnd),
+                            onClick = {
+                                event(AdminHomeEvent.RemoveUser(orders.userMail))
+                        }) {
+                            Icon(
+                                tint = MaterialTheme.colorScheme.error,
+                                imageVector = Icons.Default.Delete, contentDescription = "" )
+                        }
+
 
                     }
                 }

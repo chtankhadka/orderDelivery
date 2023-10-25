@@ -82,6 +82,7 @@ import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNav
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartViewModel
 import com.chetan.orderdelivery.presentation.user.dashboard.favourite.UserFavouriteScreen
+import com.chetan.orderdelivery.presentation.user.dashboard.favourite.UserFavouriteViewModel
 import com.chetan.orderdelivery.presentation.user.dashboard.history.UserHistoryScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.history.UserHistoryViewModel
 import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeScreen
@@ -395,7 +396,12 @@ fun UserDashboardScreen(
                         )
                     }
                     composable("favourite") {
-                        UserFavouriteScreen()
+                        val viewModel = hiltViewModel<UserFavouriteViewModel>()
+                        UserFavouriteScreen(
+                            navController = navController,
+                            state = viewModel.state.collectAsStateWithLifecycle().value,
+                            event = viewModel.onEvent
+                        )
                     }
                     composable("history") {
                         val viewModel = hiltViewModel<UserHistoryViewModel>()

@@ -11,6 +11,7 @@ import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import com.chetan.orderdelivery.presentation.common.utils.GenerateRandomNumber
+import com.chetan.orderdelivery.presentation.common.utils.MyDate.CurrentDateTimeSDF
 import com.google.android.gms.maps.model.LatLng
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -93,9 +94,8 @@ class OrderCheckoutViewModel @Inject constructor(
                         is Resource.Success -> {
                             if (setAddress.data) {
                                 val orderRequest =
-                                    firestoreUseCases.orderFood(data = RequestFoodOrder(orderId = GenerateRandomNumber.generateRandomNumber(
-                                        11111111..99999999
-                                    ).toString(),
+                                    firestoreUseCases.orderFood(data = RequestFoodOrder(
+                                        orderId = System.currentTimeMillis().toString(),
                                         locationLat = location.first(),
                                         locationLng = location.last(),
                                         userName = "",
@@ -105,6 +105,7 @@ class OrderCheckoutViewModel @Inject constructor(
                                         dbProfileUrl = "",
                                         googleUserName = preference.userName ?: "",
                                         locationAddress = state.value.locationAddress,
+                                        dateTime = CurrentDateTimeSDF(),
                                         orderList = state.value.orderList.map { food ->
                                             RequestFoodOrder.OrderedList(
                                                 foodId = food.foodId,
@@ -119,7 +120,7 @@ class OrderCheckoutViewModel @Inject constructor(
                                                 foodRating = food.foodRating,
                                                 newFoodRating = food.newFoodRating,
                                                 quantity = food.quantity,
-                                                date = food.date,
+                                                date = CurrentDateTimeSDF(),
                                                 faceImgName = food.faceImgName,
                                                 faceImgUrl = food.faceImgUrl,
                                             )

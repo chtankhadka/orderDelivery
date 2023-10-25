@@ -5,12 +5,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -23,7 +23,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -45,41 +44,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.common.Constants
-import com.chetan.orderdelivery.presentation.common.utils.CustomShape
-import com.chetan.orderdelivery.presentation.user.dashboard.home.TestItem
+
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@OptIn( ExperimentalFoundationApi::class)
 @Composable
-fun UserFavouriteScreen() {
-    val listOfItem = listOf(
-        TestItem(
-            image = Constants.testFoodUrl,
-            foodName = "Spicy Momo",
-            rating = 4f,
-            rate = "Rs 200",
-        ), TestItem(
-            image = Constants.testFoodUrl,
-            foodName = "Spicy Momo",
-            rating = 3f,
-            rate = "Rs 20",
-        ), TestItem(
-            image = Constants.testFoodUrl,
-            foodName = "Spicy Momo",
-            rating = 5f,
-            rate = "Rs 20000",
-        ), TestItem(
-            image = Constants.testFoodUrl,
-            foodName = "Spicy Momo",
-            rating = 1f,
-            rate = "Rs 200",
-        )
-    )
-
+fun UserFavouriteScreen(
+    navController: NavHostController,
+    state: UserFavouriteState,
+    event: (event: UserFavouriteEvent) -> Unit
+) {
     val scope = rememberCoroutineScope()
     val ctx = LocalContext.current
     val listOfHeader = listOf(
@@ -118,8 +97,10 @@ fun UserFavouriteScreen() {
             ) { page ->
                 when (page) {
                     0 -> {
-                        LazyColumn(content = {
-                            items(listOfItem) {
+                        LazyColumn(
+                            modifier = Modifier.fillMaxSize(),
+                            content = {
+                            items(state.allFoods.filter { it.foodType != "drink" }) {
                                 Box(modifier = Modifier.padding(horizontal = 25.dp)) {
                                     Card(
                                         modifier = Modifier
@@ -228,11 +209,13 @@ fun UserFavouriteScreen() {
                                     }
                                 }
                             }
+
                         })
                     }
                     1 -> {
-                        LazyColumn(content = {
-                            items(listOfItem) {
+                        LazyColumn(modifier = Modifier.fillMaxSize(),
+                            content = {
+                            items(state.allFoods) {
                                 Box(modifier = Modifier.padding(horizontal = 25.dp)) {
                                     Card(
                                         modifier = Modifier

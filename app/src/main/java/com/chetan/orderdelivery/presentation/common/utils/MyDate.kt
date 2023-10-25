@@ -2,9 +2,11 @@ package com.chetan.orderdelivery.presentation.common.utils
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
@@ -18,6 +20,14 @@ object MyDate {
             .withLocale(Locale.getDefault())
             .withZone(ZoneId.systemDefault())
         return formatter.format(instant)
+    }
+
+    fun CurrentDateTimeSDF() : String{
+        val millis = System.currentTimeMillis()
+        val pattern = "yyyy-MM-dd hh:mm a"
+        val date = Date(millis)
+        val sdf = SimpleDateFormat(pattern,Locale.US)
+        return sdf.format(date)
     }
 
     fun differenceOfDates(before: String, now: String): String {

@@ -11,8 +11,10 @@ import com.chetan.orderdelivery.domain.repository.StorageRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddToCart
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteCartItem
+import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteMyHistory
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetCartItems
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetFavouriteList
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrderDetails
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
@@ -24,6 +26,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
 import com.chetan.orderdelivery.domain.use_cases.firestore.RemoveUserOrder
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetAddress
+import com.chetan.orderdelivery.domain.use_cases.firestore.SetFavourite
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateDeliveredHistroy
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateRating
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateUserHistory
@@ -104,6 +107,9 @@ object FirebaseModule {
             orderDelivered = OrderDelivered(repository = repository),
             updateDeliveredHistory = UpdateDeliveredHistroy(repository = repository),
             getMyHistory = GetMyHistory(repository = repository),
+            deleteMyHistory = DeleteMyHistory(repository = repository),
+            setFavourite = SetFavourite(repository = repository),
+            getFavouriteList = GetFavouriteList(repository = repository),
 
             getCartItems = GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),
