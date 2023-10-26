@@ -220,7 +220,7 @@ fun AdminOrderDetailScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "2",
+                            text = state.orderDetails.size.toString(),
                             style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
                         )
                         Text(
@@ -232,27 +232,11 @@ fun AdminOrderDetailScreen(
                             .height(50.dp)
                             .width(2.dp)
                     )
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = "5:20")
-                        Text(text = "Time")
-                    }
                     Divider(
                         modifier = Modifier
                             .height(50.dp)
                             .width(2.dp)
                     )
-                    Column(
-                        modifier = Modifier.weight(1f),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(text = "ne")
-                        Text(text = "en")
-                    }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
                 state.orderDetails.forEach { orders ->
@@ -277,16 +261,28 @@ fun AdminOrderDetailScreen(
                                             .padding(5.dp),
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        Column {
-                                            Text(
-                                                text = orders.dateTime,
-                                                style = MaterialTheme.typography.headlineMedium
-                                            )
+                                        Text(
+                                            text = orders.dateTime,
+                                            style = MaterialTheme.typography.headlineMedium
+                                        )
+
+                                        Text(
+                                            text = orders.distance,
+                                            style = MaterialTheme.typography.headlineMedium
+                                        )
+                                    }
+
+
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(5.dp),
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
                                             Text(
                                                 text = orders.orderId,
                                                 style = MaterialTheme.typography.headlineSmall
                                             )
-                                        }
                                         Column(
                                             horizontalAlignment = Alignment.End
                                         ) {

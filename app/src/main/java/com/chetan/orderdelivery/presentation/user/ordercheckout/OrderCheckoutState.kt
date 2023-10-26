@@ -8,6 +8,10 @@ data class OrderCheckoutState(
     val test: String = "",
     val locationAddress : String = "",
     val location : String = "",
-    val cameraLocation: LatLng = LatLng(0.0,0.0),
+    val momobarLok: LatLng = LatLng(
+        28.0594641, 81.617649
+    ),
+    val cameraLocation: LatLng = LatLng(28.0594641, 81.617649,),
+    val distance: String ="",
     val orderList: List<CheckoutFoods> = emptyList()
 )

@@ -13,6 +13,11 @@ import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import com.chetan.orderdelivery.presentation.common.utils.GenerateRandomNumber
 import com.chetan.orderdelivery.presentation.common.utils.MyDate.CurrentDateTimeSDF
 import com.google.android.gms.maps.model.LatLng
+import com.google.maps.DirectionsApi
+import com.google.maps.DirectionsApiRequest
+import com.google.maps.GeoApiContext
+import com.google.maps.model.DirectionsResult
+import com.google.maps.model.TravelMode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,15 +34,25 @@ class OrderCheckoutViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(OrderCheckoutState())
     val state: StateFlow<OrderCheckoutState> = _state
+    val context = GeoApiContext.Builder().apiKey("AIzaSyCmYhLU8zTX8SJV0IxIvtwV0D27tlFyVSc").build()
 
     init {
         getOrderList()
-        _state.update {
-            it.copy(
-                cameraLocation = LatLng(
-                    28.0594641, 81.617649,
+        try {
+            val directionsResult: DirectionsResult? = DirectionsApi.newRequest(context)
+                .mode(TravelMode.DRIVING)
+                .origin(com.google.maps.model.LatLng(state.value.cameraLocation.latitude,state.value.cameraLocation.longitude))
+                .destination(com.google.maps.model.LatLng(state.value.momobarLok.latitude,state.value.momobarLok.longitude))
+                .await()
+
+            _state.update {
+                it.copy(
+                    distance = directionsResult?.routes?.get(0)?.legs?.get(0)?.distance?.humanReadable?:"null"
                 )
-            )
+            }
+
+        } catch (e: Exception){
+            e.printStackTrace()
         }
     }
 
@@ -55,10 +70,24 @@ class OrderCheckoutViewModel @Inject constructor(
         viewModelScope.launch {
             when (event) {
                 is OrderCheckoutEvent.Location -> {
-                    _state.update {
-                        it.copy(
-                            location = event.value
-                        )
+
+                    val location = event.value.split(",")
+                    try {
+                        val directionsResult: DirectionsResult? = DirectionsApi.newRequest(context)
+                            .mode(TravelMode.DRIVING)
+                            .origin(com.google.maps.model.LatLng(location.first().toDouble(),location.last().toDouble()))
+                            .destination(com.google.maps.model.LatLng(state.value.momobarLok.latitude,state.value.momobarLok.longitude))
+                            .await()
+
+                        _state.update {
+                            it.copy(
+                                distance = directionsResult?.routes?.get(0)?.legs?.get(0)?.distance?.humanReadable?:"null",
+                                location = event.value
+                            )
+                        }
+
+                    } catch (e: Exception){
+                        e.printStackTrace()
                     }
                 }
 
@@ -77,6 +106,7 @@ class OrderCheckoutViewModel @Inject constructor(
                             locationLat = location.first(),
                             locationLng = location.last(),
                             locationAddress = state.value.locationAddress,
+                            distance = state.value.distance,
                             userName = "",
                             userContactNo = "",
                             userMail = preference.tableName!!,
@@ -98,6 +128,7 @@ class OrderCheckoutViewModel @Inject constructor(
                                         orderId = System.currentTimeMillis().toString(),
                                         locationLat = location.first(),
                                         locationLng = location.last(),
+                                        distance = state.value.distance,
                                         userName = "",
                                         userContactNo = "",
                                         userMail = preference.tableName!!,

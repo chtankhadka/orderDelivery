@@ -14,6 +14,7 @@ data class RequestFoodOrder(
     val deliveredTime: String = "",
     val locationLat: String = "",
     val locationLng: String = "",
+    val distance : String = "",
     val locationAddress: String = "",
     val dateTime: String = "",
     val orderList: List<OrderedList> = emptyList(),

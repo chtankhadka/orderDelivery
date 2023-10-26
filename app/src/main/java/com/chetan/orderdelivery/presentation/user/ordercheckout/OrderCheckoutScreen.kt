@@ -373,7 +373,7 @@ fun OrderCheckoutScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = state.locationAddress, modifier = Modifier.weight(1f))
+                    Text(text = state.distance + "  "+ state.locationAddress, modifier = Modifier.weight(1f))
                     IconButton(onClick = {
                         openMap = true
                     }) {
