@@ -20,6 +20,7 @@ import com.google.maps.DirectionsApiRequest
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DirectionsResult
 import com.google.maps.model.TravelMode
+import com.onesignal.OneSignal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -144,6 +145,7 @@ class OrderCheckoutViewModel @Inject constructor(
                                         locationLng = location.last(),
                                         distance = state.value.distance,
                                         userName = "",
+                                        oneSignalId = OneSignal.User.pushSubscription.id,
                                         userContactNo = "",
                                         userMail = preference.tableName!!,
                                         googleProfileUrl = preference.gmailProfile ?: "",

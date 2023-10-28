@@ -29,6 +29,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <meta-data android:name="com.onesignal.NotificationServiceExtension"
+            android:value="com.chetan.orderdelivery.service.NotificationServiceExtension"/>
+        <meta-data
+            android:name="com.onesignal.NotificationOpened.DEFAULT"
+            android:value="DISABLE" />
         <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyCmYhLU8zTX8SJV0IxIvtwV0D27tlFyVSc"/>
     </application>
 

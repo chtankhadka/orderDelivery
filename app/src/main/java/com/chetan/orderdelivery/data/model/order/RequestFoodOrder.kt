@@ -9,6 +9,7 @@ data class RequestFoodOrder(
     val googleProfileUrl: String = "",
     val dbProfileUrl: String = "",
     val userMail: String = "",
+    val oneSignalId: String = "",
 
     val isDelivered: Boolean = false,
     val deliveredTime: String = "",

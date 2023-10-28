@@ -88,7 +88,11 @@ fun AppNavHost(
             LaunchedEffect(key1 = state.isSignInSuccessful, block = {
                 if (state.isSignInSuccessful) {
                     viewModel.resetState()
-                    navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
+                    if (googleAuthUiClient.getSignedInUser()!!.userEmail == "chtankhadka12@gmail.com") {
+                        navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
+                    } else {
+                        navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
+                    }
 
                 }
             })
