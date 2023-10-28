@@ -30,68 +30,6 @@ class UserHomeViewModel @Inject constructor(
     init {
         getFavList()
         getAllFoods()
-        println("----------------------------")
-        OneSignal.User.pushSubscription.token
-        println(OneSignal.User.pushSubscription.id)
-
-        viewModelScope.launch {
-
-
-            try {
-                val sendNotification = oneSiganlRepository.pushNotification(
-                    PushNotificationRequest(
-                        contents = mapOf("en" to "hi"), name = "test"
-                    )
-                )
-                when (sendNotification) {
-                    is Resource.Failure -> {
-//                        _state.update {
-//                            it.copy(
-//                                infoMsg = Message.Error(
-//                                    lottieImage = R.raw.delete_simple,
-//                                    yesNoRequired = false,
-//                                    isCancellable = false,
-//                                    description = "Error..."
-//                                )
-//                            )
-//
-//                        }
-                    }
-
-                    Resource.Loading -> {
-
-                    }
-
-                    is Resource.Success -> {
-//                        _state.update {
-//                            it.copy(
-//                                infoMsg = Message.Success(
-//                                    lottieImage = R.raw.pencil_walking,
-//                                    isCancellable = true,
-//                                    description = "Success"
-//                                )
-//                            )
-//                        }
-                    }
-                }
-            } catch (e: HttpException) {
-                _state.update {
-                    it.copy(
-                        infoMsg = null
-                    )
-                }
-                e.printStackTrace()
-            } catch (e: Throwable) {
-                _state.update {
-                    it.copy(
-                        infoMsg = null
-                    )
-                }
-                e.printStackTrace()
-            }
-        }
-
-
     }
 
     private fun getAllFoods() {

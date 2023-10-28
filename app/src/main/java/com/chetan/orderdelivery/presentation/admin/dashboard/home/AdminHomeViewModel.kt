@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
-import com.chetan.orderdelivery.domain.repository.FirestoreRepository
+import com.chetan.orderdelivery.domain.model.SetOneSignalId
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
+import com.onesignal.OneSignal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,13 +21,21 @@ class AdminHomeViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(AdminHomeState())
-    val state : StateFlow<AdminHomeState> = _state
+    val state: StateFlow<AdminHomeState> = _state
 
     init {
         getOrders()
+        viewModelScope.launch {
+            firestoreUseCases.setOneSignalId(
+                data = SetOneSignalId(
+                    id = OneSignal.User.pushSubscription.id,
+                    branch = "1",
+                )
+            )
+        }
     }
 
-    private fun getOrders(){
+    private fun getOrders() {
         viewModelScope.launch {
             _state.update {
                 it.copy(
@@ -40,7 +49,7 @@ class AdminHomeViewModel @Inject constructor(
                 )
             }
             val orderList = firestoreUseCases.getFoodOrders()
-            when(orderList){
+            when (orderList) {
                 is Resource.Failure -> {
                     _state.update {
                         it.copy(
@@ -54,9 +63,11 @@ class AdminHomeViewModel @Inject constructor(
                         )
                     }
                 }
+
                 Resource.Loading -> {
 
                 }
+
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
@@ -69,9 +80,9 @@ class AdminHomeViewModel @Inject constructor(
         }
     }
 
-    val onEvent : (event: AdminHomeEvent) -> Unit = { event ->
+    val onEvent: (event: AdminHomeEvent) -> Unit = { event ->
         viewModelScope.launch {
-            when(event){
+            when (event) {
                 AdminHomeEvent.Test -> {
 
                 }
@@ -97,7 +108,7 @@ class AdminHomeViewModel @Inject constructor(
                         )
                     }
                     val deleteUser = firestoreUseCases.removeUserOrder(event.user)
-                    when(deleteUser){
+                    when (deleteUser) {
                         is Resource.Failure -> {
                             _state.update {
                                 it.copy(
@@ -111,10 +122,12 @@ class AdminHomeViewModel @Inject constructor(
                                 )
                             }
                         }
+
                         Resource.Loading -> {
                         }
+
                         is Resource.Success -> {
-                            if(deleteUser.data){
+                            if (deleteUser.data) {
                                 _state.update {
                                     it.copy(
                                         orderList = state.value.orderList.filter { it.userMail != event.user },

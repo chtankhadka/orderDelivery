@@ -2,6 +2,7 @@ package com.chetan.orderdelivery.presentation.user.ordercheckout
 
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 import com.chetan.orderdelivery.domain.model.CheckoutFoods
+import com.chetan.orderdelivery.domain.model.SetOneSignalId
 import com.google.android.gms.maps.model.LatLng
 
 data class OrderCheckoutState(
@@ -13,5 +14,6 @@ data class OrderCheckoutState(
     ),
     val cameraLocation: LatLng = LatLng(28.0594641, 81.617649,),
     val distance: String ="",
-    val orderList: List<CheckoutFoods> = emptyList()
+    val orderList: List<CheckoutFoods> = emptyList(),
+    val allIds: List<SetOneSignalId> = emptyList()
 )

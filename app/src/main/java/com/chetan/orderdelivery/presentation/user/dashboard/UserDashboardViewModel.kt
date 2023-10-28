@@ -30,6 +30,7 @@ class UserDashboardViewModel @Inject constructor(
 
     init {
         getAllFoods()
+        getAllIds()
         _state.update {
             it.copy(
                 profileUrl = preference.gmailProfile?:"",
@@ -121,6 +122,29 @@ class UserDashboardViewModel @Inject constructor(
                         )
                     }
                     println(getAllFoodsResponse.data)
+                }
+            }
+        }
+    }
+    fun getAllIds() {
+        viewModelScope.launch {
+            when (val getAllId = repository.getOneSignalIds("1")) {
+                is Resource.Failure -> {
+
+                }
+
+                Resource.Loading -> {
+
+                }
+
+                is Resource.Success -> {
+                    dbRepository.insertIds(getAllId.data)
+                    _state.update {
+                        it.copy(
+                            allIds = getAllId.data,
+                            infoMsg = null
+                        )
+                    }
                 }
             }
         }

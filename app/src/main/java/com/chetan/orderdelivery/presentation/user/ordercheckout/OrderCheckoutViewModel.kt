@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.local.Preference
+import com.chetan.orderdelivery.data.model.PushNotificationRequest
 import com.chetan.orderdelivery.data.model.RealtimeModelResponse
 import com.chetan.orderdelivery.data.model.SetLatLng
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
+import com.chetan.orderdelivery.domain.repository.OneSignalRepository
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -30,7 +33,8 @@ class OrderCheckoutViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases,
     private val dbUseCases: DBUseCases,
     private val realtimeUseCases: RealtimeUseCases,
-    private val preference: Preference
+    private val preference: Preference,
+    private val oneSiganlRepository: OneSignalRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow(OrderCheckoutState())
     val state: StateFlow<OrderCheckoutState> = _state
@@ -38,6 +42,7 @@ class OrderCheckoutViewModel @Inject constructor(
 
     init {
         getOrderList()
+        getIds()
         try {
             val directionsResult: DirectionsResult? = DirectionsApi.newRequest(context)
                 .mode(TravelMode.DRIVING)
@@ -61,6 +66,15 @@ class OrderCheckoutViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     orderList = dbUseCases.getAllCheckoutFoods()
+                )
+            }
+        }
+    }
+    private fun getIds() {
+        viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    allIds = dbUseCases.getAllIds()
                 )
             }
         }
@@ -176,6 +190,65 @@ class OrderCheckoutViewModel @Inject constructor(
                                                 firestoreUseCases.deleteCartItem(food.foodId)
                                             }
                                         }
+                                        try {
+                                            val sendNotification = oneSiganlRepository.pushNotification(
+                                                PushNotificationRequest(
+                                                    contents = mapOf("en" to "order"),
+                                                    name = "New order",
+                                                    include_player_ids = dbUseCases.getAllIds().map { it.id }
+                                                )
+                                            )
+                                            when (sendNotification) {
+                                                is Resource.Failure -> {
+//                        _state.update {
+//                            it.copy(
+//                                infoMsg = Message.Error(
+//                                    lottieImage = R.raw.delete_simple,
+//                                    yesNoRequired = false,
+//                                    isCancellable = false,
+//                                    description = "Error..."
+//                                )
+//                            )
+//
+//                        }
+                                                }
+
+                                                Resource.Loading -> {
+
+                                                }
+
+                                                is Resource.Success -> {
+//                        _state.update {
+//                            it.copy(
+//                                infoMsg = Message.Success(
+//                                    lottieImage = R.raw.pencil_walking,
+//                                    isCancellable = true,
+//                                    description = "Success"
+//                                )
+//                            )
+//                        }
+                                                }
+                                            }
+                                        } catch (e: HttpException) {
+                                            _state.update {
+                                                it.copy(
+
+                                                )
+                                            }
+                                            e.printStackTrace()
+                                        } catch (e: Throwable) {
+                                            _state.update {
+                                                it.copy(
+
+                                                )
+                                            }
+                                            e.printStackTrace()
+                                        }
+
+
+
+
+
                                     }
                                 }
                             }

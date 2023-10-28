@@ -8,7 +8,7 @@ import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
 import com.chetan.orderdelivery.data.model.SetLatLng
-import com.chetan.orderdelivery.data.model.SetOneSignalId
+import com.chetan.orderdelivery.domain.model.SetOneSignalId
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -271,6 +271,27 @@ class FirestoreRepositoryImpl @Inject constructor(
 
 
             Resource.Success(isSuccess)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun getOneSignalIds(branch: String): Resource<List<SetOneSignalId>> {
+        return try {
+            val ids = mutableListOf<SetOneSignalId>()
+            val coll = firestore.collection("admin")
+                .document("oneSignal")
+                .collection(branch)
+                .get()
+                .await()
+            for (document in coll.documents){
+                val data = document.toObject<SetOneSignalId>()
+                data?.let {
+                    ids.add(data)
+                }
+            }
+            Resource.Success(ids)
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)

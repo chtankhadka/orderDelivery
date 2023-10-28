@@ -4,10 +4,11 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.chetan.orderdelivery.domain.model.AllFoods
 import com.chetan.orderdelivery.domain.model.CheckoutFoods
+import com.chetan.orderdelivery.domain.model.SetOneSignalId
 
 @Database(
-    entities = [AllFoods::class,CheckoutFoods::class],
-    version = 15,
+    entities = [AllFoods::class,CheckoutFoods::class,SetOneSignalId::class],
+    version = 16,
     exportSchema = false
 )
 abstract class OrderDeliveryDatabase :RoomDatabase() {

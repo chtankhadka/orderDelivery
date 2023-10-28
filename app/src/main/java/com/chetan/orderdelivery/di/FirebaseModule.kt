@@ -21,6 +21,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoods
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodsForUpdate
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetMyHistory
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetOneSignalIds
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderDelivered
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
@@ -111,7 +112,9 @@ object FirebaseModule {
             deleteMyHistory = DeleteMyHistory(repository = repository),
             setFavourite = SetFavourite(repository = repository),
             getFavouriteList = GetFavouriteList(repository = repository),
+
             setOneSignalId = SetOneSignalId(repository = repository),
+            getOneSignalIds = GetOneSignalIds(repository = repository),
 
             getCartItems = GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),

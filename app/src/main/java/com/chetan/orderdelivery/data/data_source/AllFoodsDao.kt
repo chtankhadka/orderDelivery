@@ -8,6 +8,8 @@ import androidx.room.Query
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.domain.model.AllFoods
 import com.chetan.orderdelivery.domain.model.CheckoutFoods
+import com.chetan.orderdelivery.domain.model.SetOneSignalId
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetOneSignalIds
 import kotlinx.coroutines.flow.Flow
 
 
@@ -19,6 +21,12 @@ interface AllFoodsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFoodList(noteList: List<AllFoods>)
+
+    @Query("SELECT * FROM SetOneSignalId")
+    suspend fun getAllIds() : List<SetOneSignalId>
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertIds(idList: List<SetOneSignalId>)
 
     @Query("SELECT * FROM CheckoutFoods")
     suspend fun getAllCheckoutFoods() : List<CheckoutFoods>
