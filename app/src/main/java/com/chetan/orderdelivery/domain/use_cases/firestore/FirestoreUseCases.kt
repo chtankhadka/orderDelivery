@@ -17,6 +17,8 @@ data class FirestoreUseCases(
     val setFavourite: SetFavourite,
     val getFavouriteList: GetFavouriteList,
 
+    val setOneSignalId: SetOneSignalId,
+
     val addFood : AddFood,
 
     val getCartItems : GetCartItems,

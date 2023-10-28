@@ -8,6 +8,7 @@ import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
 import com.chetan.orderdelivery.data.model.SetLatLng
+import com.chetan.orderdelivery.data.model.SetOneSignalId
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.google.firebase.firestore.FirebaseFirestore
@@ -225,13 +226,12 @@ class FirestoreRepositoryImpl @Inject constructor(
         return try {
             var isDone: Boolean
             if (isFavourite) {
-                firestore.collection("users")
-                    .document(preference.tableName!!).collection("favourite")
-                    .document(foodId).set(FavouriteModel(foodId)).await()
+                firestore.collection("users").document(preference.tableName!!)
+                    .collection("favourite").document(foodId).set(FavouriteModel(foodId)).await()
                 isDone = true
             } else {
-                firestore.collection("users").document(preference.tableName!!).collection("favourite")
-                    .document(foodId).delete().await()
+                firestore.collection("users").document(preference.tableName!!)
+                    .collection("favourite").document(foodId).delete().await()
                 isDone = true
             }
             Resource.Success(isDone)
@@ -240,6 +240,7 @@ class FirestoreRepositoryImpl @Inject constructor(
             Resource.Failure(e)
         }
     }
+
     override suspend fun getFavouriteList(): Resource<List<FavouriteModel>> {
         return try {
             val favList = mutableListOf<FavouriteModel>()
@@ -252,6 +253,24 @@ class FirestoreRepositoryImpl @Inject constructor(
                 }
             }
             Resource.Success(favList)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun setOneSignalId(data: SetOneSignalId): Resource<Boolean> {
+        return try {
+            var isSuccess = false
+            firestore.collection("admin").document("oneSignal").collection(data.branch)
+                .document(data.id).set(data).addOnSuccessListener {
+                    isSuccess = true
+                }.addOnFailureListener {
+                    isSuccess = false
+                }.await()
+
+
+            Resource.Success(isSuccess)
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)
