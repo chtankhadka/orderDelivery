@@ -13,7 +13,7 @@ data class AddFoodState(
     val foodTypes: List<String> =  listOf("Regular", "Popular","New","Drinks"),
     val selectedFoodType: String = foodTypes[0],
 
-    val foodFamilies: List<String> = listOf("Pizza", "Momo", "Burger"),
+    val foodFamilies: List<String> = listOf("Pizza", "Momo", "Burger","Soft Drinks","Hard Drinks"),
     val selectedFoodFamily: String = foodFamilies[0],
 
     val faceImgUrl : ImageUrlDetail = ImageUrlDetail(),

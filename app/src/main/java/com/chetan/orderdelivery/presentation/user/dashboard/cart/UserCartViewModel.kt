@@ -164,7 +164,6 @@ class UserCartViewModel @Inject constructor(
                                 faceImgUrl = it.faceImgUrl
                             )
                         })
-                    println(dbUseCases.getAllCheckoutFoods)
                 }
             }
         }

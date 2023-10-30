@@ -207,7 +207,7 @@ fun UserCartScreen(
                                 Card(
                                     modifier = Modifier
                                         .fillMaxSize()
-                                        .padding(top = 15.dp, start = 50.dp)
+                                        .padding(top = 15.dp, start = 40.dp)
                                         .clickable {
                                             navController.navigate(
                                                 Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
@@ -252,7 +252,7 @@ fun UserCartScreen(
                                                         style = MaterialTheme.typography.bodyMedium.copy(
                                                             color = Color.Red,
                                                             fontWeight = FontWeight.Bold,
-                                                            fontSize = 18.sp
+                                                            fontSize = 16.sp
                                                         )
                                                     )
                                                     Text(
@@ -274,7 +274,7 @@ fun UserCartScreen(
                                                 ) {
                                                     if (food.quantity > 1) {
                                                         Card(
-                                                            modifier = Modifier.size(34.dp),
+                                                            modifier = Modifier.size(24.dp),
                                                             colors = CardDefaults.cardColors(
                                                                 MaterialTheme.colorScheme.onPrimaryContainer
                                                             ),
@@ -304,7 +304,7 @@ fun UserCartScreen(
                                                         style = MaterialTheme.typography.headlineSmall
                                                     )
                                                     Card(
-                                                        modifier = Modifier.size(34.dp),
+                                                        modifier = Modifier.size(24.dp),
                                                         colors = CardDefaults.cardColors(
                                                             MaterialTheme.colorScheme.primary
                                                         ),
@@ -336,7 +336,7 @@ fun UserCartScreen(
                                 ) {
                                     AsyncImage(
                                         modifier = Modifier
-                                            .size(100.dp)
+                                            .size(90.dp)
                                             .border(
                                                 border = BorderStroke(
                                                     width = 2.dp, color = Color.White

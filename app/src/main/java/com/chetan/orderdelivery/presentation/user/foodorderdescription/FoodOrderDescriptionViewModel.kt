@@ -8,10 +8,14 @@ import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.domain.model.CheckoutFoods
 import com.chetan.orderdelivery.domain.repository.DBRepository
+import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
+import com.chetan.orderdelivery.presentation.common.utils.MyDate.CurrentDateTimeSDF
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -23,17 +27,23 @@ import javax.inject.Inject
 @HiltViewModel
 class FoodOrderDescriptionViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases,
-    private val dbRepository: DBRepository
+    private val dbUseCases: DBUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FoodOrderDescriptionState())
     val state: StateFlow<FoodOrderDescriptionState> = _state
 
+    init {
+        viewModelScope.launch {
+            dbUseCases.removeAllCheckoutFoods()
+        }
+
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     val onEvent: (event: FoodOrderDescriptionEvent) -> Unit = { event ->
         viewModelScope.launch {
-            when(event) {
+            when (event) {
                 FoodOrderDescriptionEvent.DismissInfoMsg -> {
                     _state.update {
                         it.copy(
@@ -41,8 +51,9 @@ class FoodOrderDescriptionViewModel @Inject constructor(
                         )
                     }
                 }
+
                 is FoodOrderDescriptionEvent.GetFoodItemDetails -> {
-                    val data = dbRepository.getAllFoods().find { it.foodId == event.value }!!
+                    val data = dbUseCases.getAllFoods().find { it.foodId == event.value }!!
                     _state.update {
                         it.copy(
                             foodItemDetails = data,
@@ -51,6 +62,7 @@ class FoodOrderDescriptionViewModel @Inject constructor(
                         )
                     }
                 }
+
                 FoodOrderDescriptionEvent.DecreaseQuantity -> {
                     _state.update {
                         it.copy(
@@ -68,6 +80,29 @@ class FoodOrderDescriptionViewModel @Inject constructor(
                 }
 
                 is FoodOrderDescriptionEvent.OrderFood -> {
+                    println(state.value.foodItemDetails)
+                    dbUseCases.insertAllCheckoutFoodList(
+                        checkList = listOf(
+                            CheckoutFoods(
+                                foodId = state.value.foodItemDetails.foodId,
+                                foodType = state.value.foodItemDetails.foodType,
+                                foodFamily = state.value.foodItemDetails.foodFamily,
+                                foodName = state.value.foodItemDetails.foodName,
+                                foodDetails = state.value.foodItemDetails.foodDetails,
+                                foodPrice = state.value.foodItemDetails.foodPrice,
+                                foodDiscount = state.value.foodItemDetails.foodDiscount,
+                                foodNewPrice = state.value.foodItemDetails.foodNewPrice,
+                                isSelected = true,
+                                foodRating = state.value.foodItemDetails.foodRating,
+                                newFoodRating = state.value.foodItemDetails.newFoodRating,
+                                quantity = state.value.foodQuantity,
+                                date = CurrentDateTimeSDF(),
+                                faceImgName = state.value.foodItemDetails.faceImgName,
+                                faceImgUrl = state.value.foodItemDetails.faceImgUrl
+                            )
+                        )
+                    )
+
 
                 }
 

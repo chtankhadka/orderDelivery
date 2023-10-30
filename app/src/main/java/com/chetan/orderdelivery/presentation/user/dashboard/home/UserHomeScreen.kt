@@ -151,11 +151,7 @@ fun UserHomeScreen(
                     colors = ButtonDefaults.buttonColors(Color.Transparent)
                 ) {
                     Text(
-                        text = if (state.name.isNotEmpty()) {
-                            state.name.first().item?.title ?: ""
-                        } else {
-                            ""
-                        }, style = MaterialTheme.typography.bodyMedium.copy(
+                        text = "More", style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onPrimaryContainer
                         ), modifier = Modifier.padding(start = 5.dp)
@@ -182,8 +178,11 @@ fun UserHomeScreen(
                                 .fillMaxSize()
                                 .padding(vertical = 10.dp)
                                 .clickable {
-                                    navController.navigate(Destination.Screen.UserFoodOrderDescriptionScreen.route)
-                                },
+                                    navController.navigate(
+                                        Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                            "{foodId}", foodItem.foodId
+                                        )
+                                    )                                },
                             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
                             elevation = CardDefaults.cardElevation(10.dp)
                         ) {
@@ -314,14 +313,17 @@ fun UserHomeScreen(
                 }
             }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(15.dp), content = {
-                items(state.allFoods) { foodItem ->
+                items(state.allFoods.filter { it.foodType =="Drinks" }) { foodItem ->
                     Column(
                         modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Card(
                             modifier = Modifier.clickable {
-                                navController.navigate(Destination.Screen.UserFoodOrderDescriptionScreen.route)
-                            },
+                                navController.navigate(
+                                    Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                        "{foodId}", foodItem.foodId
+                                    )
+                                )                            },
                             colors = CardDefaults.cardColors(Color.Transparent),
                         ) {
                             AsyncImage(
