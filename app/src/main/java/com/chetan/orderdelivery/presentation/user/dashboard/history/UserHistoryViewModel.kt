@@ -17,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserHistoryViewModel @Inject constructor(
-    private val firestoreUseCases: FirestoreUseCases, private val preference: Preference
+    private val firestoreUseCases: FirestoreUseCases,
+    private val preference: Preference
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserHistoryState())
     val state: StateFlow<UserHistoryState> = _state

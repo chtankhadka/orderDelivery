@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +23,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -46,13 +46,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.common.Constants
-
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 import kotlinx.coroutines.launch
 
-@OptIn( ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun UserFavouriteScreen(
     navController: NavHostController,
@@ -73,12 +73,9 @@ fun UserFavouriteScreen(
             mutableFloatStateOf(0f)
         }
         Column(modifier = Modifier.padding(it)) {
-            TabRow(selectedTabIndex = pagerState.currentPage,
-                divider = {}) {
+            TabRow(selectedTabIndex = pagerState.currentPage, divider = {}) {
                 listOfHeader.forEachIndexed { index, page ->
-                    Tab(
-                        selected = pagerState.currentPage == index,
-                        onClick = {
+                    Tab(selected = pagerState.currentPage == index, onClick = {
                         scope.launch {
                             pagerState.animateScrollToPage(index)
                         }
@@ -97,10 +94,8 @@ fun UserFavouriteScreen(
             ) { page ->
                 when (page) {
                     0 -> {
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            content = {
-                            items(state.allFoods.filter { it.foodType != "drink" }) {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), content = {
+                            items(state.allFoods.filter { it.foodType != "drinks" }) { foodDetails ->
                                 Box(modifier = Modifier.padding(horizontal = 25.dp)) {
                                     Card(
                                         modifier = Modifier
@@ -125,7 +120,7 @@ fun UserFavouriteScreen(
                                         ) {
                                             Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Text(
-                                                    text = "Hello",
+                                                    text = foodDetails.foodName,
                                                     modifier = Modifier,
                                                     style = MaterialTheme.typography.headlineSmall.copy(
                                                         color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -144,127 +139,13 @@ fun UserFavouriteScreen(
 
                                             Text(
                                                 modifier = Modifier.fillMaxWidth(0.7f),
-                                                text = "This is the dfa asdfad asd fasdf pasdfasdfa sdfasdf a asdf asdf a asd adf asdf f asdroduct in our hotel. Please try this once.",
+                                                text = foodDetails.foodDetails,
                                                 style = MaterialTheme.typography.bodyMedium.copy(
                                                     fontWeight = FontWeight.SemiBold,
                                                     color = MaterialTheme.colorScheme.outline
                                                 ),
                                                 maxLines = 3,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
-
-
-                                    }
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 20.dp)
-                                            .align(Alignment.TopCenter),
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
-                                        Card(
-                                            modifier = Modifier.clip(shape = CircleShape),
-                                            colors = CardDefaults.cardColors(Color.Transparent),
-
-                                            shape = CircleShape
-
-                                        ) {
-                                            AsyncImage(
-                                                modifier = Modifier.size(120.dp),
-                                                contentScale = ContentScale.Fit,
-                                                model = Constants.testFoodUrl,
-                                                contentDescription = ""
-                                            )
-                                        }
-                                        Card(
-                                            modifier = Modifier.padding(end = 5.dp),
-                                            elevation = CardDefaults.cardElevation(10.dp),
-                                            colors = CardDefaults.cardColors(Color.Transparent)
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Favorite,
-                                                tint = if (true) Color(
-                                                    179, 5, 5
-                                                ) else Color(179, 164, 164),
-                                                contentDescription = "favourite"
-                                            )
-                                        }
-                                    }
-                                    Button(modifier = Modifier.align(Alignment.BottomEnd),
-                                        shape = RoundedCornerShape(
-                                            bottomEndPercent = 100,
-                                            bottomStartPercent = 10,
-                                            topStartPercent = 100
-                                        ),
-                                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
-                                        onClick = { }) {
-                                        Text(
-                                            text = "Order Now",
-                                            style = MaterialTheme.typography.bodyMedium.copy(
-                                                fontWeight = FontWeight.SemiBold
-                                            )
-                                        )
-                                    }
-                                }
-                            }
-
-                        })
-                    }
-                    1 -> {
-                        LazyColumn(modifier = Modifier.fillMaxSize(),
-                            content = {
-                            items(state.allFoods) {
-                                Box(modifier = Modifier.padding(horizontal = 25.dp)) {
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(top = 40.dp, bottom = 10.dp, end = 20.dp)
-                                            .height(150.dp)
-                                            .onGloballyPositioned {
-                                                cardSize.value = Size(
-                                                    it.size.width.toFloat(),
-                                                    it.size.height.toFloat()
-                                                ).width
-                                            },
-                                        shape = RoundedCornerShape(topStart = cardSize.value / 4),
-                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                                        elevation = CardDefaults.cardElevation(10.dp)
-                                    ) {
-                                        Column(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(horizontal = 10.dp),
-                                            verticalArrangement = Arrangement.Bottom
-                                        ) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                                Text(
-                                                    text = "Hello",
-                                                    modifier = Modifier,
-                                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                                                    )
-                                                )
-                                                RatingBar(
-                                                    size = 15.dp,
-                                                    value = 4f,
-                                                    style = RatingBarStyle.Default,
-                                                    onValueChange = {},
-                                                    onRatingChanged = {},
-                                                    numOfStars = 5,
-                                                    spaceBetween = 1.dp
-                                                )
-                                            }
-
-                                            Text(
-                                                modifier = Modifier.fillMaxWidth(0.7f),
-                                                text = "This is the dfa asdfad asd fasdf pasdfasdfa sdfasdf a asdf asdf a asd adf asdf f asdroduct in our hotel. Please try this once.",
-                                                style = MaterialTheme.typography.bodyMedium.copy(
-                                                    fontWeight = FontWeight.SemiBold,
-                                                    color = MaterialTheme.colorScheme.outline
-                                                ),
-                                                maxLines = 3,
+                                                minLines = 3,
                                                 overflow = TextOverflow.Ellipsis
                                             )
                                         }
@@ -287,21 +168,22 @@ fun UserFavouriteScreen(
                                         ) {
                                             AsyncImage(
                                                 modifier = Modifier.size(100.dp),
-                                                contentScale = ContentScale.Fit,
+                                                contentScale = ContentScale.Crop,
                                                 model = Constants.bottle,
                                                 contentDescription = ""
                                             )
                                         }
-                                        Card(
+
+                                        IconButton(
                                             modifier = Modifier.padding(end = 5.dp),
-                                            elevation = CardDefaults.cardElevation(10.dp),
-                                            colors = CardDefaults.cardColors(Color.Transparent)
-                                        ) {
+                                            onClick = {
+                                                event(
+                                                    UserFavouriteEvent.RemoveFavourite(id = foodDetails.foodId)
+                                                )
+                                            }) {
                                             Icon(
                                                 imageVector = Icons.Default.Favorite,
-                                                tint = if (true) Color(
-                                                    179, 5, 5
-                                                ) else Color(179, 164, 164),
+                                                tint = MaterialTheme.colorScheme.error,
                                                 contentDescription = "favourite"
                                             )
                                         }
@@ -314,10 +196,133 @@ fun UserFavouriteScreen(
                                         ),
                                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
                                         onClick = {
+                                            navController.navigate(
+                                                Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                                    "{foodId}", foodDetails.foodId
+                                                )
+                                            )
+                                        }) {
+                                        Text(
+                                            text = "Details",
+                                            style = MaterialTheme.typography.bodyMedium.copy(
+                                                fontWeight = FontWeight.SemiBold
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                        })
+                    }
+
+                    1 -> {
+                        LazyColumn(modifier = Modifier.fillMaxSize(), content = {
+                            items(state.allFoods.filter { it.foodType == "drinks" }) { foodDetails ->
+                                Box(modifier = Modifier.padding(horizontal = 25.dp)) {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(top = 40.dp, bottom = 10.dp, end = 20.dp)
+                                            .height(150.dp)
+                                            .onGloballyPositioned {
+                                                cardSize.value = Size(
+                                                    it.size.width.toFloat(),
+                                                    it.size.height.toFloat()
+                                                ).width
+                                            },
+                                        shape = RoundedCornerShape(topStart = cardSize.value / 4),
+                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                                        elevation = CardDefaults.cardElevation(10.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(horizontal = 10.dp),
+                                            verticalArrangement = Arrangement.Bottom
+                                        ) {
+                                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                                Text(
+                                                    text = foodDetails.foodName,
+                                                    modifier = Modifier,
+                                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                                    )
+                                                )
+                                                RatingBar(
+                                                    size = 15.dp,
+                                                    value = 4f,
+                                                    style = RatingBarStyle.Default,
+                                                    onValueChange = {},
+                                                    onRatingChanged = {},
+                                                    numOfStars = 5,
+                                                    spaceBetween = 1.dp
+                                                )
+                                            }
+
+                                            Text(
+                                                modifier = Modifier.fillMaxWidth(0.7f),
+                                                text = foodDetails.foodDetails,
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    color = MaterialTheme.colorScheme.outline
+                                                ),
+                                                maxLines = 3,
+                                                minLines = 3,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+
+
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 20.dp)
+                                            .align(Alignment.TopCenter),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Card(
+                                            modifier = Modifier.clip(shape = CircleShape),
+                                            colors = CardDefaults.cardColors(Color.Transparent),
+                                            shape = CircleShape
+
+                                        ) {
+                                            AsyncImage(
+                                                modifier = Modifier.size(100.dp),
+                                                contentScale = ContentScale.Crop,
+                                                model = Constants.bottle,
+                                                contentDescription = ""
+                                            )
+                                        }
+
+                                        IconButton(
+                                            modifier = Modifier.padding(end = 5.dp),
+                                            onClick = {
+                                                event(
+                                                    UserFavouriteEvent.RemoveFavourite(id = foodDetails.foodId)
+                                                )
+                                            }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Favorite,
+                                                tint = MaterialTheme.colorScheme.error,
+                                                contentDescription = "favourite"
+                                            )
+                                        }
+
+                                    }
+                                    Button(modifier = Modifier.align(Alignment.BottomEnd),
+                                        shape = RoundedCornerShape(
+                                            bottomEndPercent = 100,
+                                            bottomStartPercent = 10,
+                                            topStartPercent = 100
+                                        ),
+                                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                                        onClick = {
 
                                         }) {
                                         Text(
-                                            text = "Order Now",
+                                            text = "Details",
                                             style = MaterialTheme.typography.bodyMedium.copy(
                                                 fontWeight = FontWeight.SemiBold
                                             )

@@ -49,7 +49,32 @@ class UserFavouriteViewModel @Inject constructor(
     }
     val onEvent: (event: UserFavouriteEvent) -> Unit = {event ->
         viewModelScope.launch {
+            when(event){
+                UserFavouriteEvent.OrderAgain -> {
 
+                }
+
+                is UserFavouriteEvent.RemoveFavourite -> {
+                    val setFav = firestoreUseCases.setFavourite(
+                        foodId = event.id
+                    )
+                    when (setFav) {
+                        is Resource.Failure -> {
+
+                        }
+
+                        Resource.Loading -> {
+
+                        }
+
+                        is Resource.Success -> {
+                            if (setFav.data) {
+                                getFavList()
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

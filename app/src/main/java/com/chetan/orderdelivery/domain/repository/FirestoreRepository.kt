@@ -34,7 +34,7 @@ interface FirestoreRepository {
     suspend fun getMyHistory(): Resource<List<RequestFoodOrder>>
     suspend fun deleteMyHistory(orderId: String): Resource<Boolean>
 
-    suspend fun setFavourite(isFavourite: Boolean, foodId: String): Resource<Boolean>
+    suspend fun setFavourite(isFavourite: Boolean = false, foodId: String): Resource<Boolean>
     suspend fun getFavouriteList(): Resource<List<FavouriteModel>>
 
     //common

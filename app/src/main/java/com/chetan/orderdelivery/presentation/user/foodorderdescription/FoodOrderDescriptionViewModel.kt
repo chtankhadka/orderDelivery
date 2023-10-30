@@ -80,7 +80,6 @@ class FoodOrderDescriptionViewModel @Inject constructor(
                 }
 
                 is FoodOrderDescriptionEvent.OrderFood -> {
-                    println(state.value.foodItemDetails)
                     dbUseCases.insertAllCheckoutFoodList(
                         checkList = listOf(
                             CheckoutFoods(
