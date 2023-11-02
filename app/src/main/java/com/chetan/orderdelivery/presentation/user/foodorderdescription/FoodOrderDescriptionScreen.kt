@@ -122,41 +122,6 @@ fun FoodOrderDescriptionScreen(
             }
 
         }, actions = {
-//            Card(
-//                modifier = Modifier
-//                    .size(34.dp)
-//                    .clickable {
-//                        navController.navigate(Destination.Screen.UserOutCartScreen.route)
-//                    },
-//                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-//                elevation = CardDefaults.cardElevation(10.dp),
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxSize()
-//                        .padding(2.dp)
-//                ) {
-//                    Icon(
-//                        modifier = Modifier
-//                            .align(Alignment.BottomCenter)
-//                            .size(20.dp),
-//                        imageVector = Icons.Default.ShoppingCart,
-//                        tint = Color.White,
-//                        contentDescription = ""
-//                    )
-//                    Text(
-//                        text = state.totalCartItem.toString(),
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .padding(end = 2.dp),
-//                        fontSize = 8.sp,
-//                        textAlign = TextAlign.Right,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color.White
-//                    )
-//                }
-//
-//            }
         }
 
         )

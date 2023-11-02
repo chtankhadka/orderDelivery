@@ -37,6 +37,7 @@ class UserDashboardViewModel @Inject constructor(
                 darkMode = preference.isDarkMode.value
             )
         }
+
     }
 
     val onEvent: (event: UserDashboardEvent) -> Unit = { event ->
@@ -84,7 +85,6 @@ class UserDashboardViewModel @Inject constructor(
                 }
 
                 is Resource.Success -> {
-                    println(getAllFoodsResponse)
                     dbRepository.insertFoodList(getAllFoodsResponse.data.map {
                         AllFoods(
                             foodId = it.foodId,
@@ -117,11 +117,10 @@ class UserDashboardViewModel @Inject constructor(
                     })
                     _state.update {
                         it.copy(
-                            allFoods = getAllFoodsResponse.data,
+                            allFoods = getAllFoodsResponse.data.sortedByDescending { it.foodRating },
                             infoMsg = null
                         )
                     }
-                    println(getAllFoodsResponse.data)
                 }
             }
         }

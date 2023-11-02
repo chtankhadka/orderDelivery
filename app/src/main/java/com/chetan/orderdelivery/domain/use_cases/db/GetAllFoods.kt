@@ -9,5 +9,5 @@ class GetAllFoods @Inject constructor(
     private val dbRepository: DBRepository
 ) {
 
-    suspend operator fun invoke(): List<AllFoods> = dbRepository.getAllFoods()
+    suspend operator fun invoke() = dbRepository.getAllFoods()
 }

@@ -147,7 +147,9 @@ fun UserHomeScreen(
                     modifier = Modifier.padding(start = 5.dp)
                 )
                 Button(
-                    onClick = { event(UserHomeEvent.More) },
+                    onClick = {
+                              navController.navigate(Destination.Screen.UserMoreScreen.route)
+                    },
                     colors = ButtonDefaults.buttonColors(Color.Transparent)
                 ) {
                     Text(

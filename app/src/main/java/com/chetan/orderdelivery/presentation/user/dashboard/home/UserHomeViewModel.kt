@@ -78,14 +78,6 @@ class UserHomeViewModel @Inject constructor(
                     }
                 }
 
-                UserHomeEvent.AddToCart -> {
-
-                }
-
-                UserHomeEvent.More -> {
-
-                }
-
                 is UserHomeEvent.SetFavourite -> {
                     val setFav = firestoreUseCases.setFavourite(
                         foodId = event.foodId, isFavourite = event.isFav

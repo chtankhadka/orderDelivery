@@ -3,6 +3,7 @@ package com.chetan.orderdelivery.presentation.user.dashboard
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -92,7 +93,11 @@ import kotlinx.coroutines.launch
 
 
 data class UserInnerPage(
-    val route: String, val label: Int, val icon: ImageVector, val count: String = "",val isBadge: Boolean = false
+    val route: String,
+    val label: Int,
+    val icon: ImageVector,
+    val count: String = "",
+    val isBadge: Boolean = false
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -118,10 +123,8 @@ fun UserDashboardScreen(
         mutableStateOf(false)
     }
 
-    if (showApplyThemeDialog){
-        Dialog(onDismissRequest = {
-        })
-        {
+    if (showApplyThemeDialog) {
+        Dialog(onDismissRequest = {}) {
             Column(
                 Modifier
                     .clip(RoundedCornerShape(16.dp))
@@ -141,9 +144,9 @@ fun UserDashboardScreen(
 //                contentDescription = null
 //            )
 
-                    LoadLottieAnimation(
-                        modifier = Modifier.size(200.dp) ,
-                        image = R.raw.loading_food)
+                LoadLottieAnimation(
+                    modifier = Modifier.size(200.dp), image = R.raw.loading_food
+                )
 
                 Spacer(modifier = Modifier.height(12.dp))
                 Text(
@@ -153,27 +156,24 @@ fun UserDashboardScreen(
                 )
                 Spacer(modifier = Modifier.height(34.dp))
 
-                    Row(modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(5.dp).also { Arrangement.Center }){
-                        Button(
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                onAction(ApplicationAction.Restart)
-                            },
-                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
-                            ) {
-                            Text(text = "Restart")
-                        }
-                        Button(
-                            modifier = Modifier.weight(1f),
-                            onClick = {
-                                      showApplyThemeDialog = false
-                            },
-                            colors = ButtonDefaults.buttonColors(Constants.dark_primaryContainer)
-                            ) {
-                            Text(text = "Cancel")
-                        }
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        .also { Arrangement.Center }) {
+                    Button(
+                        modifier = Modifier.weight(1f), onClick = {
+                            onAction(ApplicationAction.Restart)
+                        }, colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                    ) {
+                        Text(text = "Restart")
                     }
+                    Button(
+                        modifier = Modifier.weight(1f), onClick = {
+                            showApplyThemeDialog = false
+                        }, colors = ButtonDefaults.buttonColors(Constants.dark_primaryContainer)
+                    ) {
+                        Text(text = "Cancel")
+                    }
+                }
 
             }
         }
@@ -198,15 +198,11 @@ fun UserDashboardScreen(
     val bottomNavController = rememberNavController()
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
-
-    ModalNavigationDrawer(
-        drawerState = drawerState,
+    ModalNavigationDrawer(drawerState = drawerState,
         scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         drawerContent = {
-            UserDashboardModalDrawerPage(
-                state = state,
-                onClick = {menuItem ->
-                when(menuItem){
+            UserDashboardModalDrawerPage(state = state, onClick = { menuItem ->
+                when (menuItem) {
                     MenuItem.Admin -> {
                         navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
                     }
@@ -214,9 +210,11 @@ fun UserDashboardScreen(
                     MenuItem.Contacts -> {
 
                     }
+
                     MenuItem.Logout -> {
                         onAction(ApplicationAction.Logout)
                     }
+
                     MenuItem.Setting -> {
 
                     }
@@ -228,94 +226,89 @@ fun UserDashboardScreen(
                 }
 
             })
-        }
-
-
-    ) {
-        Scaffold(modifier = Modifier,
-            topBar = {
-                TopAppBar(
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp),
-                    navigationIcon = {
-                        Card(
-                            modifier = Modifier.size(34.dp),
-                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                            shape = RoundedCornerShape(10.dp),
-                            elevation = CardDefaults.cardElevation(10.dp)
-                        ) {
-                            IconButton(
+        }) {
+        Scaffold(modifier = Modifier, topBar = {
+            TopAppBar(modifier = Modifier.padding(horizontal = 10.dp), navigationIcon = {
+                Card(
+                    modifier = Modifier.size(34.dp),
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                    shape = RoundedCornerShape(10.dp),
+                    elevation = CardDefaults.cardElevation(10.dp)
+                ) {
+                    IconButton(
 //                        colors = IconButtonDefaults.iconButtonColors(Color.White),
-                                onClick = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                }) {
-                                Icon(
-                                    tint = Color.White,
-                                    imageVector = Icons.Default.MenuOpen,
-                                    contentDescription = "Menu"
-                                )
+                        onClick = {
+                            scope.launch {
+                                drawerState.open()
                             }
-
-                        }
-                    },
-                    actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
-
-                        }
-                        Card(
-                            modifier = Modifier.size(34.dp),
-                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(2.dp)
-                            ) {
-                                Icon(
-                                    modifier = Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .size(20.dp),
-                                    imageVector = Icons.Default.NotificationsActive,
-                                    tint = Color.White,
-                                    contentDescription = ""
-                                )
-                                Text(
-                                    text = "201",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(end = 2.dp),
-                                    fontSize = 8.sp,
-                                    textAlign = TextAlign.Right,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                            }
-
-                        }
-                    },
-                    title = {
-                        Text(
-                            text = "MOMO BAR",
-                            style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                        }) {
+                        Icon(
+                            tint = Color.White,
+                            imageVector = Icons.Default.MenuOpen,
+                            contentDescription = "Menu"
                         )
-                    })
-            },
-            bottomBar = {
-                BottomAppBar{
-                    val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
-                    items.forEach { screen ->
-                        val isSelected =
-                            navBackStackEntry?.destination?.hierarchy?.any { it.route == screen.route } == true
-                        val color =
-                            if (isSelected) Color.White else MaterialTheme.colorScheme.outline
+                    }
 
-                        CompositionLocalProvider(LocalContentColor provides color) {
+                }
+            }, actions = {
+                IconButton(onClick = {
+                    navController.navigate(Destination.Screen.UserSearchScreen.route)
+                }) {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+
+                }
+                Card(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clickable {
+                            navController.navigate(Destination.Screen.UserNotificationScreen.route)
+                        },
+                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                    elevation = CardDefaults.cardElevation(10.dp),
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(2.dp)
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .size(20.dp),
+                            imageVector = Icons.Default.NotificationsActive,
+                            tint = Color.White,
+                            contentDescription = ""
+                        )
+                        Text(
+                            text = "201",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(end = 2.dp),
+                            fontSize = 8.sp,
+                            textAlign = TextAlign.Right,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                    }
+
+                }
+            }, title = {
+                Text(
+                    text = "MOMO BAR",
+                    style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            })
+        }, bottomBar = {
+            BottomAppBar {
+                val navBackStackEntry by bottomNavController.currentBackStackEntryAsState()
+                items.forEach { screen ->
+                    val isSelected =
+                        navBackStackEntry?.destination?.hierarchy?.any { it.route == screen.route } == true
+                    val color = if (isSelected) Color.White else MaterialTheme.colorScheme.outline
+
+                    CompositionLocalProvider(LocalContentColor provides color) {
                         NavigationBarItem(
                             colors = NavigationBarItemDefaults.colors(
                                 indicatorColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
@@ -357,69 +350,65 @@ fun UserDashboardScreen(
                             },
                             selected = isSelected,
                             onClick = { bottomNavController.bottomNavigate(screen.route) },
-                            label = {
-                            },
+                            label = {},
                             alwaysShowLabel = false
                         )
                     }
 
 
-
-                    }
                 }
-            },
-            content = {
+            }
+        }, content = {
 
-                state.infoMsg?.let {
-                    MessageDialog(
-                        message = it,
-                        onDismissRequest = {
-                            if (onEvent != null && state.infoMsg.isCancellable == true) {
-                                onEvent(UserDashboardEvent.DismissInfoMsg)
-                            }
-                        },
-                        onPositive = { /*TODO*/ }) {
-
+            state.infoMsg?.let {
+                MessageDialog(message = it, onDismissRequest = {
+                    if (onEvent != null && state.infoMsg.isCancellable == true) {
+                        onEvent(UserDashboardEvent.DismissInfoMsg)
                     }
-                }
-                NavHost(
-                    modifier = Modifier.padding(it),
-                    navController = bottomNavController,
-                    startDestination = "home"
-                ) {
-                    composable("home") {
-                        val viewModel = hiltViewModel<UserHomeViewModel>()
-                        UserHomeScreen(
-                            navController = navController,
-                            state = viewModel.state.collectAsStateWithLifecycle().value,
-                            event = viewModel.onEvent
-                        )
-                    }
-                    composable("favourite") {
-                        val viewModel = hiltViewModel<UserFavouriteViewModel>()
-                        UserFavouriteScreen(
-                            navController = navController,
-                            state = viewModel.state.collectAsStateWithLifecycle().value,
-                            event = viewModel.onEvent
-                        )
-                    }
-                    composable("history") {
-                        val viewModel = hiltViewModel<UserHistoryViewModel>()
-                        UserHistoryScreen(
-                            navController = navController,
-                            state = viewModel.state.collectAsStateWithLifecycle().value,
-                            event = viewModel.onEvent
-                        )
-                    }
-                    composable("cart"){
-                        val viewModel = hiltViewModel<UserCartViewModel>()
-                        UserCartScreen(navController = navController,
-                            state = viewModel.state.collectAsStateWithLifecycle().value,
-                            event = viewModel.onEvent)
-                    }
+                }, onPositive = { /*TODO*/ }) {
 
                 }
-            })
+            }
+            NavHost(
+                modifier = Modifier.padding(it),
+                navController = bottomNavController,
+                startDestination = "home"
+            ) {
+                composable("home") {
+                    val viewModel = hiltViewModel<UserHomeViewModel>()
+                    UserHomeScreen(
+                        navController = navController,
+                        state = viewModel.state.collectAsStateWithLifecycle().value,
+                        event = viewModel.onEvent
+                    )
+                }
+                composable("favourite") {
+                    val viewModel = hiltViewModel<UserFavouriteViewModel>()
+                    UserFavouriteScreen(
+                        navController = navController,
+                        state = viewModel.state.collectAsStateWithLifecycle().value,
+                        event = viewModel.onEvent
+                    )
+                }
+                composable("history") {
+                    val viewModel = hiltViewModel<UserHistoryViewModel>()
+                    UserHistoryScreen(
+                        navController = navController,
+                        state = viewModel.state.collectAsStateWithLifecycle().value,
+                        event = viewModel.onEvent
+                    )
+                }
+                composable("cart") {
+                    val viewModel = hiltViewModel<UserCartViewModel>()
+                    UserCartScreen(
+                        navController = navController,
+                        state = viewModel.state.collectAsStateWithLifecycle().value,
+                        event = viewModel.onEvent
+                    )
+                }
+
+            }
+        })
     }
 
 }

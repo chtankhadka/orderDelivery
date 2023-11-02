@@ -34,12 +34,16 @@ import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardViewModel
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionScreen
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionViewModel
-import com.chetan.orderdelivery.presentation.user.morefood.MoreFoodScreen
+import com.chetan.orderdelivery.presentation.user.later.MoreFoodScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
 import com.chetan.orderdelivery.presentation.user.outCart.OutUserCartScreen
 import com.chetan.orderdelivery.presentation.user.outCart.OutUserCartViewModel
+import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreScreen
+import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreViewModel
+import com.chetan.orderdelivery.presentation.user.search.UserSearchScreen
+import com.chetan.orderdelivery.presentation.user.search.UserSearchViewModel
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -70,20 +74,19 @@ fun AppNavHost(
                     }
                 }
             })
-            val launcher = rememberLauncherForActivityResult(
-                contract = ActivityResultContracts.StartIntentSenderForResult(),
-                onResult = { result ->
-                    if (result.resultCode == ComponentActivity.RESULT_OK) {
-                        lifecycleScope.launch {
-                            val signInResult = googleAuthUiClient.signInWithIntent(
-                                intent = result.data ?: return@launch
-                            )
-                            viewModel.onSignInResult(signInResult)
+            val launcher =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult(),
+                    onResult = { result ->
+                        if (result.resultCode == ComponentActivity.RESULT_OK) {
+                            lifecycleScope.launch {
+                                val signInResult = googleAuthUiClient.signInWithIntent(
+                                    intent = result.data ?: return@launch
+                                )
+                                viewModel.onSignInResult(signInResult)
+                            }
                         }
-                    }
 
-                }
-            )
+                    })
 
             LaunchedEffect(key1 = state.isSignInSuccessful, block = {
                 if (state.isSignInSuccessful) {
@@ -112,8 +115,7 @@ fun AppNavHost(
         // User
         composable(Destination.Screen.UserDashboardScreen.route) {
             val viewModel = hiltViewModel<UserDashboardViewModel>()
-            UserDashboardScreen(
-                onBack = onBack,
+            UserDashboardScreen(onBack = onBack,
                 navController = navController,
                 state = viewModel.state.collectAsStateWithLifecycle().value,
                 onEvent = viewModel.onEvent,
@@ -125,6 +127,7 @@ fun AppNavHost(
                                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             applicationContext.startActivity(intent)
                         }
+
                         ApplicationAction.Logout -> {
                             lifecycleScope.launch {
                                 googleAuthUiClient.signOut()
@@ -132,11 +135,10 @@ fun AppNavHost(
                             }
                         }
                     }
-                }
-            )
+                })
         }
 
-        composable(Destination.Screen.UserFoodOrderDescriptionScreen.route) {it->
+        composable(Destination.Screen.UserFoodOrderDescriptionScreen.route) { it ->
             val foodId = it.arguments?.getString("foodId")!!
             val viewModel = hiltViewModel<FoodOrderDescriptionViewModel>()
             val state by viewModel.state.collectAsStateWithLifecycle()
@@ -160,19 +162,33 @@ fun AppNavHost(
             )
         }
 
-        composable(Destination.Screen.UserNotificationScreen.route){
+        composable(Destination.Screen.UserNotificationScreen.route) {
             NotificationScreen()
         }
-        composable(Destination.Screen.UserMoreFoodScreen.route){
+        composable(Destination.Screen.UserMoreFoodScreen.route) {
             MoreFoodScreen()
         }
-        composable(Destination.Screen.UserOutCartScreen.route){
+        composable(Destination.Screen.UserMoreScreen.route) {
+            val viewModel = hiltViewModel<UserMoreViewModel>()
+            val state = viewModel.state.collectAsStateWithLifecycle().value
+            val event = viewModel.onEvent
+            UserMoreScreen(
+                navController = navController, state = state, event = event
+            )
+        }
+        composable(Destination.Screen.UserSearchScreen.route) {
+            val viewModel = hiltViewModel<UserSearchViewModel>()
+            val state = viewModel.state.collectAsStateWithLifecycle().value
+            val event = viewModel.event
+            UserSearchScreen(
+                navController = navController, state = state, event = event
+            )
+        }
+        composable(Destination.Screen.UserOutCartScreen.route) {
             val viewModel = hiltViewModel<OutUserCartViewModel>()
             val state = viewModel.state.collectAsStateWithLifecycle().value
             OutUserCartScreen(
-                navController = navController,
-                state = state,
-                event = viewModel.onEvent
+                navController = navController, state = state, event = viewModel.onEvent
             )
         }
 
@@ -180,8 +196,7 @@ fun AppNavHost(
         //Admin
         composable(Destination.Screen.AdminDashboardScreen.route) {
             val viewModel = hiltViewModel<AdminDashboardViewModel>()
-            AdminDashboardScreen(
-                navController = navController,
+            AdminDashboardScreen(navController = navController,
                 onBack = onBack,
                 state = viewModel.state.collectAsStateWithLifecycle().value,
                 onEvent = viewModel.onEvent,
@@ -193,6 +208,7 @@ fun AppNavHost(
                                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             applicationContext.startActivity(intent)
                         }
+
                         ApplicationAction.Logout -> {
                             lifecycleScope.launch {
                                 googleAuthUiClient.signOut()
@@ -200,8 +216,7 @@ fun AppNavHost(
                             }
                         }
                     }
-                }
-            )
+                })
         }
         composable(Destination.Screen.AdminAddFoodScreen.route) {
             val viewModel = hiltViewModel<AddFoodViewModel>()
@@ -219,7 +234,7 @@ fun AppNavHost(
                 onEvent = viewModel.onEvent
             )
         }
-        composable(Destination.Screen.AdminOrderDetailScreen.route){
+        composable(Destination.Screen.AdminOrderDetailScreen.route) {
             val user = it.arguments?.getString("user")!!
             val viewModel = hiltViewModel<AdminOrderDetailViewModel>()
             AdminOrderDetailScreen(
