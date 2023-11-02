@@ -7,6 +7,8 @@ import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.domain.model.SetOneSignalId
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
+import com.chetan.orderdelivery.presentation.user.morepopularfood.FilterTypes
+import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreEvent
 import com.onesignal.OneSignal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -83,6 +85,32 @@ class AdminHomeViewModel @Inject constructor(
     val onEvent: (event: AdminHomeEvent) -> Unit = { event ->
         viewModelScope.launch {
             when (event) {
+                is AdminHomeEvent.OnFilterChange -> {
+                    when(event.value){
+                        BranchType.ALL -> {
+                            _state.update {
+                                it.copy(
+                                    branchWiseList = state.value.orderList
+                                )
+                            }
+                        }
+                        BranchType.NPJ -> {
+                            _state.update {
+                                it.copy(
+                                    branchWiseList = state.value.orderList.filter { it.branch == "npj" }
+                                )
+                            }
+                        }
+                        BranchType.KLP -> {
+                            _state.update {
+                                it.copy(
+                                    branchWiseList = state.value.orderList.filter { it.branch == "klp" }
+                                )
+                            }
+                        }
+                    }
+                }
+
                 AdminHomeEvent.Test -> {
 
                 }
@@ -138,6 +166,10 @@ class AdminHomeViewModel @Inject constructor(
                             }
                         }
                     }
+                }
+
+                AdminHomeEvent.OnRefresh -> {
+                    getOrders()
                 }
             }
         }

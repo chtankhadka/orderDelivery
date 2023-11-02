@@ -23,10 +23,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Remove
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -43,6 +47,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,7 +72,10 @@ import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
+import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeEvent
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun UserCartScreen(
     navController: NavHostController, state: UserCartState, event: (event: UserCartEvent) -> Unit
@@ -146,293 +154,321 @@ fun UserCartScreen(
             }
         }
     }
-    Scaffold(content = {
-        state.infoMsg?.let {
-            MessageDialog(message = it, onDismissRequest = {
-                if (event != null && state.infoMsg.isCancellable == true) {
-                    event(UserCartEvent.DismissInfoMsg)
-                }
-            }, onPositive = { /*TODO*/ }) {
 
-            }
-        }
-        Column(modifier = Modifier.padding(it)) {
-            if (state.cartItemList.isNotEmpty()){
-                Row(
-                    modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Checkbox(checked = state.cartItemList.size == state.cartItemList.filter { it.isSelected }.size,
-                            onCheckedChange = {
-                                event(UserCartEvent.SelectAllCheckBox(it))
-                            })
-                        Text(text = "Select All")
-                    }
-                    Button(shape = RoundedCornerShape(10.dp), onClick = {
-                        isShowAlertDialog = true
-                    }) {
-                        Icon(imageVector = Icons.Default.Delete, contentDescription = "")
-                        Text(text = "Delete")
-                    }
+    val refreshScope = rememberCoroutineScope()
+    var refreshing by remember {
+        mutableStateOf(false)
+    }
+    fun refresh() = refreshScope.launch {
+        refreshing = true
+        event(UserCartEvent.OnRefresh)
+        refreshing = false
+    }
+    val refreshState = rememberPullRefreshState(refreshing, ::refresh)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .pullRefresh(refreshState),
+        contentAlignment = Alignment.TopCenter
+    ) {
+        if (!refreshing){
+            Scaffold(content = {
+                state.infoMsg?.let {
+                    MessageDialog(message = it, onDismissRequest = {
+                        if (event != null && state.infoMsg.isCancellable == true) {
+                            event(UserCartEvent.DismissInfoMsg)
+                        }
+                    }, onPositive = { /*TODO*/ }) {
 
+                    }
                 }
-            }
-            Divider()
-            LazyColumn(modifier = Modifier
-                .weight(1f)
-                .padding(end = 15.dp, start = 5.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                content = {
-                    items(state.cartItemList) { food ->
+                Column(modifier = Modifier.padding(it)) {
+                    if (state.cartItemList.isNotEmpty()){
                         Row(
-                            modifier = Modifier
-                                .height(120.dp)
-                                .fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Checkbox(checked = food.isSelected, onCheckedChange = {
-                                event(
-                                    UserCartEvent.ItemSelected(
-                                        isItemSelected = it, item = food.foodId
-                                    )
-                                )
-
-                            })
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(top = 15.dp, start = 40.dp)
-                                        .clickable {
-                                            navController.navigate(
-                                                Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
-                                                    "{foodId}", food.foodId
-                                                )
-                                            )
-                                        },
-                                    elevation = CardDefaults.cardElevation(10.dp),
-                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(start = 60.dp),
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Column {
-                                            Text(
-                                                text = food.foodName,
-                                                style = MaterialTheme.typography.headlineMedium.copy(
+                                Checkbox(checked = state.cartItemList.size == state.cartItemList.filter { it.isSelected }.size,
+                                    onCheckedChange = {
+                                        event(UserCartEvent.SelectAllCheckBox(it))
+                                    })
+                                Text(text = "Select All")
+                            }
+                            Button(shape = RoundedCornerShape(10.dp), onClick = {
+                                isShowAlertDialog = true
+                            }) {
+                                Icon(imageVector = Icons.Default.Delete, contentDescription = "")
+                                Text(text = "Delete")
+                            }
 
-                                                )
+                        }
+                    }
+                    Divider()
+                    LazyColumn(modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 15.dp, start = 5.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        content = {
+                            items(state.cartItemList) { food ->
+                                Row(
+                                    modifier = Modifier
+                                        .height(120.dp)
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Checkbox(checked = food.isSelected, onCheckedChange = {
+                                        event(
+                                            UserCartEvent.ItemSelected(
+                                                isItemSelected = it, item = food.foodId
                                             )
-                                            Text(
-                                                text = food.foodDetails,
-                                                maxLines = 2,
-                                                style = MaterialTheme.typography.bodyMedium.copy(
-                                                    color = MaterialTheme.colorScheme.outline,
-                                                    fontWeight = FontWeight.Bold
-                                                ),
-                                                overflow = TextOverflow.Ellipsis
-                                            )
+                                        )
+
+                                    })
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                    ) {
+                                        Card(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .padding(top = 15.dp, start = 40.dp)
+                                                .clickable {
+                                                    navController.navigate(
+                                                        Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                                            "{foodId}", food.foodId
+                                                        )
+                                                    )
+                                                },
+                                            elevation = CardDefaults.cardElevation(10.dp),
+                                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
+                                        ) {
                                             Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                horizontalArrangement = Arrangement.SpaceBetween,
+                                                modifier = Modifier.padding(start = 60.dp),
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
-                                                Row(
-                                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                                    verticalAlignment = Alignment.Bottom
-                                                ) {
+                                                Column {
                                                     Text(
-                                                        text = "${food.foodNewPrice * food.quantity}",
-                                                        style = MaterialTheme.typography.bodyMedium.copy(
-                                                            color = Color.Red,
-                                                            fontWeight = FontWeight.Bold,
-                                                            fontSize = 16.sp
+                                                        text = food.foodName,
+                                                        style = MaterialTheme.typography.headlineMedium.copy(
+
                                                         )
                                                     )
                                                     Text(
-                                                        text = "${food.foodPrice.toInt() * food.quantity}",
+                                                        text = food.foodDetails,
+                                                        maxLines = 2,
                                                         style = MaterialTheme.typography.bodyMedium.copy(
                                                             color = MaterialTheme.colorScheme.outline,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            textDecoration = TextDecoration.LineThrough
-                                                        )
-                                                    )
-                                                }
-
-                                                Row(
-                                                    modifier = Modifier.padding(
-                                                        end = 10.dp, bottom = 5.dp
-                                                    ),
-                                                    verticalAlignment = Alignment.CenterVertically,
-                                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                                ) {
-                                                    if (food.quantity > 1) {
-                                                        Card(
-                                                            modifier = Modifier.size(24.dp),
-                                                            colors = CardDefaults.cardColors(
-                                                                MaterialTheme.colorScheme.onPrimaryContainer
-                                                            ),
-                                                            elevation = CardDefaults.cardElevation(
-                                                                10.dp
-                                                            ),
-                                                        ) {
-                                                            IconButton(onClick = {
-                                                                event(
-                                                                    UserCartEvent.DecreaseQuantity(
-                                                                        foodId = food.foodId,
-                                                                        food.quantity
-                                                                    )
-                                                                )
-                                                            }) {
-                                                                Icon(
-                                                                    imageVector = Icons.Default.Remove,
-                                                                    contentDescription = "Remove",
-                                                                    tint = Color.White
-                                                                )
-                                                            }
-                                                        }
-                                                    }
-
-                                                    Text(
-                                                        text = "${food.quantity}",
-                                                        style = MaterialTheme.typography.headlineSmall
-                                                    )
-                                                    Card(
-                                                        modifier = Modifier.size(24.dp),
-                                                        colors = CardDefaults.cardColors(
-                                                            MaterialTheme.colorScheme.primary
+                                                            fontWeight = FontWeight.Bold
                                                         ),
-                                                        elevation = CardDefaults.cardElevation(10.dp),
+                                                        overflow = TextOverflow.Ellipsis
+                                                    )
+                                                    Row(
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                                        verticalAlignment = Alignment.CenterVertically
                                                     ) {
-                                                        IconButton(onClick = {
-                                                            event(
-                                                                UserCartEvent.IncreaseQuantity(
-                                                                    foodId = food.foodId,
-                                                                    food.quantity
+                                                        Row(
+                                                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                                            verticalAlignment = Alignment.Bottom
+                                                        ) {
+                                                            Text(
+                                                                text = "${food.foodNewPrice * food.quantity}",
+                                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                                    color = Color.Red,
+                                                                    fontWeight = FontWeight.Bold,
+                                                                    fontSize = 16.sp
                                                                 )
                                                             )
-                                                        }) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Add,
-                                                                contentDescription = "Add"
+                                                            Text(
+                                                                text = "${food.foodPrice.toInt() * food.quantity}",
+                                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                                    color = MaterialTheme.colorScheme.outline,
+                                                                    fontWeight = FontWeight.SemiBold,
+                                                                    textDecoration = TextDecoration.LineThrough
+                                                                )
                                                             )
                                                         }
-                                                    }
 
+                                                        Row(
+                                                            modifier = Modifier.padding(
+                                                                end = 10.dp, bottom = 5.dp
+                                                            ),
+                                                            verticalAlignment = Alignment.CenterVertically,
+                                                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                                        ) {
+                                                            if (food.quantity > 1) {
+                                                                Card(
+                                                                    modifier = Modifier.size(24.dp),
+                                                                    colors = CardDefaults.cardColors(
+                                                                        MaterialTheme.colorScheme.onPrimaryContainer
+                                                                    ),
+                                                                    elevation = CardDefaults.cardElevation(
+                                                                        10.dp
+                                                                    ),
+                                                                ) {
+                                                                    IconButton(onClick = {
+                                                                        event(
+                                                                            UserCartEvent.DecreaseQuantity(
+                                                                                foodId = food.foodId,
+                                                                                food.quantity
+                                                                            )
+                                                                        )
+                                                                    }) {
+                                                                        Icon(
+                                                                            imageVector = Icons.Default.Remove,
+                                                                            contentDescription = "Remove",
+                                                                            tint = Color.White
+                                                                        )
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            Text(
+                                                                text = "${food.quantity}",
+                                                                style = MaterialTheme.typography.headlineSmall
+                                                            )
+                                                            Card(
+                                                                modifier = Modifier.size(24.dp),
+                                                                colors = CardDefaults.cardColors(
+                                                                    MaterialTheme.colorScheme.primary
+                                                                ),
+                                                                elevation = CardDefaults.cardElevation(10.dp),
+                                                            ) {
+                                                                IconButton(onClick = {
+                                                                    event(
+                                                                        UserCartEvent.IncreaseQuantity(
+                                                                            foodId = food.foodId,
+                                                                            food.quantity
+                                                                        )
+                                                                    )
+                                                                }) {
+                                                                    Icon(
+                                                                        imageVector = Icons.Default.Add,
+                                                                        contentDescription = "Add"
+                                                                    )
+                                                                }
+                                                            }
+
+                                                        }
+                                                    }
                                                 }
                                             }
                                         }
-                                    }
-                                }
-                                Card(
-                                    modifier = Modifier.align(Alignment.TopStart),
-                                    shape = CircleShape
-                                ) {
-                                    AsyncImage(
-                                        modifier = Modifier
-                                            .size(90.dp)
-                                            .border(
-                                                border = BorderStroke(
-                                                    width = 2.dp, color = Color.White
-                                                ), shape = CircleShape
-                                            ),
-                                        model = food.faceImgUrl,
-                                        contentDescription = "",
-                                        contentScale = ContentScale.Crop
+                                        Card(
+                                            modifier = Modifier.align(Alignment.TopStart),
+                                            shape = CircleShape
+                                        ) {
+                                            AsyncImage(
+                                                modifier = Modifier
+                                                    .size(90.dp)
+                                                    .border(
+                                                        border = BorderStroke(
+                                                            width = 2.dp, color = Color.White
+                                                        ), shape = CircleShape
+                                                    ),
+                                                model = food.faceImgUrl,
+                                                contentDescription = "",
+                                                contentScale = ContentScale.Crop
 
-                                    )
+                                            )
+                                        }
+
+                                    }
                                 }
 
                             }
-                        }
+                        })
+                    Divider()
+                    if (state.cartItemList.filter { it.isSelected }.isNotEmpty()){
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 10.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.outline,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                ) {
+                                    append("Delivery: Rs 0\n")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                                    )
+                                ) {
+                                    append("Total: ")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Red, fontSize = 18.sp, fontWeight = FontWeight.SemiBold
 
+                                    )
+                                ) {
+                                    append("Rs ")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = Color.Red, fontSize = 18.sp, fontWeight = FontWeight.SemiBold
+                                    )
+                                ) {
+                                    append(state.cartItemList.filter { it.isSelected }
+                                        .sumOf { it.foodNewPrice * it.quantity }.toString())
+                                }
+
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.outline, fontSize = 12.sp
+
+                                    )
+                                ) {
+                                    append("Rs ")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = MaterialTheme.colorScheme.outline,
+                                        fontSize = 12.sp,
+                                        textDecoration = TextDecoration.LineThrough
+                                    )
+                                ) {
+                                    append(state.cartItemList.filter { it.isSelected }.sumOf { it.foodPrice.toInt() * it.quantity }.toString())
+                                }
+
+                            })
+                            Button(
+                                onClick = {
+                                    event(UserCartEvent.Checkout)
+                                    navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route.replace(
+                                        "{totalCost}", state.cartItemList.filter { it.isSelected }
+                                            .sumOf { it.foodNewPrice * it.quantity }.toString()
+                                    ))
+                                }, shape = RoundedCornerShape(10.dp)
+                            ) {
+                                Text(text = "Check out(${state.cartItemList.filter { it.isSelected }.size})")
+
+                            }
+                        }
+                        Divider()
                     }
-                })
-            Divider()
-            if (state.cartItemList.filter { it.isSelected }.isNotEmpty()){
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(text = buildAnnotatedString {
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.outline,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        ) {
-                            append("Delivery: Rs 0\n")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                fontSize = 18.sp, fontWeight = FontWeight.SemiBold
-                            )
-                        ) {
-                            append("Total: ")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Red, fontSize = 18.sp, fontWeight = FontWeight.SemiBold
 
-                            )
-                        ) {
-                            append("Rs ")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                color = Color.Red, fontSize = 18.sp, fontWeight = FontWeight.SemiBold
-                            )
-                        ) {
-                            append(state.cartItemList.filter { it.isSelected }
-                                .sumOf { it.foodNewPrice * it.quantity }.toString())
-                        }
 
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.outline, fontSize = 12.sp
-
-                            )
-                        ) {
-                            append("Rs ")
-                        }
-                        withStyle(
-                            style = SpanStyle(
-                                color = MaterialTheme.colorScheme.outline,
-                                fontSize = 12.sp,
-                                textDecoration = TextDecoration.LineThrough
-                            )
-                        ) {
-                            append(state.cartItemList.filter { it.isSelected }.sumOf { it.foodPrice.toInt() * it.quantity }.toString())
-                        }
-
-                    })
-                    Button(
-                        onClick = {
-                            event(UserCartEvent.Checkout)
-                            navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route.replace(
-                                "{totalCost}", state.cartItemList.filter { it.isSelected }
-                                    .sumOf { it.foodNewPrice * it.quantity }.toString()
-                            ))
-                        }, shape = RoundedCornerShape(10.dp)
-                    ) {
-                        Text(text = "Check out(${state.cartItemList.filter { it.isSelected }.size})")
-
-                    }
                 }
-                Divider()
-            }
-
-
+            })
         }
-    })
+        PullRefreshIndicator(
+            refreshing = refreshing, state = refreshState, modifier = Modifier.align(
+                Alignment.TopCenter
+            )
+        )
+
+    }
+
+
 }

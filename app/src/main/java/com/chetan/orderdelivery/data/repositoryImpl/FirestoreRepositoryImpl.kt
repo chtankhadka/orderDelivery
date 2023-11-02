@@ -37,9 +37,14 @@ class FirestoreRepositoryImpl @Inject constructor(
 //            }
 
             var success = false
-            firestore.collection("admin").document("foods").collection("orders")
-                .document(preference.tableName.toString()).collection("orderDetails")
-                .document(data.orderId).set(data).addOnSuccessListener {
+            firestore.collection("admin")
+                .document("foods")
+                .collection("orders")
+                .document(preference.tableName.toString())
+                .collection("orderDetails")
+                .document(data.orderId)
+                .set(data)
+                .addOnSuccessListener {
                     success = true
                 }.await()
             Resource.Success(success)

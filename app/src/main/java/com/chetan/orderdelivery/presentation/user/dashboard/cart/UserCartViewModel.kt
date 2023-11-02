@@ -11,6 +11,7 @@ import com.chetan.orderdelivery.domain.repository.DBRepository
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
+import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -164,6 +165,9 @@ class UserCartViewModel @Inject constructor(
                                 faceImgUrl = it.faceImgUrl
                             )
                         })
+                }
+                UserCartEvent.OnRefresh -> {
+                    getCartItems()
                 }
             }
         }

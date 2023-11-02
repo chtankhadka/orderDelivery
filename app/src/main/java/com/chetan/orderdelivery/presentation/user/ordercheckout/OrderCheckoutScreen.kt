@@ -73,7 +73,9 @@ import coil.compose.AsyncImage
 import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
+import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.presentation.common.components.requestpermission.RequestPermission
+import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeEvent
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -360,6 +362,18 @@ fun OrderCheckoutScreen(
                 .padding(it)
                 .fillMaxSize()
         ) {
+
+            state.infoMsg?.let {
+                MessageDialog(message = it, onDismissRequest = {
+                    if (onEvent != null && state.infoMsg.isCancellable == true) {
+                        onEvent(OrderCheckoutEvent.DismissInfoMsg)
+                    }
+                }, onPositive = { /*TODO*/ }) {
+
+                }
+            }
+
+
             Divider()
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -373,7 +387,9 @@ fun OrderCheckoutScreen(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(text = state.distance + "  "+ state.locationAddress, modifier = Modifier.weight(1f))
+                    Text(text = if (canOrder){
+                        state.distance + "  "+ state.locationAddress
+                    }else "Sorry we cannot give delivery here", modifier = Modifier.weight(1f))
                     IconButton(onClick = {
                         openMap = true
                     }) {
@@ -630,6 +646,7 @@ fun OrderCheckoutScreen(
                     }
                 })
                 Button(
+                    enabled = state.canOrder,
                     onClick = {
                         showConfirmDialog = true
                     }, shape = RoundedCornerShape(10.dp)

@@ -2,6 +2,7 @@ package com.chetan.orderdelivery.presentation.user.ordercheckout
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.model.PushNotificationRequest
@@ -12,11 +13,9 @@ import com.chetan.orderdelivery.domain.repository.OneSignalRepository
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
-import com.chetan.orderdelivery.presentation.common.utils.GenerateRandomNumber
+import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import com.chetan.orderdelivery.presentation.common.utils.MyDate.CurrentDateTimeSDF
-import com.google.android.gms.maps.model.LatLng
 import com.google.maps.DirectionsApi
-import com.google.maps.DirectionsApiRequest
 import com.google.maps.GeoApiContext
 import com.google.maps.model.DirectionsResult
 import com.google.maps.model.TravelMode
@@ -47,17 +46,28 @@ class OrderCheckoutViewModel @Inject constructor(
         try {
             val directionsResult: DirectionsResult? = DirectionsApi.newRequest(context)
                 .mode(TravelMode.DRIVING)
-                .origin(com.google.maps.model.LatLng(state.value.cameraLocation.latitude,state.value.cameraLocation.longitude))
-                .destination(com.google.maps.model.LatLng(state.value.momobarLok.latitude,state.value.momobarLok.longitude))
+                .origin(
+                    com.google.maps.model.LatLng(
+                        state.value.cameraLocation.latitude,
+                        state.value.cameraLocation.longitude
+                    )
+                )
+                .destination(
+                    com.google.maps.model.LatLng(
+                        state.value.momobarNpj.latitude,
+                        state.value.momobarNpj.longitude
+                    )
+                )
                 .await()
 
             _state.update {
                 it.copy(
-                    distance = directionsResult?.routes?.get(0)?.legs?.get(0)?.distance?.humanReadable?:"null"
+                    distance = directionsResult?.routes?.get(0)?.legs?.get(0)?.distance?.humanReadable
+                        ?: "null"
                 )
             }
 
-        } catch (e: Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -71,6 +81,7 @@ class OrderCheckoutViewModel @Inject constructor(
             }
         }
     }
+
     private fun getIds() {
         viewModelScope.launch {
             _state.update {
@@ -84,24 +95,96 @@ class OrderCheckoutViewModel @Inject constructor(
     val onEvent: (event: OrderCheckoutEvent) -> Unit = { event ->
         viewModelScope.launch {
             when (event) {
+                OrderCheckoutEvent.DismissInfoMsg -> {
+                    _state.update {
+                        it.copy(
+                            infoMsg = null
+                        )
+                    }
+                }
+
                 is OrderCheckoutEvent.Location -> {
 
                     val location = event.value.split(",")
                     try {
-                        val directionsResult: DirectionsResult? = DirectionsApi.newRequest(context)
-                            .mode(TravelMode.DRIVING)
-                            .origin(com.google.maps.model.LatLng(location.first().toDouble(),location.last().toDouble()))
-                            .destination(com.google.maps.model.LatLng(state.value.momobarLok.latitude,state.value.momobarLok.longitude))
-                            .await()
+                        val npjDirectionResult: DirectionsResult? =
+                            DirectionsApi.newRequest(context)
+                                .mode(TravelMode.DRIVING)
+                                .origin(
+                                    com.google.maps.model.LatLng(
+                                        location.first().toDouble(),
+                                        location.last().toDouble()
+                                    )
+                                )
+                                .destination(
+                                    com.google.maps.model.LatLng(
+                                        state.value.momobarNpj.latitude,
+                                        state.value.momobarNpj.longitude
+                                    )
+                                )
+                                .await()
+                        val klpDirectionResult: DirectionsResult? =
+                            DirectionsApi.newRequest(context)
+                                .mode(TravelMode.DRIVING)
+                                .origin(
+                                    com.google.maps.model.LatLng(
+                                        location.first().toDouble(),
+                                        location.last().toDouble()
+                                    )
+                                )
+                                .destination(
+                                    com.google.maps.model.LatLng(
+                                        state.value.momobarKlp.latitude,
+                                        state.value.momobarKlp.longitude
+                                    )
+                                )
+                                .await()
 
-                        _state.update {
-                            it.copy(
-                                distance = directionsResult?.routes?.get(0)?.legs?.get(0)?.distance?.humanReadable?:"null",
-                                location = event.value
-                            )
+                        val npjDistance = npjDirectionResult?.routes?.get(0)?.legs?.get(0)?.distance
+                        val klpDistance = klpDirectionResult?.routes?.get(0)?.legs?.get(0)?.distance
+                        if ((npjDistance?.inMeters ?: 0L) <= 4000L || (klpDistance?.inMeters
+                                ?: 0L) <= 4000L
+                        ) {
+                            if ((npjDistance?.inMeters
+                                    ?: 0L) < (klpDistance?.inMeters ?: 0L)
+                            ) {
+                                _state.update {
+                                    it.copy(
+                                        branch = "npj",
+                                        distance = npjDistance?.humanReadable ?: "null",
+                                        canOrder = true,
+                                        location = event.value
+                                    )
+                                }
+
+                            } else {
+                                _state.update {
+                                    it.copy(
+                                        branch = "klp",
+                                        distance = klpDistance?.humanReadable ?: "null",
+                                        canOrder = true,
+                                        location = event.value
+                                    )
+                                }
+                            }
+
+
+                        } else {
+                            _state.update {
+                                it.copy(
+                                    infoMsg = Message.Error(
+                                        lottieImage = R.raw.delete,
+                                        title = "Error",
+                                        description = "Delivery is Not available here",
+                                        yesNoRequired = false,
+                                        isCancellable = true
+                                    ),
+                                    canOrder = false
+                                )
+                            }
                         }
 
-                    } catch (e: Exception){
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
@@ -128,6 +211,8 @@ class OrderCheckoutViewModel @Inject constructor(
                             googleProfileUrl = preference.gmailProfile ?: "",
                             dbProfileUrl = "",
                             googleUserName = preference.userName ?: "",
+                            branch = state.value.branch
+
                         )
                     )
                     when (setAddress) {
@@ -139,39 +224,42 @@ class OrderCheckoutViewModel @Inject constructor(
                         is Resource.Success -> {
                             if (setAddress.data) {
                                 val orderRequest =
-                                    firestoreUseCases.orderFood(data = RequestFoodOrder(
-                                        orderId = System.currentTimeMillis().toString(),
-                                        locationLat = location.first(),
-                                        locationLng = location.last(),
-                                        distance = state.value.distance,
-                                        userName = "",
-                                        oneSignalId = OneSignal.User.pushSubscription.id,
-                                        userContactNo = "",
-                                        userMail = preference.tableName!!,
-                                        googleProfileUrl = preference.gmailProfile ?: "",
-                                        dbProfileUrl = "",
-                                        googleUserName = preference.userName ?: "",
-                                        locationAddress = state.value.locationAddress,
-                                        dateTime = CurrentDateTimeSDF(),
-                                        orderList = state.value.orderList.map { food ->
-                                            RequestFoodOrder.OrderedList(
-                                                foodId = food.foodId,
-                                                foodType = food.foodType,
-                                                foodFamily = food.foodFamily,
-                                                foodName = food.foodName,
-                                                foodDetails = food.foodDetails,
-                                                foodPrice = food.foodPrice,
-                                                foodDiscount = food.foodDiscount,
-                                                foodNewPrice = food.foodNewPrice,
-                                                isSelected = food.isSelected,
-                                                foodRating = food.foodRating,
-                                                newFoodRating = food.newFoodRating,
-                                                quantity = food.quantity,
-                                                date = CurrentDateTimeSDF(),
-                                                faceImgName = food.faceImgName,
-                                                faceImgUrl = food.faceImgUrl,
-                                            )
-                                        }))
+                                    firestoreUseCases.orderFood(
+                                        data = RequestFoodOrder(
+                                            orderId = System.currentTimeMillis().toString(),
+                                            locationLat = location.first(),
+                                            locationLng = location.last(),
+                                            distance = state.value.distance,
+                                            userName = "",
+                                            oneSignalId = OneSignal.User.pushSubscription.id,
+                                            userContactNo = "",
+                                            userMail = preference.tableName!!,
+                                            googleProfileUrl = preference.gmailProfile ?: "",
+                                            dbProfileUrl = "",
+                                            googleUserName = preference.userName ?: "",
+                                            locationAddress = state.value.locationAddress,
+                                            dateTime = CurrentDateTimeSDF(),
+                                            branch = state.value.branch,
+                                            orderList = state.value.orderList.map { food ->
+                                                RequestFoodOrder.OrderedList(
+                                                    foodId = food.foodId,
+                                                    foodType = food.foodType,
+                                                    foodFamily = food.foodFamily,
+                                                    foodName = food.foodName,
+                                                    foodDetails = food.foodDetails,
+                                                    foodPrice = food.foodPrice,
+                                                    foodDiscount = food.foodDiscount,
+                                                    foodNewPrice = food.foodNewPrice,
+                                                    isSelected = food.isSelected,
+                                                    foodRating = food.foodRating,
+                                                    newFoodRating = food.newFoodRating,
+                                                    quantity = food.quantity,
+                                                    date = CurrentDateTimeSDF(),
+                                                    faceImgName = food.faceImgName,
+                                                    faceImgUrl = food.faceImgUrl,
+                                                )
+                                            })
+                                    )
                                 when (orderRequest) {
                                     is Resource.Failure -> {
 
@@ -193,13 +281,15 @@ class OrderCheckoutViewModel @Inject constructor(
                                             }
                                         }
                                         try {
-                                            val sendNotification = oneSiganlRepository.pushNotification(
-                                                PushNotificationRequest(
-                                                    contents = mapOf("en" to "order"),
-                                                    name = "New order",
-                                                    include_player_ids = dbUseCases.getAllIds().map { it.id }
+                                            val sendNotification =
+                                                oneSiganlRepository.pushNotification(
+                                                    PushNotificationRequest(
+                                                        contents = mapOf("en" to "order"),
+                                                        name = "New order",
+                                                        include_player_ids = dbUseCases.getAllIds()
+                                                            .map { it.id }
+                                                    )
                                                 )
-                                            )
                                             when (sendNotification) {
                                                 is Resource.Failure -> {
 //                        _state.update {
@@ -246,9 +336,6 @@ class OrderCheckoutViewModel @Inject constructor(
                                             }
                                             e.printStackTrace()
                                         }
-
-
-
 
 
                                     }

@@ -98,6 +98,11 @@ class UserHomeViewModel @Inject constructor(
                         }
                     }
                 }
+
+                UserHomeEvent.OnRefresh -> {
+                    getFavList()
+                    getAllFoods()
+                }
             }
         }
 

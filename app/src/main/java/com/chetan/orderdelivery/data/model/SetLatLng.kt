@@ -10,5 +10,6 @@ data class SetLatLng(
     val userMail: String = "",
     val googleProfileUrl: String = "",
     val dbProfileUrl: String = "",
-    val distance: String = ""
+    val distance: String = "",
+    val branch: String = "npj",
 )

@@ -10,7 +10,6 @@ data class RequestFoodOrder(
     val dbProfileUrl: String = "",
     val userMail: String = "",
     val oneSignalId: String = "",
-
     val isDelivered: Boolean = false,
     val deliveredTime: String = "",
     val locationLat: String = "",
@@ -18,6 +17,7 @@ data class RequestFoodOrder(
     val distance : String = "",
     val locationAddress: String = "",
     val dateTime: String = "",
+    val branch: String = "npj",
     val orderList: List<OrderedList> = emptyList(),
     ){
     data class OrderedList(
