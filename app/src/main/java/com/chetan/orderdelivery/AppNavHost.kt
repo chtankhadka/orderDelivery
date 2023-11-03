@@ -44,6 +44,7 @@ import com.chetan.orderdelivery.presentation.user.myorder.OutUserCartScreen
 import com.chetan.orderdelivery.presentation.user.myorder.OutUserCartViewModel
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreScreen
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreViewModel
+import com.chetan.orderdelivery.presentation.user.notification.NotificationViewModel
 import com.chetan.orderdelivery.presentation.user.search.UserSearchScreen
 import com.chetan.orderdelivery.presentation.user.search.UserSearchViewModel
 import kotlinx.coroutines.launch
@@ -165,7 +166,12 @@ fun AppNavHost(
         }
 
         composable(Destination.Screen.UserNotificationScreen.route) {
-            NotificationScreen()
+            val viewModel = hiltViewModel<NotificationViewModel>()
+            NotificationScreen(
+                nav = navController,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                event = viewModel.onEvent
+            )
         }
         composable(Destination.Screen.UserMoreFoodScreen.route) {
             MoreFoodScreen()

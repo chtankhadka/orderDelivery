@@ -291,7 +291,7 @@ class FirestoreRepositoryImpl @Inject constructor(
                 .collection(branch)
                 .get()
                 .await()
-            for (document in coll.documents){
+            for (document in coll.documents) {
                 val data = document.toObject<SetOneSignalId>()
                 data?.let {
                     ids.add(data)
@@ -323,6 +323,73 @@ class FirestoreRepositoryImpl @Inject constructor(
             Resource.Failure(e)
         }
 
+    }
+
+    override suspend fun getNotification(): Resource<List<StoreNotificationRequestResponse>> {
+        return try {
+            val noticeList = mutableListOf<StoreNotificationRequestResponse>()
+            val querySnapshot =
+                firestore
+                    .collection("users")
+                    .document(preference.tableName!!)
+                    .collection("notifications")
+                    .get()
+                    .await()
+            for (document in querySnapshot.documents) {
+                val order = document.toObject<StoreNotificationRequestResponse>()
+                order?.let {
+                    noticeList.add(it)
+                }
+            }
+            Resource.Success(noticeList)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun readNotification(id: String): Resource<Boolean> {
+        return try {
+            var read = false
+            firestore
+                .collection("users")
+                .document(preference.tableName ?: "test")
+                .collection("notifications")
+                .document(id)
+                .update("readNotice", true)
+                .addOnSuccessListener {
+                    read = true
+                }
+                .addOnFailureListener {
+                    read = false
+                }
+            Resource.Success(read)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun deleteNotification(id: String): Resource<Boolean> {
+        return try {
+            var read = false
+            firestore
+                .collection("users")
+                .document(preference.tableName ?: "test")
+                .collection("notifications")
+                .document(id)
+                .delete()
+                .addOnSuccessListener {
+                    read = true
+                }
+                .addOnFailureListener {
+                    read = false
+                }
+            Resource.Success(read)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
     }
 
     //admin

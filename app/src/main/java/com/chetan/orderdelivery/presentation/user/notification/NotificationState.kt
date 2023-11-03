@@ -1,7 +1,7 @@
 package com.chetan.orderdelivery.presentation.user.notification
 
-import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.data.model.StoreNotificationRequestResponse
 
 data class NotificationState(
-    val allFoodList: List<GetFoodResponse> = emptyList()
+    val notificationList: List<StoreNotificationRequestResponse> = emptyList()
 )

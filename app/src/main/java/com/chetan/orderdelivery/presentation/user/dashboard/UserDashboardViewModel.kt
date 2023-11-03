@@ -39,7 +39,6 @@ class UserDashboardViewModel @Inject constructor(
         }
 
     }
-
     val onEvent: (event: UserDashboardEvent) -> Unit = { event ->
         when (event) {
             is UserDashboardEvent.ChangeDarkMode -> {

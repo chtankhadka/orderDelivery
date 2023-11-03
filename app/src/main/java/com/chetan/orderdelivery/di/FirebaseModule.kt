@@ -12,6 +12,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.AddFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddToCart
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteCartItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteMyHistory
+import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetCartItems
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFavouriteList
@@ -21,10 +22,12 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodOrders
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoods
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodsForUpdate
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetMyHistory
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetOneSignalIds
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderDelivered
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
+import com.chetan.orderdelivery.domain.use_cases.firestore.ReadNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.RemoveUserOrder
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetAddress
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetFavourite
@@ -118,6 +121,9 @@ object FirebaseModule {
             setOneSignalId = SetOneSignalId(repository = repository),
             getOneSignalIds = GetOneSignalIds(repository = repository),
             setNotification = SetNotification(repository = repository),
+            getNotification = GetNotification(repository = repository),
+            readNotification = ReadNotification(repository = repository),
+            deleteNotification = DeleteNotification(repository = repository),
 
             getCartItems = GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),

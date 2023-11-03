@@ -20,6 +20,9 @@ data class FirestoreUseCases(
     val setOneSignalId: SetOneSignalId,
     val getOneSignalIds: GetOneSignalIds,
     val setNotification : SetNotification,
+    val getNotification : GetNotification,
+    val readNotification : ReadNotification,
+    val deleteNotification: DeleteNotification,
 
     val addFood : AddFood,
 

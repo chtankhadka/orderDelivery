@@ -43,6 +43,9 @@ interface FirestoreRepository {
     suspend fun setOneSignalId(data : SetOneSignalId) : Resource<Boolean>
     suspend fun getOneSignalIds( branch: String ) : Resource<List<SetOneSignalId>>
     suspend fun setNotification(data: StoreNotificationRequestResponse): Resource<Boolean>
+    suspend fun getNotification(): Resource<List<StoreNotificationRequestResponse>>
+    suspend fun readNotification(id: String): Resource<Boolean>
+    suspend fun deleteNotification(id: String): Resource<Boolean>
 
 
     //admin
