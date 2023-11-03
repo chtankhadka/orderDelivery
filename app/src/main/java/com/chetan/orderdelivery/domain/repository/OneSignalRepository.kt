@@ -16,5 +16,5 @@ interface OneSignalRepository {
     @POST("notifications")
     suspend fun pushNotification(
         @Body requestBody: PushNotificationRequest
-    ): Resource<Any>
+    ): Resource<Boolean>
 }

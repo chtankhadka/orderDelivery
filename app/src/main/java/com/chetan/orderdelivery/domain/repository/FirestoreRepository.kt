@@ -7,6 +7,7 @@ import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
 import com.chetan.orderdelivery.data.model.SetLatLng
+import com.chetan.orderdelivery.data.model.StoreNotificationRequestResponse
 import com.chetan.orderdelivery.domain.model.SetOneSignalId
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 
@@ -41,6 +42,7 @@ interface FirestoreRepository {
 
     suspend fun setOneSignalId(data : SetOneSignalId) : Resource<Boolean>
     suspend fun getOneSignalIds( branch: String ) : Resource<List<SetOneSignalId>>
+    suspend fun setNotification(data: StoreNotificationRequestResponse): Resource<Boolean>
 
 
     //admin

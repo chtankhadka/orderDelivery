@@ -28,6 +28,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
 import com.chetan.orderdelivery.domain.use_cases.firestore.RemoveUserOrder
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetAddress
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetFavourite
+import com.chetan.orderdelivery.domain.use_cases.firestore.SetNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetOneSignalId
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateDeliveredHistroy
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateRating
@@ -39,6 +40,7 @@ import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.DeleteImage
 import com.chetan.orderdelivery.domain.use_cases.storage.FirestorageUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.InsertImage
+import com.chetan.orderdelivery.service.NotificationServiceExtension
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -115,6 +117,7 @@ object FirebaseModule {
 
             setOneSignalId = SetOneSignalId(repository = repository),
             getOneSignalIds = GetOneSignalIds(repository = repository),
+            setNotification = SetNotification(repository = repository),
 
             getCartItems = GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),

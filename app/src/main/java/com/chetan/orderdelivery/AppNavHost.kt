@@ -26,6 +26,8 @@ import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdat
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateViewModel
 import com.chetan.orderdelivery.presentation.admin.orderdetails.AdminOrderDetailScreen
 import com.chetan.orderdelivery.presentation.admin.orderdetails.AdminOrderDetailViewModel
+import com.chetan.orderdelivery.presentation.admin.sendnotice.AdminSendNoticeScreen
+import com.chetan.orderdelivery.presentation.admin.sendnotice.AdminSendNoticeViewModel
 import com.chetan.orderdelivery.presentation.common.google_sign_in.GoogleAuthUiClient
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInScreen
 import com.chetan.orderdelivery.presentation.common.google_sign_in.SignInViewModel
@@ -38,8 +40,8 @@ import com.chetan.orderdelivery.presentation.user.later.MoreFoodScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
-import com.chetan.orderdelivery.presentation.user.outCart.OutUserCartScreen
-import com.chetan.orderdelivery.presentation.user.outCart.OutUserCartViewModel
+import com.chetan.orderdelivery.presentation.user.myorder.OutUserCartScreen
+import com.chetan.orderdelivery.presentation.user.myorder.OutUserCartViewModel
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreScreen
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreViewModel
 import com.chetan.orderdelivery.presentation.user.search.UserSearchScreen
@@ -242,6 +244,14 @@ fun AppNavHost(
                 state = viewModel.state.collectAsStateWithLifecycle().value,
                 event = viewModel.onEvent,
                 user = user
+            )
+        }
+        composable(Destination.Screen.AdminSendNoticeScreen.route){
+            val viewModel = hiltViewModel<AdminSendNoticeViewModel>()
+            AdminSendNoticeScreen(
+                nav = navController,
+                event = viewModel.onEvent,
+                state = viewModel.state.collectAsStateWithLifecycle().value
             )
         }
     }

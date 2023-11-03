@@ -229,6 +229,3 @@ sealed class BranchType(val branch: String){
     data object NPJ : BranchType("Npj")
     data object KLP : BranchType("Klp")
 }
-
-//This is the medium to remove the boundaries of hunger. All will get special type of food in same price. We offer variety of healthy and fast food.
-//Get all taste in affordable price

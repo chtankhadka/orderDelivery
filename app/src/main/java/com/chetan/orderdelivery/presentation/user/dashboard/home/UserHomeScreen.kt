@@ -288,36 +288,19 @@ fun UserHomeScreen(
                         style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
                         modifier = Modifier.padding(start = 5.dp)
                     )
-                    Box(modifier = Modifier.fillMaxWidth()) {
-                        Card(
+                    Card(
+                        elevation = CardDefaults.cardElevation(10.dp)
+                    ) {
+                        AsyncImage(
+                            contentScale = ContentScale.Fit,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .height(90.dp),
-                            colors = CardDefaults.cardColors(Constants.dark_primaryContainer),
-                        ) {
-
-                        }
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            AsyncImage(
-                                contentScale = ContentScale.Fit,
-                                modifier = Modifier
-                                    .height(110.dp)
-                                    .weight(0.7f),
-                                model = Constants.testFoodUrl,
-                                contentDescription = ""
-                            )
-                            Text(
-                                modifier = Modifier.weight(0.3f),
-                                text = "Valentine Special Offer",
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    color = Color.White,
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Center
-                                )
-                            )
-                        }
-
+                                .height(110.dp)
+                                .fillMaxWidth(),
+                            model = Constants.testFoodUrl,
+                            contentDescription = ""
+                        )
                     }
+
                     //Drinks
                     Row(
                         modifier = Modifier.fillMaxWidth(),

@@ -8,6 +8,7 @@ import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
 import com.chetan.orderdelivery.data.model.SetLatLng
+import com.chetan.orderdelivery.data.model.StoreNotificationRequestResponse
 import com.chetan.orderdelivery.domain.model.SetOneSignalId
 import com.chetan.orderdelivery.data.model.order.RequestFoodOrder
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
@@ -301,6 +302,27 @@ class FirestoreRepositoryImpl @Inject constructor(
             e.printStackTrace()
             Resource.Failure(e)
         }
+    }
+
+    override suspend fun setNotification(data: StoreNotificationRequestResponse): Resource<Boolean> {
+        return try {
+            var isSuccess = false
+            firestore.collection("users")
+                .document(preference.tableName!!)
+                .collection("notifications")
+                .document(data.time)
+                .set(data)
+                .addOnSuccessListener {
+                    isSuccess = true
+                }.addOnFailureListener {
+                    isSuccess = false
+                }.await()
+            Resource.Success(isSuccess)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+
     }
 
     //admin

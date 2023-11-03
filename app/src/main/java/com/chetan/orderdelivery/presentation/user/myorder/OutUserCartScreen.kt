@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.user.outCart
+package com.chetan.orderdelivery.presentation.user.myorder
 
 import android.app.PendingIntent
 import android.content.Context
@@ -58,7 +58,7 @@ import com.chetan.orderdelivery.common.Constants
 fun OutUserCartScreen(
     navController: NavHostController,
     state: OutUserCartState,
-    event: (event: OutUserCartEvent) -> Unit
+    event: (event: MyOrderEvent) -> Unit
 ) {
     val cartList = listOf("Pizza", "Jhol MoMo", "Fried Momo", "Buff Momo", "Chicken Momo")
 

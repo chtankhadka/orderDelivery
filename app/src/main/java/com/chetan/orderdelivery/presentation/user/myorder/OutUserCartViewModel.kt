@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.user.outCart
+package com.chetan.orderdelivery.presentation.user.myorder
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,10 +16,10 @@ class OutUserCartViewModel @Inject constructor(
     private val _state = MutableStateFlow(OutUserCartState())
     val state : StateFlow<OutUserCartState> = _state
 
-    val onEvent : (event: OutUserCartEvent) -> Unit = {event ->
+    val onEvent : (event: MyOrderEvent) -> Unit = { event ->
         viewModelScope.launch {
             when(event){
-                OutUserCartEvent.test -> {
+                MyOrderEvent.test -> {
 
                 }
             }

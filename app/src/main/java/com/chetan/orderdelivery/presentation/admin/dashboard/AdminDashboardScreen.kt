@@ -220,8 +220,8 @@ fun AdminDashboardScreen(
                 state = state,
                 onClick = {
                     when(it){
-                        MenuItem.AddDrinks -> {
-
+                        MenuItem.SendNotice -> {
+                            navController.navigate(Destination.Screen.AdminSendNoticeScreen.route)
                         }
                         MenuItem.AddFoodItem -> {
                             navController.navigate(Destination.Screen.AdminAddFoodScreen.route)

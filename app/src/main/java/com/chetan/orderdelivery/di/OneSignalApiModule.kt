@@ -1,5 +1,6 @@
 package com.chetan.orderdelivery.di
 
+import com.chetan.orderdelivery.data.repositoryImpl.OneSignalRepositoryImpl
 import com.chetan.orderdelivery.domain.repository.OneSignalRepository
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -43,5 +44,9 @@ object OneSignalApiModule {
     @Provides
     fun provideOneSignalApiService(retrofit: Retrofit) : OneSignalRepository{
         return retrofit.create(OneSignalRepository::class.java)
+    }
+    @Provides
+    fun provideOneSignalRepository(repository: OneSignalRepository) : OneSignalRepositoryImpl{
+        return OneSignalRepositoryImpl(repository)
     }
 }

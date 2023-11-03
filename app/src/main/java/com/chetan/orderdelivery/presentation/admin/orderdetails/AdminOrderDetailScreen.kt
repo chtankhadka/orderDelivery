@@ -57,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -145,23 +146,8 @@ fun AdminOrderDetailScreen(
             })
         }
     }
-    val cameraPositionState = com.google.maps.android.compose.rememberCameraPositionState()
-
     RequestPermission(permission = Manifest.permission.ACCESS_FINE_LOCATION) {
         canOrder = it
-    }
-
-    if (locationInfo.isNotBlank()) {
-        LaunchedEffect(key1 = Unit, block = {
-            val userlatlng = locationInfo.split(",")
-            val position = CameraPosition.fromLatLngZoom(
-                LatLng(
-                    userlatlng.first().toDouble(), userlatlng.last().toDouble()
-                ), 16f
-            )
-            cameraPositionState.animate(CameraUpdateFactory.newCameraPosition(position))
-            cameraPositionState.position = position
-        })
     }
 
     LaunchedEffect(targetValue) {
@@ -280,7 +266,8 @@ fun AdminOrderDetailScreen(
                                         border = BorderStroke(
                                             width = 2.dp, color = Color.White
                                         )
-                                    ), model = Constants.testFoodUrl, contentDescription = ""
+                                    ), model = state.orderDetails.first().googleProfileUrl, contentDescription = "",
+                                contentScale = ContentScale.Crop
                             )
                         }
                     }

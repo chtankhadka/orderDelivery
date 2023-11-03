@@ -83,7 +83,7 @@ class AdminOrderDetailViewModel @Inject constructor(
                                                                 oneSiganlRepository.pushNotification(
                                                                     PushNotificationRequest(
                                                                         contents = mapOf("en" to "Your order is delivered"),
-                                                                        name = "MoMo Bar",
+                                                                        headings = mapOf("en" to "Order"),
                                                                         include_player_ids = listOf(
                                                                             orderIdDetails.oneSignalId
                                                                         )

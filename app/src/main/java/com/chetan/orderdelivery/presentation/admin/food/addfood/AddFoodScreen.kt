@@ -130,7 +130,8 @@ fun AddFoodScreen(
             }
 
         })
-    }, content = {
+    },
+        content = {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -380,15 +381,6 @@ fun AddFoodScreen(
             }
         }
     })
-}
-
-@Composable
-@Preview
-fun showThis() {
-    OrderDeliveryTheme {
-        AddFoodScreen(state = AddFoodState(), onEvent = {}, navController = null)
-    }
-
 }
 
 @Composable

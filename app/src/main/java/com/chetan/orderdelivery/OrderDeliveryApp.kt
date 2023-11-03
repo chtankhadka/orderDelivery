@@ -1,13 +1,16 @@
 package com.chetan.orderdelivery
 
 import android.app.Application
+import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.google.android.libraries.places.api.Places
+import com.google.firebase.FirebaseApp
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 
 const val ONESIGNAL_APP_ID = "4bc849f6-9a48-4194-bdce-a151a9c901b1"
@@ -17,7 +20,7 @@ class OrderDeliveryApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-
+        FirebaseApp.initializeApp(this)
         // Verbose Logging set to help debug issues, remove before releasing your app.
         OneSignal.Debug.logLevel = LogLevel.VERBOSE
 
