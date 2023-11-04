@@ -1,7 +1,5 @@
 package com.chetan.orderdelivery.presentation.admin.addoffer
 
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,13 +34,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.airbnb.lottie.model.content.CircleShape
 import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.presentation.admin.food.addfood.OutlinedTextFieldAddFood
-import com.chetan.orderdelivery.ui.theme.OrderDeliveryTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

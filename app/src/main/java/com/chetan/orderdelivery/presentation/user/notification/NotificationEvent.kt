@@ -1,6 +1,7 @@
 package com.chetan.orderdelivery.presentation.user.notification
 
 sealed interface NotificationEvent{
-    data object Test: NotificationEvent
+    data class ChangeToRead(val id: String): NotificationEvent
     data class DeleteNotification(val id: String): NotificationEvent
+    data object DismissInfoMsg: NotificationEvent
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
+import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -14,28 +15,42 @@ import javax.inject.Inject
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
     private val repository: FirestoreRepository
-): ViewModel(){
+) : ViewModel() {
 
     private val _state = MutableStateFlow(NotificationState())
-    val state : StateFlow<NotificationState> = _state
+    val state: StateFlow<NotificationState> = _state
 
     init {
         notification()
     }
-    fun notification(){
+
+    fun notification() {
         viewModelScope.launch {
+            _state.update {
+                it.copy(
+                    infoMsg =Message.Loading(
+                        description = "Getting Notifications!!!",
+                        title = "Loading",
+                        yesNoRequired = false,
+                        isCancellable = false
+                    )
+                )
+            }
             val notificationList = repository.getNotification()
-            when(notificationList){
+            when (notificationList) {
                 is Resource.Failure -> {
 
                 }
+
                 Resource.Loading -> {
 
                 }
+
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
-                            notificationList = notificationList.data
+                            notificationList = notificationList.data,
+                            infoMsg = null
                         )
                     }
                 }
@@ -44,32 +59,55 @@ class NotificationViewModel @Inject constructor(
     }
 
     val onEvent: (event: NotificationEvent) -> Unit = { event ->
-            viewModelScope.launch {
-                when(event){
-                    NotificationEvent.Test -> {
-
-                    }
-
-                    is NotificationEvent.DeleteNotification -> {
-                        val delete = repository.deleteNotification(event.id)
-                        when(delete){
-                            is Resource.Failure -> {
-
-                            }
-                            Resource.Loading -> {
-
-                            }
-                            is Resource.Success -> {
-                                _state.update {
-                                    it.copy(
-                                        notificationList = state.value.notificationList.filter { it.time != event.id }
-                                    )
-                                }
-                            }
-                        }
-
+        viewModelScope.launch {
+            when (event) {
+                NotificationEvent.DismissInfoMsg -> {
+                    _state.update {
+                        it.copy(
+                            infoMsg = null
+                        )
                     }
                 }
+                is NotificationEvent.ChangeToRead -> {
+                    val changeToRead = repository.readNotification(event.id)
+                    when (changeToRead) {
+                        is Resource.Failure -> {
+
+                        }
+                        Resource.Loading -> {
+
+                        }
+                        is Resource.Success -> {
+                            _state.update {
+                                it.copy(notificationList = state.value.notificationList.map {
+                                    if (it.time == event.id) {
+                                        it.copy(readNotice = true)
+                                    } else {
+                                        it.copy(readNotice = it.readNotice)
+                                    }
+                                })
+                            }
+                        }
+                    }
+                }
+
+                is NotificationEvent.DeleteNotification -> {
+                    _state.update {
+                        it.copy(notificationList = state.value.notificationList.filterNot { it.time == event.id })
+                    }
+                    val delete = repository.deleteNotification(event.id)
+                    when (delete) {
+                        is Resource.Failure -> {
+                        }
+                        Resource.Loading -> {
+                        }
+                        is Resource.Success -> {
+
+                        }
+                    }
+
+                }
             }
+        }
     }
 }
