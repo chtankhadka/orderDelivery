@@ -43,7 +43,6 @@ class AdminOrderDetailViewModel @Inject constructor(
                             )
                         )
                     }
-
                     val orderIdDetails =
                         state.value.orderDetails.find { it.orderId == event.value }!!
                     val updateUserHistory =

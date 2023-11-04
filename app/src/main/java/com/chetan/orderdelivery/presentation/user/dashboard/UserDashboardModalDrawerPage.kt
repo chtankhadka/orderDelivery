@@ -23,6 +23,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
@@ -56,6 +57,8 @@ fun UserDashboardModalDrawerPage(
     state: UserDashboardState,
 ) {
     val topMenuList = listOf(
+        MenuItem.Profile,
+        MenuItem.MyOrders,
         MenuItem.Admin
     )
     val bottomMenuList = listOf(
@@ -218,6 +221,8 @@ fun UserDashboardModalDrawerPage(
 
 sealed class MenuItem(val icon: ImageVector, val label: String) {
     data object Admin : MenuItem(icon = Icons.Default.Person, label = "Admin")
+    data object Profile: MenuItem(icon = Icons.Default.Person, label = "Profile")
+    data object MyOrders : MenuItem(icon = Icons.Default.Fastfood, label = "My Orders")
     data object DarkMode : MenuItem(icon = Icons.Default.DarkMode, label = "Dark Mode")
     data object Contacts : MenuItem(icon = Icons.Default.Contacts, label = "Contacts")
     data object Setting : MenuItem(icon = Icons.Default.Settings, label = "Setting")

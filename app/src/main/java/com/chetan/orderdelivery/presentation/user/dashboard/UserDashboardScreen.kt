@@ -223,6 +223,13 @@ fun UserDashboardScreen(
                         showApplyThemeDialog = true
                         onEvent(UserDashboardEvent.ChangeDarkMode)
                     }
+
+                    MenuItem.MyOrders -> {
+                        navController.navigate(Destination.Screen.UserMyOrderScreen.route)
+                    }
+                    MenuItem.Profile -> {
+
+                    }
                 }
 
             })

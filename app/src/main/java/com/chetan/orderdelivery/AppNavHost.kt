@@ -40,10 +40,10 @@ import com.chetan.orderdelivery.presentation.user.later.MoreFoodScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
-import com.chetan.orderdelivery.presentation.user.myorder.OutUserCartScreen
-import com.chetan.orderdelivery.presentation.user.myorder.OutUserCartViewModel
+import com.chetan.orderdelivery.presentation.user.myorder.MyOrderViewModel
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreScreen
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreViewModel
+import com.chetan.orderdelivery.presentation.user.myorder.MyOrderScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationViewModel
 import com.chetan.orderdelivery.presentation.user.search.UserSearchScreen
 import com.chetan.orderdelivery.presentation.user.search.UserSearchViewModel
@@ -192,14 +192,13 @@ fun AppNavHost(
                 navController = navController, state = state, event = event
             )
         }
-        composable(Destination.Screen.UserOutCartScreen.route) {
-            val viewModel = hiltViewModel<OutUserCartViewModel>()
+        composable(Destination.Screen.UserMyOrderScreen.route) {
+            val viewModel = hiltViewModel<MyOrderViewModel>()
             val state = viewModel.state.collectAsStateWithLifecycle().value
-            OutUserCartScreen(
+            MyOrderScreen(
                 navController = navController, state = state, event = viewModel.onEvent
             )
         }
-
 
         //Admin
         composable(Destination.Screen.AdminDashboardScreen.route) {
