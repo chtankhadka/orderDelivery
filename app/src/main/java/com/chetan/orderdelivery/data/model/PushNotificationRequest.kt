@@ -1,7 +1,7 @@
 package com.chetan.orderdelivery.data.model
 
 data class PushNotificationRequest(
-    val app_id :String = "7d7d5c3e-bdd2-4336-91c7-467ea0431cec",
+    val app_id :String = "473febeb-3878-459e-a056-6e0f67ad6fb8",
 //    val include_subscription_ids : List<String> = listOf(""),
     val include_player_ids : List<String> = emptyList(),
     val included_segments: List<String> = emptyList(),

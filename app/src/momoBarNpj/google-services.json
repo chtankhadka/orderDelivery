@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "793956256518-afqb0j4f6069rstevscqhi9ce6qvvpio.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chetan.momoBarNpj",
+            "certificate_hash": "130716c86a604464755fd6a3da2f8e91251f80e5"
+          }
+        },
+        {
           "client_id": "793956256518-c9jl646tptp073k0f9vhfahea8nhtvlc.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -49,6 +57,14 @@
           "android_info": {
             "package_name": "com.chetan.orderdelivery.momoBarNpj",
             "certificate_hash": "9ae3c7f391d799140b388b93ebd6c5b2c8182ed8"
+          }
+        },
+        {
+          "client_id": "793956256518-lvqf0nmdfch2k7ie4a2ldh2gnc5lac57.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chetan.orderdelivery.momoBarNpj",
+            "certificate_hash": "130716c86a604464755fd6a3da2f8e91251f80e5"
           }
         },
         {

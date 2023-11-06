@@ -8,7 +8,7 @@ import com.chetan.orderdelivery.domain.model.SetOneSignalId
 
 @Database(
     entities = [AllFoods::class,CheckoutFoods::class,SetOneSignalId::class],
-    version = 16,
+    version = 1,
     exportSchema = false
 )
 abstract class OrderDeliveryDatabase :RoomDatabase() {

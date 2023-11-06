@@ -11,7 +11,7 @@ interface OneSignalRepository {
     @Headers(
         "Accept: application/json",
         "Content-Type: application/json",
-        "Authorization: Basic MzY2NGEzYmUtY2E2OS00NDRmLWJhNDItYTlkZTJkM2ZhMTU2"
+        "Authorization: Basic YmY3NzA5MzYtMDQyYS00Njk4LTllZTAtZWQ1NWUyYTdjMDJh"
     )
     @POST("notifications")
     suspend fun pushNotification(
