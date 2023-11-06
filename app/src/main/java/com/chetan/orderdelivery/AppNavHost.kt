@@ -49,6 +49,8 @@ import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreScreen
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreViewModel
 import com.chetan.orderdelivery.presentation.user.myorder.MyOrderScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationViewModel
+import com.chetan.orderdelivery.presentation.user.profile.UserProfileScreen
+import com.chetan.orderdelivery.presentation.user.profile.UserProfileViewModel
 import com.chetan.orderdelivery.presentation.user.search.UserSearchScreen
 import com.chetan.orderdelivery.presentation.user.search.UserSearchViewModel
 import kotlinx.coroutines.launch
@@ -201,6 +203,16 @@ fun AppNavHost(
             val state = viewModel.state.collectAsStateWithLifecycle().value
             MyOrderScreen(
                 navController = navController, state = state, event = viewModel.onEvent
+            )
+        }
+
+        composable(Destination.Screen.UserProfileScreen.route) {
+            val viewModel = hiltViewModel<UserProfileViewModel>()
+            val state = viewModel.state.collectAsStateWithLifecycle().value
+            UserProfileScreen(
+                nav = navController,
+                state = state,
+                event = viewModel.onEvent
             )
         }
 

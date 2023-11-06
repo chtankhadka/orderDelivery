@@ -112,7 +112,7 @@ fun NotificationScreen(
                     },
                     directions = setOf(DismissDirection.StartToEnd),
                     dismissContent = {
-                        swipeItem(list = state.notificationList, itemIndex = index)
+                        swipeItem(list = state.notificationList, itemIndex = index,event = event)
                     })
             }
         }
@@ -122,13 +122,17 @@ fun NotificationScreen(
 }
 
 @Composable
-fun swipeItem(list: List<StoreNotificationRequestResponse>, itemIndex: Int) {
+fun swipeItem(
+    list: List<StoreNotificationRequestResponse>,
+    itemIndex: Int,
+    event: (event: NotificationEvent) -> Unit
+) {
     Box(modifier = Modifier.padding(bottom = 5.dp)) {
         Card(
             modifier = Modifier
                 .padding(top = 12.dp)
                 .clickable {
-//                                        event(NotificationEvent.ChangeToRead(item.time))
+                                        event(NotificationEvent.ChangeToRead(list[itemIndex].time))
                 },
             elevation = CardDefaults.cardElevation(10.dp),
             shape = RoundedCornerShape(5.dp),
@@ -141,7 +145,7 @@ fun swipeItem(list: List<StoreNotificationRequestResponse>, itemIndex: Int) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "item.time", style = MaterialTheme.typography.titleMedium
+                    text = list[itemIndex].title, style = MaterialTheme.typography.titleMedium
                 )
                 Text(
                     text = "2 days ago", style = MaterialTheme.typography.bodySmall
@@ -149,14 +153,14 @@ fun swipeItem(list: List<StoreNotificationRequestResponse>, itemIndex: Int) {
             }
             Text(
                 modifier = Modifier.padding(start = 10.dp),
-                text = "item.body",
+                text = list[itemIndex].body,
                 style = MaterialTheme.typography.bodyMedium
             )
         }
 
         Icon(
             modifier = Modifier.padding(start = 5.dp),
-            imageVector = if (true) Icons.Default.NotificationsNone else Icons.Default.NotificationsActive,
+            imageVector = if (list[itemIndex].readNotice) Icons.Default.NotificationsNone else Icons.Default.NotificationsActive,
             contentDescription = "notification"
         )
     }

@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
-const val ONESIGNAL_APP_ID = "4bc849f6-9a48-4194-bdce-a151a9c901b1"
+const val ONESIGNAL_APP_ID = "7d7d5c3e-bdd2-4336-91c7-467ea0431cec"
 @HiltAndroidApp
 class OrderDeliveryApp : Application() {
 

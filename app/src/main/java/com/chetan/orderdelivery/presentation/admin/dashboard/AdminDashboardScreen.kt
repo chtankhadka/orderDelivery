@@ -218,6 +218,7 @@ fun AdminDashboardScreen(
 
 
     ModalNavigationDrawer(
+        gesturesEnabled = drawerState.isOpen,
         drawerState = drawerState,
         scrimColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
         drawerContent = {

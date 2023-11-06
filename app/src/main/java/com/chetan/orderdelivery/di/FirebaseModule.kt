@@ -24,6 +24,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodsForUpdate
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetMyHistory
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetOneSignalIds
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetUserProfile
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderDelivered
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
@@ -36,6 +37,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.SetOneSignalId
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateDeliveredHistroy
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateRating
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateUserHistory
+import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateUserProfile
 import com.chetan.orderdelivery.domain.use_cases.realtime.DeleteOrders
 import com.chetan.orderdelivery.domain.use_cases.realtime.GetItems
 import com.chetan.orderdelivery.domain.use_cases.realtime.Insert
@@ -117,6 +119,8 @@ object FirebaseModule {
             deleteMyHistory = DeleteMyHistory(repository = repository),
             setFavourite = SetFavourite(repository = repository),
             getFavouriteList = GetFavouriteList(repository = repository),
+            getUserProfile = GetUserProfile(repository = repository),
+            updateUserProfile = UpdateUserProfile(repository = repository),
 
             setOneSignalId = SetOneSignalId(repository = repository),
             getOneSignalIds = GetOneSignalIds(repository = repository),

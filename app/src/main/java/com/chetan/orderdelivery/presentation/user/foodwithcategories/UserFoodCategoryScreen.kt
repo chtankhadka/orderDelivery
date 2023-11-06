@@ -15,9 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -49,9 +48,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -101,7 +99,6 @@ fun UserFoodCategoryScreen(
                 .padding(horizontal = 10.dp)
                 .fillMaxSize()
                 .animateContentSize()
-                .verticalScroll(rememberScrollState())
         ) {
             state.infoMsg?.let {
                 MessageDialog(message = it, onDismissRequest = {
@@ -113,8 +110,10 @@ fun UserFoodCategoryScreen(
                 }
             }
             val colorDash = MaterialTheme.colorScheme.outline
-            Column() {
-                state.foodTypesList.forEach { foodType ->
+
+
+            LazyColumn {
+                items(state.foodTypesList) { foodType ->
                     var show by remember {
                         mutableStateOf(true)
                     }
@@ -172,79 +171,83 @@ fun UserFoodCategoryScreen(
                         }
                         .padding(horizontal = 15.dp)) {
                         if (show) {
-                            FlowRow {
-                                state.allFoods.filter { it.foodType == foodType }.forEach { foodItem ->
-                                    Spacer(modifier = Modifier.height(5.dp))
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(5.dp)
-                                            .width(150.dp)
-                                            .height(205.dp),
-                                    ) {
-                                        Card(
+                            FlowRow(
+                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                            ) {
+                                state.allFoods.filter { it.foodType == foodType }
+                                    .forEach { foodItem ->
+                                        Spacer(modifier = Modifier.height(5.dp))
+                                        Box(
                                             modifier = Modifier
-                                                .fillMaxSize()
-                                                .padding(vertical = 10.dp)
-                                                .clickable {
-                                                    navController.navigate(
-                                                        Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
-                                                            "{foodId}", foodItem.foodId
-                                                        )
-                                                    )
-                                                },
-                                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
-                                            elevation = CardDefaults.cardElevation(10.dp)
+                                                .width(140.dp)
+                                                .height(205.dp),
                                         ) {
-                                            Row(
+                                            Card(
                                                 modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(10.dp),
-                                                horizontalArrangement = Arrangement.Center
+                                                    .fillMaxSize()
+                                                    .padding(vertical = 10.dp)
+                                                    .clickable {
+                                                        navController.navigate(
+                                                            Destination.Screen.UserFoodOrderDescriptionScreen.route.replace(
+                                                                "{foodId}", foodItem.foodId
+                                                            )
+                                                        )
+                                                    },
+                                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimary),
+                                                elevation = CardDefaults.cardElevation(10.dp)
                                             ) {
-                                                AsyncImage(
+                                                Row(
                                                     modifier = Modifier
-                                                        .clip(CircleShape)
-                                                        .size(110.dp),
-                                                    model = foodItem.faceImgUrl,
-                                                    contentDescription = null,
-                                                    contentScale = ContentScale.Crop
+                                                        .fillMaxWidth()
+                                                        .padding(10.dp),
+                                                    horizontalArrangement = Arrangement.Center
+                                                ) {
+                                                    AsyncImage(
+                                                        modifier = Modifier
+                                                            .clip(CircleShape)
+                                                            .size(100.dp),
+                                                        model = foodItem.faceImgUrl,
+                                                        contentDescription = null,
+                                                        contentScale = ContentScale.Crop
+                                                    )
+                                                }
+
+                                                Text(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    text = foodItem.foodName,
+                                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                                        textAlign = TextAlign.Center
+                                                    ),
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+
+                                                )
+                                                RatingBar(
+                                                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                                                    size = 15.dp,
+                                                    value = foodItem.foodRating,
+                                                    style = RatingBarStyle.Default,
+                                                    onValueChange = {},
+                                                    onRatingChanged = {},
+                                                    numOfStars = 5,
+                                                    spaceBetween = 1.dp
                                                 )
                                             }
-
-                                            Text(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                text = foodItem.foodName,
-                                                style = MaterialTheme.typography.headlineSmall.copy(
-                                                    textAlign = TextAlign.Center
-                                                ),
-                                                maxLines = 1
-                                            )
-                                            RatingBar(
-                                                modifier = Modifier.align(Alignment.CenterHorizontally),
-                                                size = 15.dp,
-                                                value = foodItem.foodRating,
-                                                style = RatingBarStyle.Default,
-                                                onValueChange = {},
-                                                onRatingChanged = {},
-                                                numOfStars = 5,
-                                                spaceBetween = 1.dp
-                                            )
-                                        }
-                                        Card(
-                                            modifier = Modifier.align(Alignment.BottomCenter),
-                                            elevation = CardDefaults.cardElevation(10.dp),
-                                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
-                                        ) {
-                                            Text(
-                                                text = "Rs ${foodItem.foodPrice}",
-                                                modifier = Modifier.padding(horizontal = 15.dp),
-                                                style = MaterialTheme.typography.titleSmall.copy(
-                                                    color = Color.White
+                                            Card(
+                                                modifier = Modifier.align(Alignment.BottomCenter),
+                                                elevation = CardDefaults.cardElevation(10.dp),
+                                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
+                                            ) {
+                                                Text(
+                                                    text = "Rs ${foodItem.foodPrice}",
+                                                    modifier = Modifier.padding(horizontal = 15.dp),
+                                                    style = MaterialTheme.typography.titleSmall.copy(
+                                                        color = Color.White
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     }
-                                }
                             }
 
 
@@ -332,6 +335,8 @@ fun UserFoodCategoryScreen(
                     Spacer(modifier = Modifier.height(15.dp))
                 }
             }
+
         }
     }
 }
+

@@ -24,7 +24,7 @@ class UserFoodCategoryViewModel @Inject constructor(
             _state.update {
                 it.copy(
                     allFoods = data,
-                    foodTypesList = data.map { it.foodType }.distinct()
+                    foodTypesList = data.map { it.foodFamily }.distinct()
                 )
             }
         }

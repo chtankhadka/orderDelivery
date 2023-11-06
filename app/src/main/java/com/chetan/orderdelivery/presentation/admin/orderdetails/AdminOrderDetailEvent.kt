@@ -4,4 +4,5 @@ sealed interface AdminOrderDetailEvent{
     data class Delivered(val value: String) :AdminOrderDetailEvent
     data object DismissInfoMsg: AdminOrderDetailEvent
     data class GetOrderDetails(val user: String) : AdminOrderDetailEvent
+    data class OnOrderReady(val value: String): AdminOrderDetailEvent
 }

@@ -7,6 +7,7 @@ import com.chetan.orderdelivery.data.model.FavouriteModel
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.data.model.ProfileRequestResponse
 import com.chetan.orderdelivery.data.model.SetLatLng
 import com.chetan.orderdelivery.data.model.StoreNotificationRequestResponse
 import com.chetan.orderdelivery.domain.model.SetOneSignalId
@@ -259,6 +260,48 @@ class FirestoreRepositoryImpl @Inject constructor(
                 }
             }
             Resource.Success(favList)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun updateUserProfile(data: ProfileRequestResponse): Resource<Boolean> {
+        return try {
+            var isSuccess = false
+            firestore
+                .collection("users")
+                .document(preference.tableName?:"test")
+                .collection("profile")
+                .document("profile")
+                .set(data)
+                .addOnSuccessListener {
+                    isSuccess = true
+                }.addOnFailureListener {
+                    isSuccess = false
+                }.await()
+            Resource.Success(isSuccess)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun getUserProfile(user: String): Resource<ProfileRequestResponse> {
+        return try {
+            val coll = firestore.collection("users")
+                .document(user)
+                .collection("profile")
+                .document(user)
+                .get()
+                .await()
+                .toObject<ProfileRequestResponse>()
+            if (coll != null){
+                Resource.Success(coll)
+            }else{
+                Resource.Failure(java.lang.Exception("NO data yet"))
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)

@@ -54,6 +54,7 @@ import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.presentation.common.utils.MyDate
+import com.google.protobuf.Empty
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 
@@ -115,6 +116,7 @@ fun UserHistoryScreen(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Button(
+                            enabled = rateValue != 0f,
                             modifier = Modifier.weight(1f),
                             elevation = ButtonDefaults.buttonElevation(10.dp),
                             onClick = {

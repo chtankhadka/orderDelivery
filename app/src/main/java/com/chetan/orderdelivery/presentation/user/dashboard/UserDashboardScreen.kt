@@ -228,7 +228,7 @@ fun UserDashboardScreen(
                         navController.navigate(Destination.Screen.UserMyOrderScreen.route)
                     }
                     MenuItem.Profile -> {
-
+                        navController.navigate(Destination.Screen.UserProfileScreen.route)
                     }
                 }
 

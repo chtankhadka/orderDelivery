@@ -28,5 +28,6 @@ open class Destination(open val route: String) {
         object UserMoreScreen: Destination("user-more-screen")
         object UserSearchScreen: Destination("user-search-screen")
         object UserFoodCategoryScreen: Destination("user-food-category-screen")
+        object UserProfileScreen: Destination("user-profile-screen")
     }
 }

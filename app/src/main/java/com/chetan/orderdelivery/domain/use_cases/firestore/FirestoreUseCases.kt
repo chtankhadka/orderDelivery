@@ -16,6 +16,8 @@ data class FirestoreUseCases(
     val deleteMyHistory: DeleteMyHistory,
     val setFavourite: SetFavourite,
     val getFavouriteList: GetFavouriteList,
+    val getUserProfile: GetUserProfile,
+    val updateUserProfile: UpdateUserProfile,
 
     val setOneSignalId: SetOneSignalId,
     val getOneSignalIds: GetOneSignalIds,

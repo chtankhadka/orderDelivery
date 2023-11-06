@@ -49,7 +49,7 @@ class NotificationViewModel @Inject constructor(
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
-                            notificationList = notificationList.data,
+                            notificationList = notificationList.data.reversed(),
                             infoMsg = null
                         )
                     }

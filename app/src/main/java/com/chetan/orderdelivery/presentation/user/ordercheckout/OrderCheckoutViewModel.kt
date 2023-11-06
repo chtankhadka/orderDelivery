@@ -284,8 +284,8 @@ class OrderCheckoutViewModel @Inject constructor(
                                             val sendNotification =
                                                 oneSiganlRepository.pushNotification(
                                                     PushNotificationRequest(
-                                                        contents = mapOf("en" to "food"),
-                                                        headings = mapOf("en" to "order"),
+                                                        contents = mapOf("en" to state.value.locationAddress),
+                                                        headings = mapOf("en" to "Order"),
                                                         include_player_ids = dbUseCases.getAllIds()
                                                             .map { it.id }
                                                     )

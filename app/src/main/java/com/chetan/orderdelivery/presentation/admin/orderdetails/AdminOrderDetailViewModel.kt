@@ -182,6 +182,68 @@ class AdminOrderDetailViewModel @Inject constructor(
                     }
 
                 }
+
+                is AdminOrderDetailEvent.OnOrderReady -> {
+                    val orderIdDetails =
+                        state.value.orderDetails.find { it.orderId == event.value }!!
+                    try {
+                        val sendNotification =
+                            oneSiganlRepository.pushNotification(
+                                PushNotificationRequest(
+                                    contents = mapOf("en" to "Your order is Ready"),
+                                    headings = mapOf("en" to "Order"),
+                                    include_player_ids = listOf(
+                                        orderIdDetails.oneSignalId
+                                    )
+                                )
+                            )
+                        when (sendNotification) {
+                            is Resource.Failure -> {
+//                        _state.update {
+//                            it.copy(
+//                                infoMsg = Message.Error(
+//                                    lottieImage = R.raw.delete_simple,
+//                                    yesNoRequired = false,
+//                                    isCancellable = false,
+//                                    description = "Error..."
+//                                )
+//                            )
+//
+//                        }
+                            }
+
+                            Resource.Loading -> {
+
+                            }
+
+                            is Resource.Success -> {
+//                        _state.update {
+//                            it.copy(
+//                                infoMsg = Message.Success(
+//                                    lottieImage = R.raw.pencil_walking,
+//                                    isCancellable = true,
+//                                    description = "Success"
+//                                )
+//                            )
+//                        }
+                            }
+                        }
+                    } catch (e: HttpException) {
+                        _state.update {
+                            it.copy(
+
+                            )
+                        }
+                        e.printStackTrace()
+                    } catch (e: Throwable) {
+                        _state.update {
+                            it.copy(
+
+                            )
+                        }
+                        e.printStackTrace()
+                    }
+                }
             }
         }
     }

@@ -6,6 +6,7 @@ import com.chetan.orderdelivery.data.model.FavouriteModel
 import com.chetan.orderdelivery.data.model.GetCartItemModel
 import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.data.model.GetFoodResponse
+import com.chetan.orderdelivery.data.model.ProfileRequestResponse
 import com.chetan.orderdelivery.data.model.SetLatLng
 import com.chetan.orderdelivery.data.model.StoreNotificationRequestResponse
 import com.chetan.orderdelivery.domain.model.SetOneSignalId
@@ -37,6 +38,13 @@ interface FirestoreRepository {
 
     suspend fun setFavourite(isFavourite: Boolean = false, foodId: String): Resource<Boolean>
     suspend fun getFavouriteList(): Resource<List<FavouriteModel>>
+
+    suspend fun updateUserProfile(
+        data: ProfileRequestResponse
+    ): Resource<Boolean>
+    suspend fun getUserProfile(
+        user: String
+    ): Resource<ProfileRequestResponse>
 
     //common
 

@@ -13,7 +13,21 @@ data class AddFoodState(
     val foodTypes: List<String> =  listOf("Regular", "Popular","New","Drinks"),
     val selectedFoodType: String = foodTypes[0],
 
-    val foodFamilies: List<String> = listOf("Pizza", "Momo", "Burger","Soft Drinks","Hard Drinks"),
+    val foodFamilies: List<String> = listOf("Special Momo",
+        "Special Combo Momo",
+        "Special Piro Momo",
+        "Regular Momo",
+        "Hard Drinks",
+        "Biryani with Raita",
+        "Chowmin & Thuppa",
+        "Rice & Achar",
+        "Healthy Salad",
+        "Chopshy with Fried Noodles",
+        "Sizzler",
+        "Cutlets",
+        "Starter Non Veg",
+        "Starter Veg"
+        ),
     val selectedFoodFamily: String = foodFamilies[0],
 
     val faceImgUrl : ImageUrlDetail = ImageUrlDetail(),
