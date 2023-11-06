@@ -12,8 +12,6 @@ sealed interface AddFoodEvent {
     data class OnFoodDiscountChange(val value: String) : AddFoodEvent
     data class OnImageUriToUrl(val value: Uri,val name: Int) : AddFoodEvent
 //    data class OnRemoveImageUri(val value: ImageUrlDetail) : AddFoodEvent
-
-
     data object AddFood : AddFoodEvent
 
 }

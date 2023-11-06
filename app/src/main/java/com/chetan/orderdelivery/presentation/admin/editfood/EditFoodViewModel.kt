@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.admin.food.addfood
+package com.chetan.orderdelivery.presentation.admin.editfood
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -7,8 +7,10 @@ import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.model.AddFoodRequest
 import com.chetan.orderdelivery.data.model.ImageStorageDetails
+import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.FirestorageUseCases
+import com.chetan.orderdelivery.presentation.admin.food.addfood.ImageUrlDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,27 +21,63 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class AddFoodViewModel @Inject constructor(
+class EditFoodViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases,
+    private val dbUseCases: DBUseCases,
     private val storageUseCases: FirestorageUseCases
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(AddFoodState())
-    val state: StateFlow<AddFoodState> = _state
+    private val _state = MutableStateFlow(EditFoodState())
+    val state: StateFlow<EditFoodState> = _state
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    val onEvent: (event: AddFoodEvent) -> Unit = { event ->
+    val onEvent: (event: EditFoodEvent) -> Unit = { event ->
         viewModelScope.launch {
             when (event) {
+                is EditFoodEvent.GetFoodItemDetails -> {
+                    val data = dbUseCases.getAllFoods().find { it.foodId == event.value }!!
+                    _state.update {
+                        it.copy(
+                            selectedFoodType = data.foodType,
+                            selectedFoodFamily = data.foodFamily,
+                            foodName = data.foodName,
+                            foodId = data.foodId,
+                            foodDetails = data.foodDetails,
+                            foodDiscountPrice = data.foodDiscount,
+                            foodPrice = data.foodPrice,
+                            faceImgUrl = ImageUrlDetail(
+                                imageName = data.faceImgName,
+                                imageUrl = data.faceImgUrl,
+                                storagePath = "/foods/${data.foodId}/",
+                            ),
+                            supportImgUrl2 = ImageUrlDetail(
+                                imageName = data.supportImgName2,
+                                imageUrl = data.supportImgUrl2,
+                                storagePath = "/foods/${data.foodId}/",
+                            ),
+                            supportImgUrl3 = ImageUrlDetail(
+                                imageName = data.supportImgName3,
+                                imageUrl = data.supportImgUrl3,
+                                storagePath = "/foods/${data.foodId}/",
+                            ),
+                            supportImgUrl4 = ImageUrlDetail(
+                                imageName = data.supportImgName4,
+                                imageUrl = data.supportImgUrl4,
+                                storagePath = "/foods/${data.foodId}/",
+                            ),
+                            foodItemDetails = data
+                        )
+                    }
+                }
 
-                AddFoodEvent.DismissInfoMsg -> {
+                EditFoodEvent.DismissInfoMsg -> {
                     _state.update {
                         it.copy(infoMsg = null)
                     }
                 }
 
-                is AddFoodEvent.OnSelectedFoodTypeChange -> {
+                is EditFoodEvent.OnSelectedFoodTypeChange -> {
                     _state.update {
                         it.copy(
                             selectedFoodType = event.value
@@ -47,7 +85,7 @@ class AddFoodViewModel @Inject constructor(
                     }
                 }
 
-                is AddFoodEvent.OnSelectedFoodFamilyChange -> {
+                is EditFoodEvent.OnSelectedFoodFamilyChange -> {
                     _state.update {
                         it.copy(
                             selectedFoodFamily = event.value
@@ -55,16 +93,15 @@ class AddFoodViewModel @Inject constructor(
                     }
                 }
 
-                is AddFoodEvent.OnFoodNameChange -> {
+                is EditFoodEvent.OnFoodNameChange -> {
                     _state.update {
                         it.copy(
-                            foodName = event.value,
-                            foodId = event.value.replace(" ", "")
+                            foodName = event.value, foodId = event.value.replace(" ", "")
                         )
                     }
                 }
 
-                is AddFoodEvent.OnFoodDetailsChange -> {
+                is EditFoodEvent.OnFoodDetailsChange -> {
                     _state.update {
                         it.copy(
                             foodDetails = event.value
@@ -72,7 +109,7 @@ class AddFoodViewModel @Inject constructor(
                     }
                 }
 
-                is AddFoodEvent.OnFoodDiscountChange -> {
+                is EditFoodEvent.OnFoodDiscountChange -> {
                     _state.update {
                         it.copy(
                             foodDiscountPrice = event.value
@@ -80,7 +117,7 @@ class AddFoodViewModel @Inject constructor(
                     }
                 }
 
-                is AddFoodEvent.OnFoodPriceChange -> {
+                is EditFoodEvent.OnFoodPriceChange -> {
                     _state.update {
                         it.copy(
                             foodPrice = event.value
@@ -88,7 +125,7 @@ class AddFoodViewModel @Inject constructor(
                     }
                 }
 
-                is AddFoodEvent.OnImageUriToUrl -> {
+                is EditFoodEvent.OnImageUriToUrl -> {
                     val requestUrl = storageUseCases.insertImage(
                         data = ImageStorageDetails(
                             imageUri = event.value,
@@ -154,7 +191,7 @@ class AddFoodViewModel @Inject constructor(
                 }
 
 
-                AddFoodEvent.AddFood -> {
+                EditFoodEvent.AddFood -> {
                     val addFoodRequest = firestoreUseCases.addFood(
                         data = AddFoodRequest(
                             foodId = state.value.foodId,
@@ -188,37 +225,7 @@ class AddFoodViewModel @Inject constructor(
                         }
 
                         is Resource.Success -> {
-                            _state.update {
-                                it.copy(
-                                    selectedFoodType = "",
-                                    selectedFoodFamily = "",
-                                    foodName = "",
-                                    foodId = "",
-                                    foodDetails = "",
-                                    foodDiscountPrice = "",
-                                    foodPrice = "",
-                                    faceImgUrl = ImageUrlDetail(
-                                        imageName = "",
-                                        imageUrl = "",
-                                        storagePath = "",
-                                    ),
-                                    supportImgUrl2 = ImageUrlDetail(
-                                        imageName = "",
-                                        imageUrl = "",
-                                        storagePath = "",
-                                    ),
-                                    supportImgUrl3 = ImageUrlDetail(
-                                        imageName = "",
-                                        imageUrl = "",
-                                        storagePath = "",
-                                    ),
-                                    supportImgUrl4 = ImageUrlDetail(
-                                        imageName = "",
-                                        imageUrl = "",
-                                        storagePath = "",
-                                    )
-                                )
-                            }
+
                         }
                     }
 

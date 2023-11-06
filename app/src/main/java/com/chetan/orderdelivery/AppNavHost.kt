@@ -20,6 +20,8 @@ import androidx.navigation.compose.composable
 import com.chetan.orderdelivery.common.ApplicationAction
 import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardScreen
 import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardViewModel
+import com.chetan.orderdelivery.presentation.admin.editfood.EditFoodScreen
+import com.chetan.orderdelivery.presentation.admin.editfood.EditFoodViewModel
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodScreen
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodViewModel
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateScreen
@@ -36,6 +38,8 @@ import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.UserDashboardViewModel
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionScreen
 import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrderDescriptionViewModel
+import com.chetan.orderdelivery.presentation.user.foodwithcategories.UserFoodCategoryScreen
+import com.chetan.orderdelivery.presentation.user.foodwithcategories.UserFoodCategoryViewModel
 import com.chetan.orderdelivery.presentation.user.later.MoreFoodScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
 import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
@@ -257,6 +261,25 @@ fun AppNavHost(
                 nav = navController,
                 event = viewModel.onEvent,
                 state = viewModel.state.collectAsStateWithLifecycle().value
+            )
+        }
+        composable(Destination.Screen.AdminEditFoodScreen.route){
+            val foodId = it.arguments?.getString("foodId")!!
+            val viewModel = hiltViewModel<EditFoodViewModel>()
+            EditFoodScreen(
+                nav = navController,
+                event = viewModel.onEvent,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                foodId = foodId
+            )
+        }
+
+        composable(Destination.Screen.UserFoodCategoryScreen.route){
+            val viewModel = hiltViewModel<UserFoodCategoryViewModel>()
+            UserFoodCategoryScreen(
+                navController = navController,
+                event = viewModel.event,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
             )
         }
     }

@@ -62,14 +62,14 @@ class UserMoreViewModel @Inject constructor(
                         FilterTypes.PriceHigh -> {
                             _state.update {
                                 it.copy(
-                                    searchedList = state.value.allFoods.sortedByDescending { it.foodPrice }
+                                    searchedList = state.value.allFoods.sortedByDescending { it.foodPrice.toInt() }
                                 )
                             }
                         }
                         FilterTypes.PriceLow -> {
                             _state.update {
                                 it.copy(
-                                    searchedList = state.value.allFoods.sortedBy { it.foodPrice }
+                                    searchedList = state.value.allFoods.sortedBy { it.foodPrice.toInt() }
                                 )
                             }
                         }

@@ -113,7 +113,9 @@ fun UserHomeScreen(
                             modifier = Modifier.padding(start = 5.dp)
                         )
                         Button(
-                            onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(Color.Transparent)
+                            onClick = {
+                                      navController.navigate(Destination.Screen.UserFoodCategoryScreen.route)
+                            }, colors = ButtonDefaults.buttonColors(Color.Transparent)
                         ) {
                             Text(
                                 text = "More", style = MaterialTheme.typography.bodyMedium.copy(
@@ -198,7 +200,7 @@ fun UserHomeScreen(
 
                     }
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(15.dp), content = {
-                        items(state.allFoods) { foodItem ->
+                        items(state.allFoods.sortedBy { it.foodRating }) { foodItem ->
                             Box(
                                 modifier = Modifier
                                     .padding(5.dp)

@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MenuOpen
@@ -56,6 +57,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -74,6 +76,8 @@ import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.common.ApplicationAction
 import com.chetan.orderdelivery.common.Constants
+import com.chetan.orderdelivery.presentation.admin.dashboard.allFoods.AllFoodScreen
+import com.chetan.orderdelivery.presentation.admin.dashboard.allFoods.AllFoodViewModel
 import com.chetan.orderdelivery.presentation.admin.dashboard.home.AdminHomeViewModel
 import com.chetan.orderdelivery.presentation.admin.dashboard.home.HomeScreen
 import com.chetan.orderdelivery.presentation.admin.dashboard.map.AdminMapViewModel
@@ -188,7 +192,8 @@ fun AdminDashboardScreen(
     val items: List<AdminInnerPage> = remember {
         listOf(
             AdminInnerPage("home", R.string.home, Icons.Default.Home),
-            AdminInnerPage("map", R.string.map, Icons.Default.LocationOn,true)
+            AdminInnerPage("map", R.string.map, Icons.Default.LocationOn,true),
+            AdminInnerPage("foods", R.string.foods, Icons.Default.Fastfood)
         )
     }
 
@@ -277,43 +282,7 @@ fun AdminDashboardScreen(
 
                         }
                     },
-                    actions = {
-                        IconButton(onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
 
-                        }
-                        Card(
-                            modifier = Modifier.size(34.dp),
-                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(2.dp)
-                            ) {
-                                Icon(
-                                    modifier = Modifier
-                                        .align(Alignment.BottomCenter)
-                                        .size(20.dp),
-                                    imageVector = Icons.Default.NotificationsActive,
-                                    tint = Color.White,
-                                    contentDescription = ""
-                                )
-                                Text(
-                                    text = "201",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(end = 2.dp),
-                                    fontSize = 8.sp,
-                                    textAlign = TextAlign.Right,
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color.White
-                                )
-                            }
-
-                        }
-                    },
                     title = {
                         Text(
                             text = "MOMO BAR",
@@ -384,7 +353,6 @@ fun AdminDashboardScreen(
                 }
             },
             content = {
-
                 state.infoMsg?.let {
                     MessageDialog(
                         message = it,
@@ -415,6 +383,14 @@ fun AdminDashboardScreen(
                         MapScreen(
                             state = viewModel.state.collectAsStateWithLifecycle().value,
                             onEvent = viewModel.onEvent
+                        )
+                    }
+                    composable("foods"){
+                        val viewModel = hiltViewModel<AllFoodViewModel>()
+                        AllFoodScreen(
+                            nav = navController,
+                            event = viewModel.onEvent,
+                            state = viewModel.state.collectAsStateWithLifecycle().value
                         )
                     }
                 }
