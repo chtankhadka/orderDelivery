@@ -292,7 +292,7 @@ class FirestoreRepositoryImpl @Inject constructor(
             val coll = firestore.collection("users")
                 .document(user)
                 .collection("profile")
-                .document(user)
+                .document("profile")
                 .get()
                 .await()
                 .toObject<ProfileRequestResponse>()
@@ -544,6 +544,43 @@ class FirestoreRepositoryImpl @Inject constructor(
                     isTrue = false
                 }.await()
             Resource.Success(isTrue)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun addOffer(url: String): Resource<Boolean> {
+        return try {
+            var isTrue = false
+            val ref = firestore
+                .collection("admin")
+                .document("foods")
+                .collection("offer")
+                .document("offer")
+                .set(mapOf("url" to url)).addOnSuccessListener {
+                    isTrue = true
+                }.addOnFailureListener {
+                    isTrue = false
+                }.await()
+            Resource.Success(isTrue)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun getOffer(): Resource<String> {
+        return try {
+            val ref = firestore
+                .collection("admin")
+                .document("foods")
+                .collection("offer")
+                .document("offer")
+                .get()
+                .await()
+
+            Resource.Success(ref.data?.get("url") as String? ?:"")
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Failure(e)

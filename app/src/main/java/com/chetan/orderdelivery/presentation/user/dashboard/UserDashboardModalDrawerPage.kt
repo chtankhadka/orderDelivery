@@ -27,8 +27,8 @@ import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
@@ -41,14 +41,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.R
 
 @Composable
@@ -58,11 +56,10 @@ fun UserDashboardModalDrawerPage(
 ) {
     val topMenuList = listOf(
         MenuItem.Profile,
-        MenuItem.MyOrders,
-        MenuItem.Admin
+        MenuItem.MyOrders
     )
     val bottomMenuList = listOf(
-        MenuItem.Contacts, MenuItem.Setting, MenuItem.Logout
+        MenuItem.Contacts, MenuItem.PrivacyPolicy, MenuItem.Logout
     )
     Column(
         modifier = Modifier
@@ -220,11 +217,10 @@ fun UserDashboardModalDrawerPage(
 }
 
 sealed class MenuItem(val icon: ImageVector, val label: String) {
-    data object Admin : MenuItem(icon = Icons.Default.Person, label = "Admin")
     data object Profile: MenuItem(icon = Icons.Default.Person, label = "Profile")
     data object MyOrders : MenuItem(icon = Icons.Default.Fastfood, label = "My Orders")
     data object DarkMode : MenuItem(icon = Icons.Default.DarkMode, label = "Dark Mode")
     data object Contacts : MenuItem(icon = Icons.Default.Contacts, label = "Contacts")
-    data object Setting : MenuItem(icon = Icons.Default.Settings, label = "Setting")
+    data object PrivacyPolicy : MenuItem(icon = Icons.Default.PrivacyTip, label = "Privacy & Policy")
     data object Logout : MenuItem(icon = Icons.Default.Logout, label = "LogOut")
 }

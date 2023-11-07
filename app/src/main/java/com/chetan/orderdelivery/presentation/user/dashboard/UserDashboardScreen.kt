@@ -20,7 +20,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MenuOpen
-import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.NotificationAdd
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.BottomAppBar
@@ -78,8 +79,8 @@ import com.chetan.orderdelivery.common.ApplicationAction
 import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
+import com.chetan.orderdelivery.presentation.common.components.dialogs.PrivacyPolicyDialog
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
-import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartScreen
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartViewModel
 import com.chetan.orderdelivery.presentation.user.dashboard.favourite.UserFavouriteScreen
@@ -122,7 +123,14 @@ fun UserDashboardScreen(
     var showApplyThemeDialog by remember {
         mutableStateOf(false)
     }
-
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+    if (showDialog) {
+        PrivacyPolicyDialog(onDismiss = {
+            showDialog = it
+        })
+    }
     if (showApplyThemeDialog) {
         Dialog(onDismissRequest = {}) {
             Column(
@@ -203,10 +211,6 @@ fun UserDashboardScreen(
         drawerContent = {
             UserDashboardModalDrawerPage(state = state, onClick = { menuItem ->
                 when (menuItem) {
-                    MenuItem.Admin -> {
-                        navController.cleanNavigate(Destination.Screen.AdminDashboardScreen.route)
-                    }
-
                     MenuItem.Contacts -> {
 
                     }
@@ -215,8 +219,8 @@ fun UserDashboardScreen(
                         onAction(ApplicationAction.Logout)
                     }
 
-                    MenuItem.Setting -> {
-
+                    MenuItem.PrivacyPolicy -> {
+                        showDialog = true
                     }
 
                     MenuItem.DarkMode -> {
@@ -280,32 +284,31 @@ fun UserDashboardScreen(
                     ) {
                         Icon(
                             modifier = Modifier
-                                .align(Alignment.BottomCenter)
+                                .align(Alignment.Center)
                                 .size(20.dp),
-                            imageVector = Icons.Default.NotificationsActive,
+                            imageVector = if (state.isNewNotification) Icons.Default.NotificationAdd else Icons.Default.Notifications,
                             tint = Color.White,
                             contentDescription = ""
-                        )
-                        Text(
-                            text = "201",
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(end = 2.dp),
-                            fontSize = 8.sp,
-                            textAlign = TextAlign.Right,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
                         )
                     }
 
                 }
             }, title = {
-                Text(
-                    text = "MOMO BAR",
-                    style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                    Text(
+                        text = "MOMO BAR",
+                        style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = "Next In",
+                        style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+
             })
         }, bottomBar = {
             BottomAppBar {

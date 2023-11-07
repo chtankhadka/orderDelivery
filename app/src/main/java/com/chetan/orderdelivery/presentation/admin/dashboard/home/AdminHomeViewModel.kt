@@ -27,14 +27,18 @@ class AdminHomeViewModel @Inject constructor(
 
     init {
         getOrders()
-        viewModelScope.launch {
-            firestoreUseCases.setOneSignalId(
-                data = SetOneSignalId(
-                    id = OneSignal.User.pushSubscription.id,
-                    branch = "1",
+        val data = OneSignal.User.pushSubscription.id
+        if(data.isNotBlank()){
+            viewModelScope.launch {
+                firestoreUseCases.setOneSignalId(
+                    data = SetOneSignalId(
+                        id = data,
+                        branch = "1",
+                    )
                 )
-            )
+            }
         }
+
     }
 
     private fun getOrders() {

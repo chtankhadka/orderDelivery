@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.DeliveryDining
+import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.LocalPizza
@@ -48,7 +50,8 @@ fun AdminDashboardModalDrawerPage(
         MenuItem.AddFoodItem,
         MenuItem.UpdateRating,
         MenuItem.SendNotice,
-        MenuItem.User
+        MenuItem.AddOffer,
+
     )
     val bottomMenuItem = listOf(
         MenuItem.Setting,
@@ -128,7 +131,6 @@ fun AdminDashboardModalDrawerPage(
 
         Spacer(modifier = Modifier.height(10.dp))
         Divider()
-
         ElevatedCard(
             modifier = Modifier,
             shape = RoundedCornerShape(5.dp),
@@ -146,12 +148,47 @@ fun AdminDashboardModalDrawerPage(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector = com.chetan.orderdelivery.presentation.user.dashboard.MenuItem.DarkMode.icon,
-                        contentDescription = com.chetan.orderdelivery.presentation.user.dashboard.MenuItem.DarkMode.label,
+                        imageVector = MenuItem.StopDelivery.icon,
+                        contentDescription = MenuItem.StopDelivery.label,
                         tint = MaterialTheme.colorScheme.primary,
                     )
                     Text(
-                        text = com.chetan.orderdelivery.presentation.user.dashboard.MenuItem.DarkMode.label,
+                        text = MenuItem.StopDelivery.label,
+                        style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
+                    )
+                }
+                Switch(
+                    checked = state.changeDeliveryState, onCheckedChange = {
+                        onClick(MenuItem.StopDelivery)
+                    }, colors = SwitchDefaults.colors(
+                        MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                )
+            }
+        }
+        ElevatedCard(
+            modifier = Modifier,
+            shape = RoundedCornerShape(5.dp),
+            elevation = CardDefaults.cardElevation(0.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = MenuItem.DarkMode.icon,
+                        contentDescription = MenuItem.DarkMode.label,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                    Text(
+                        text = MenuItem.DarkMode.label,
                         style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
                     )
                 }
@@ -203,8 +240,9 @@ sealed class MenuItem(val icon: ImageVector, val label: String) {
     data object AddFoodItem : MenuItem(icon = Icons.Default.LocalPizza, label = "Add Food Item")
     data object UpdateRating : MenuItem(icon = Icons.Default.StarRate, label = "Update Rating")
     data object SendNotice : MenuItem(icon = Icons.Default.NotificationAdd, label = "Send Notice")
-    data object User : MenuItem(icon = Icons.Default.Person, label = "User")
+    data object AddOffer : MenuItem(icon = Icons.Default.FreeBreakfast, label = "Add Offer")
     data object DarkMode : MenuItem(icon = Icons.Default.DarkMode, label = "Dark Mode")
+    data object StopDelivery : MenuItem(icon = Icons.Default.DeliveryDining, label = "Delivery")
     data object Setting : MenuItem(icon = Icons.Default.Settings, label = "Setting")
     data object Logout : MenuItem(icon = Icons.Default.Logout, label = "LogOut")
 }

@@ -27,6 +27,8 @@ data class FirestoreUseCases(
     val deleteNotification: DeleteNotification,
 
     val addFood : AddFood,
+    val addOffer : AddOffer,
+    val getOffer : GetOffer,
 
     val getCartItems : GetCartItems,
     val deleteCartItem: DeleteCartItem,

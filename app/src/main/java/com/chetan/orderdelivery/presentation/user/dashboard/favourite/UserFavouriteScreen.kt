@@ -129,7 +129,7 @@ fun UserFavouriteScreen(
                                                 RatingBar(
                                                     size = 15.dp,
                                                     value = 4f,
-                                                    style = RatingBarStyle.Default,
+                                                    style = RatingBarStyle.Fill(activeColor = Color.Green),
                                                     onValueChange = {},
                                                     onRatingChanged = {},
                                                     numOfStars = 5,
@@ -169,7 +169,7 @@ fun UserFavouriteScreen(
                                             AsyncImage(
                                                 modifier = Modifier.size(100.dp),
                                                 contentScale = ContentScale.Crop,
-                                                model = Constants.bottle,
+                                                model = foodDetails.faceImgUrl,
                                                 contentDescription = ""
                                             )
                                         }

@@ -9,6 +9,7 @@ import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.chetan.orderdelivery.domain.repository.RealtimeRepository
 import com.chetan.orderdelivery.domain.repository.StorageRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddFood
+import com.chetan.orderdelivery.domain.use_cases.firestore.AddOffer
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddToCart
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteCartItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteMyHistory
@@ -23,6 +24,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoods
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodsForUpdate
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetMyHistory
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetNotification
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetOffer
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetOneSignalIds
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetUserProfile
 import com.chetan.orderdelivery.domain.use_cases.firestore.OrderDelivered
@@ -38,7 +40,9 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateDeliveredHistro
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateRating
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateUserHistory
 import com.chetan.orderdelivery.domain.use_cases.firestore.UpdateUserProfile
+import com.chetan.orderdelivery.domain.use_cases.realtime.ChangeDeliveryState
 import com.chetan.orderdelivery.domain.use_cases.realtime.DeleteOrders
+import com.chetan.orderdelivery.domain.use_cases.realtime.DeliveryState
 import com.chetan.orderdelivery.domain.use_cases.realtime.GetItems
 import com.chetan.orderdelivery.domain.use_cases.realtime.Insert
 import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
@@ -129,6 +133,8 @@ object FirebaseModule {
             readNotification = ReadNotification(repository = repository),
             deleteNotification = DeleteNotification(repository = repository),
 
+            addOffer =  AddOffer(repository = repository),
+            getOffer =  GetOffer(repository = repository),
             getCartItems = GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),
             deleteCartItem = DeleteCartItem(repository = repository),
@@ -156,6 +162,9 @@ object FirebaseModule {
         RealtimeUseCases(
             insert = Insert(realtimeRepository = repository),
             getItems = GetItems(realtimeRepository = repository),
-            deleteOrders = DeleteOrders(realtimeRepository = repository)
+            deleteOrders = DeleteOrders(realtimeRepository = repository),
+
+            changeDeliveryState = ChangeDeliveryState(realtimeRepository = repository),
+            deliveryState = DeliveryState(realtimeRepository = repository)
         )
 }

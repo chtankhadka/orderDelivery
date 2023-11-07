@@ -67,6 +67,8 @@ interface FirestoreRepository {
     suspend fun removeUser(user : String): Resource<Boolean>
     suspend fun updateUserHistory(data : RequestFoodOrder): Resource<Boolean>
     suspend fun updateDeliveredHistroy(data: RequestFoodOrder) : Resource<Boolean>
+    suspend fun addOffer(url: String) : Resource<Boolean>
+    suspend fun getOffer() : Resource<String>
 
     suspend fun updateRating(
         foodId : String,

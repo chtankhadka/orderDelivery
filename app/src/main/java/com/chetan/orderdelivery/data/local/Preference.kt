@@ -21,11 +21,16 @@ class Preference @Inject constructor(
         private const val IS_DARK_MODE = "IS_DARK_MODE"
         private const val TABLE_NAME = "TABLE_NAME"
         private const val GMAIL_PROFILE = "GMAIL_PROFILE"
+        private const val NOTIFICATION = "NOTIFICATION"
+        private const val PHONE = "PHONE"
     }
 
     var isDarkMode
         get() = mutableStateOf(sharedPreference.getBoolean(IS_DARK_MODE, false))
         set(value) {sharedPreference.edit().putBoolean(IS_DARK_MODE,value.value).apply()}
+    var isNewNotification
+        get() = sharedPreference.getBoolean(NOTIFICATION, false)
+        set(value) {sharedPreference.edit().putBoolean(NOTIFICATION,value).apply()}
 
     var userName
         get() = sharedPreference.getString(USER_NAME,"")
@@ -39,5 +44,9 @@ class Preference @Inject constructor(
     var tableName
         get() = sharedPreference.getString(TABLE_NAME,"")
         set(value) {sharedPreference.edit().putString(TABLE_NAME,value).apply()}
+
+    var phone
+        get() = sharedPreference.getString(PHONE,"")
+        set(value) {sharedPreference.edit().putString(PHONE,value).apply()}
 
 }

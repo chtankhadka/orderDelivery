@@ -9,6 +9,7 @@ import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -26,6 +27,20 @@ class AdminDashboardViewModel @Inject constructor(
 
 
     init {
+        viewModelScope.launch {
+            realtimeUseCases.deliveryState().collect{data ->
+                when(data){
+                    is Resource.Failure -> {
+                    }
+                    Resource.Loading -> {
+                    }
+                    is Resource.Success -> {
+
+                        _state.update { it.copy(changeDeliveryState = data.data) }
+                    }
+                }
+            }
+        }
         _state.update {
             it.copy(
                 darkMode = preference.isDarkMode.value
@@ -45,28 +60,36 @@ class AdminDashboardViewModel @Inject constructor(
                     }
                 }
             }
+
         }
 
     }
 
     val onEvent : (event : AdminDashboardEvent) -> Unit = {event ->
-        when(event){
-            is AdminDashboardEvent.ChangeDarkMode -> {
-                preference.isDarkMode = mutableStateOf(!state.value.darkMode)
-                _state.update {
-                    it.copy(
-                        darkMode = !state.value.darkMode
-                    )
+        viewModelScope.launch {
+            when(event){
+                is AdminDashboardEvent.ChangeDarkMode -> {
+                    preference.isDarkMode = mutableStateOf(!state.value.darkMode)
+                    _state.update {
+                        it.copy(
+                            darkMode = !state.value.darkMode
+                        )
+                    }
                 }
-            }
 
-            AdminDashboardEvent.DismissInfoMsg -> {
-                _state.update {
-                    it.copy(
-                        infoMsg = null
-                    )
+                AdminDashboardEvent.DismissInfoMsg -> {
+                    _state.update {
+                        it.copy(
+                            infoMsg = null
+                        )
+                    }
+                }
+
+                AdminDashboardEvent.ChangeDeliveryState -> {
+                    realtimeUseCases.changeDeliveryState(!state.value.changeDeliveryState)
                 }
             }
         }
+
     }
 }

@@ -11,6 +11,7 @@ object Constants {
     val light_onprimaryContainer = Color(0xFF072100)
     val dark_primary = Color(0xFF9DD67D)
     val dark_onprimary = Color(0xFF123800)
-    val dark_primaryContainer = Color(0xFF215106)
+    val dark_primaryContainer = Color(0xFF594400)
+//    val dark_primaryContainer = Color(0xFF215106)
     val dark_onprimaryContainer = Color(0xFFB8F396)
 }

@@ -4,14 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
-import com.chetan.orderdelivery.data.model.GetCartItemModel
-import com.chetan.orderdelivery.domain.model.AllFoods
+import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.domain.model.CheckoutFoods
-import com.chetan.orderdelivery.domain.repository.DBRepository
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
-import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,12 +19,34 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserCartViewModel @Inject constructor(
-    private val firestoreUseCases: FirestoreUseCases, private val dbUseCases: DBUseCases
+    private val firestoreUseCases: FirestoreUseCases,
+    private val dbUseCases: DBUseCases,
+    private val preference: Preference,
+    private val realtimeUseCases: RealtimeUseCases
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserCartState())
     val state: StateFlow<UserCartState> = _state
 
     init {
+        _state.update {
+            it.copy(
+                phoneNo = preference.phone?:""
+            )
+        }
+        viewModelScope.launch {
+            realtimeUseCases.deliveryState().collect{data ->
+                when(data){
+                    is Resource.Failure -> {
+                    }
+                    Resource.Loading -> {
+                    }
+                    is Resource.Success -> {
+
+                        _state.update { it.copy(deliveryState = data.data) }
+                    }
+                }
+            }
+        }
         getCartItems()
     }
 
@@ -167,6 +187,11 @@ class UserCartViewModel @Inject constructor(
                         })
                 }
                 UserCartEvent.OnRefresh -> {
+                    _state.update {
+                        it.copy(
+                            phoneNo = preference.phone?:""
+                        )
+                    }
                     getCartItems()
                 }
             }

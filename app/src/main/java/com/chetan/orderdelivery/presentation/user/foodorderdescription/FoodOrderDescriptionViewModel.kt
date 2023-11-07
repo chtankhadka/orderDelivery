@@ -6,16 +6,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
+import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.model.GetCartItemModel
-import com.chetan.orderdelivery.data.model.GetFoodResponse
 import com.chetan.orderdelivery.domain.model.CheckoutFoods
-import com.chetan.orderdelivery.domain.repository.DBRepository
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import com.chetan.orderdelivery.presentation.common.utils.MyDate.CurrentDateTimeSDF
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -27,7 +26,9 @@ import javax.inject.Inject
 @HiltViewModel
 class FoodOrderDescriptionViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases,
-    private val dbUseCases: DBUseCases
+    private val dbUseCases: DBUseCases,
+    private val preference: Preference,
+    private val realtimeUseCases: RealtimeUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(FoodOrderDescriptionState())
@@ -35,15 +36,78 @@ class FoodOrderDescriptionViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            realtimeUseCases.deliveryState().collect{data ->
+                when(data){
+                    is Resource.Failure -> {
+                    }
+                    Resource.Loading -> {
+                    }
+                    is Resource.Success -> {
+
+                        _state.update { it.copy(deliveryState = data.data) }
+                    }
+                }
+            }
+        }
+        _state.update {
+            it.copy(
+                phoneNo = preference.phone?:""
+            )
+        }
+        viewModelScope.launch {
             dbUseCases.removeAllCheckoutFoods()
         }
 
+    }
+    private fun getFavList() {
+        viewModelScope.launch {
+            val allFavList = firestoreUseCases.getFavouriteList()
+            when (allFavList) {
+                is Resource.Failure -> {
+
+                }
+
+                Resource.Loading -> {
+
+                }
+
+                is Resource.Success -> {
+                    _state.update {
+                        it.copy(
+                            favouriteList = allFavList.data
+                        )
+                    }
+                }
+            }
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     val onEvent: (event: FoodOrderDescriptionEvent) -> Unit = { event ->
         viewModelScope.launch {
             when (event) {
+
+                is FoodOrderDescriptionEvent.SetFavourite -> {
+                    val setFav = firestoreUseCases.setFavourite(
+                        foodId = event.foodId, isFavourite = event.isFav
+                    )
+                    when (setFav) {
+                        is Resource.Failure -> {
+
+                        }
+
+                        Resource.Loading -> {
+
+                        }
+
+                        is Resource.Success -> {
+                            if (setFav.data) {
+                                getFavList()
+                            }
+                        }
+                    }
+                }
+
                 FoodOrderDescriptionEvent.DismissInfoMsg -> {
                     _state.update {
                         it.copy(

@@ -33,8 +33,8 @@ class UserHistoryViewModel @Inject constructor(
                 it.copy(
                     infoMsg = Message.Loading(
                         title = "History",
-                        description = "Deleting Item...",
-                        lottieImage = R.raw.delete,
+                        description = "Getting Histories...",
+                        lottieImage = R.raw.loading_food,
                         yesNoRequired = false,
                         isCancellable = false
                     )

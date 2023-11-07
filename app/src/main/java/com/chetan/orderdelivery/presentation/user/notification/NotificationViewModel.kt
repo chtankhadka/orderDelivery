@@ -3,6 +3,7 @@ package com.chetan.orderdelivery.presentation.user.notification
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.chetan.orderdelivery.data.Resource
+import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,16 +15,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class NotificationViewModel @Inject constructor(
-    private val repository: FirestoreRepository
+    private val repository: FirestoreRepository,
+    private val preference: Preference
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(NotificationState())
     val state: StateFlow<NotificationState> = _state
 
     init {
+        preference.isNewNotification = false
         notification()
     }
-
     fun notification() {
         viewModelScope.launch {
             _state.update {

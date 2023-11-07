@@ -9,6 +9,8 @@ import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.domain.model.AllFoods
 import com.chetan.orderdelivery.domain.repository.DBRepository
 import com.chetan.orderdelivery.domain.repository.FirestoreRepository
+import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
+import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class UserDashboardViewModel @Inject constructor(
     private val preference: Preference,
-    private val repository: FirestoreRepository,
-    private val dbRepository: DBRepository
+    private val repository: FirestoreUseCases,
+    private val dbRepository: DBUseCases
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(UserDashboardState())
@@ -31,13 +33,31 @@ class UserDashboardViewModel @Inject constructor(
     init {
         getAllFoods()
         getAllIds()
+        getUserProfile()
         _state.update {
             it.copy(
                 profileUrl = preference.gmailProfile?:"",
-                darkMode = preference.isDarkMode.value
+                darkMode = preference.isDarkMode.value,
+                isNewNotification = preference.isNewNotification
             )
         }
 
+    }
+    private fun getUserProfile(){
+        viewModelScope.launch {
+            val profile = repository.getUserProfile(preference.tableName ?: "test")
+            when (profile) {
+                is Resource.Failure -> {
+                }
+                Resource.Loading -> {
+                }
+                is Resource.Success -> {
+                    if(profile.data.phoneNo.isNotBlank() || profile.data.name.isNotBlank() || profile.data.address.isNotBlank()){
+                        preference.phone = profile.data.phoneNo
+                    }
+                }
+            }
+        }
     }
     val onEvent: (event: UserDashboardEvent) -> Unit = { event ->
         when (event) {

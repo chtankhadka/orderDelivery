@@ -174,7 +174,7 @@ fun UserFoodCategoryScreen(
                             FlowRow(
                                 horizontalArrangement = Arrangement.spacedBy(5.dp)
                             ) {
-                                state.allFoods.filter { it.foodType == foodType }
+                                state.allFoods.filter { it.foodFamily == foodType }
                                     .forEach { foodItem ->
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Box(

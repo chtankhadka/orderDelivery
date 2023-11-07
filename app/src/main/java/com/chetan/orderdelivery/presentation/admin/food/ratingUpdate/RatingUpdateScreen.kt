@@ -135,7 +135,9 @@ fun UpdateRatingItem(
             Text(
                 text = data.newFoodRating.toString(), style = MaterialTheme.typography.headlineSmall
             )
-            Button(onClick = {
+            Button(
+                enabled = !data.newFoodRating.isNaN(),
+                onClick = {
                 lastRatingValue = data.newFoodRating
                 onClick(data.foodId,data.newFoodRating)
             }) {

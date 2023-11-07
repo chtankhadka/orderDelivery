@@ -6,6 +6,7 @@ import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 
 data class AdminDashboardState(
     val darkMode: Boolean = false,
+    val changeDeliveryState: Boolean = false,
     val isNewOrder : Boolean = false,
     val newRequestList:  List<RealtimeModelResponse> = emptyList(),
     override val infoMsg: Message? = null

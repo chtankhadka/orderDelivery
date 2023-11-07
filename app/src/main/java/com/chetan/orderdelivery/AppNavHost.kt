@@ -18,6 +18,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.chetan.orderdelivery.common.ApplicationAction
+import com.chetan.orderdelivery.presentation.admin.addoffer.AdminAddOfferScreen
+import com.chetan.orderdelivery.presentation.admin.addoffer.AdminAddOfferViewModel
 import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardScreen
 import com.chetan.orderdelivery.presentation.admin.dashboard.AdminDashboardViewModel
 import com.chetan.orderdelivery.presentation.admin.editfood.EditFoodScreen
@@ -41,14 +43,14 @@ import com.chetan.orderdelivery.presentation.user.foodorderdescription.FoodOrder
 import com.chetan.orderdelivery.presentation.user.foodwithcategories.UserFoodCategoryScreen
 import com.chetan.orderdelivery.presentation.user.foodwithcategories.UserFoodCategoryViewModel
 import com.chetan.orderdelivery.presentation.user.later.MoreFoodScreen
-import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
-import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
-import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
-import com.chetan.orderdelivery.presentation.user.myorder.MyOrderViewModel
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreScreen
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreViewModel
 import com.chetan.orderdelivery.presentation.user.myorder.MyOrderScreen
+import com.chetan.orderdelivery.presentation.user.myorder.MyOrderViewModel
+import com.chetan.orderdelivery.presentation.user.notification.NotificationScreen
 import com.chetan.orderdelivery.presentation.user.notification.NotificationViewModel
+import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutScreen
+import com.chetan.orderdelivery.presentation.user.ordercheckout.OrderCheckoutViewModel
 import com.chetan.orderdelivery.presentation.user.profile.UserProfileScreen
 import com.chetan.orderdelivery.presentation.user.profile.UserProfileViewModel
 import com.chetan.orderdelivery.presentation.user.search.UserSearchScreen
@@ -267,7 +269,7 @@ fun AppNavHost(
                 user = user
             )
         }
-        composable(Destination.Screen.AdminSendNoticeScreen.route){
+        composable(Destination.Screen.AdminSendNoticeScreen.route) {
             val viewModel = hiltViewModel<AdminSendNoticeViewModel>()
             AdminSendNoticeScreen(
                 nav = navController,
@@ -275,7 +277,7 @@ fun AppNavHost(
                 state = viewModel.state.collectAsStateWithLifecycle().value
             )
         }
-        composable(Destination.Screen.AdminEditFoodScreen.route){
+        composable(Destination.Screen.AdminEditFoodScreen.route) {
             val foodId = it.arguments?.getString("foodId")!!
             val viewModel = hiltViewModel<EditFoodViewModel>()
             EditFoodScreen(
@@ -286,11 +288,20 @@ fun AppNavHost(
             )
         }
 
-        composable(Destination.Screen.UserFoodCategoryScreen.route){
+        composable(Destination.Screen.UserFoodCategoryScreen.route) {
             val viewModel = hiltViewModel<UserFoodCategoryViewModel>()
             UserFoodCategoryScreen(
                 navController = navController,
                 event = viewModel.event,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+            )
+        }
+
+        composable(Destination.Screen.AdminAddOfferScreen.route) {
+            val viewModel = hiltViewModel<AdminAddOfferViewModel>()
+            AdminAddOfferScreen(
+                navController = navController,
+                event = viewModel.onEvent,
                 state = viewModel.state.collectAsStateWithLifecycle().value,
             )
         }

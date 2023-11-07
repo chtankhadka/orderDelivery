@@ -8,7 +8,6 @@ import android.location.LocationManager
 import android.provider.Settings
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +27,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -42,22 +42,27 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.Destination
+import com.chetan.orderdelivery.data.model.FavouriteModel
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 
@@ -74,9 +79,65 @@ fun FoodOrderDescriptionScreen(
     foodId: String
 ) {
 
-    if (state.foodItemDetails.foodId.isBlank()){
+    if (state.foodItemDetails.foodId.isBlank()) {
         onEvent(FoodOrderDescriptionEvent.GetFoodItemDetails(foodId))
     }
+    var showProfileWarning by remember {
+        mutableStateOf(false)
+    }
+    if (showProfileWarning) {
+        AlertDialog(title = {
+            Text(
+                text = "Profile", style = TextStyle(
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }, text = {
+            Text(text = "Please complete your profile.")
+        }, onDismissRequest = {
+            navController.popBackStack()
+        }, confirmButton = {
+            Button(onClick = {
+                navController.navigate(Destination.Screen.UserProfileScreen.route)
+            }) {
+                Text(text = "Complete Profile")
+            }
+        },
+            dismissButton = {
+                Button(onClick = {
+                    showProfileWarning = false
+                }) {
+                    Text(text = "Later")
+                }
+            })
+    }
+
+    if (!state.deliveryState){
+        AlertDialog(title = {
+            Text(
+                text = "Profile", style = TextStyle(
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        },
+            text = {
+                Text(text = "Regretfully, we cannot assist you with your order between 11 am to 7pm")
+            },
+            onDismissRequest = {
+
+            },
+            confirmButton = {
+                Button(onClick = {
+                    navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
+                }) {
+                    Text(text = "Okay")
+                }
+            },
+        )
+    }
+
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -94,7 +155,6 @@ fun FoodOrderDescriptionScreen(
 
 
     val pagerImages = mutableListOf(
-        state.foodItemDetails.faceImgUrl,
         state.foodItemDetails.supportImgUrl2,
         state.foodItemDetails.supportImgUrl3,
         state.foodItemDetails.supportImgUrl4,
@@ -104,226 +164,263 @@ fun FoodOrderDescriptionScreen(
     val pageCount = pagerImages.size
     Scaffold(
         topBar = {
-        TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
-            Text(
-                text = "Food Description",
-                style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
-            )
-        }, navigationIcon = {
-            IconButton(onClick = {
-                navController.popBackStack()
-            }) {
-                Icon(
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier,
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = ""
+            TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
+                Text(
+                    text = "Food Description",
+                    style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
                 )
-            }
-
-        }, actions = {
-        }
-
-        )
-
-    }, content = {
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .padding(horizontal = 5.dp)
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-
-            state.infoMsg?.let {
-                MessageDialog(
-                    message = it,
-                    onDismissRequest = {
-                        if (onEvent != null && state.infoMsg.isCancellable == true) {
-                            onEvent(FoodOrderDescriptionEvent.DismissInfoMsg)
-                        }
-                    },
-                    onPositive = { },
-                    onNegative = {
-
-                    })
-            }
-
-
-            if (pagerImages.size != 0) {
-                HorizontalPager(
-                    state = pagerState
-                ) { page ->
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .wrapContentSize(Alignment.Center)
-                    ) {
-                        AsyncImage(
-                            modifier = Modifier
-                                .size(150.dp)
-                                .clip(shape = CircleShape),
-                            contentScale = ContentScale.Crop,
-                            model = pagerImages[page],
-                            contentDescription = "",
-                            alignment = Alignment.Center
-                        )
-                    }
-                }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                repeat(pageCount) { iteration ->
-                    val color =
-                        if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                    Box(
-                        modifier = Modifier
-                            .padding(2.dp)
-                            .clip(CircleShape)
-                            .background(color = color)
-                            .size(20.dp)
+            }, navigationIcon = {
+                IconButton(onClick = {
+                    navController.popBackStack()
+                }) {
+                    Icon(
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier,
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = ""
                     )
-
                 }
+
+            }, actions = {
             }
 
+            )
 
+        }, content = {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(it)
                     .padding(horizontal = 5.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Text(
-                    text = state.foodItemDetails.foodName,
-                    style = MaterialTheme.typography.headlineSmall
-                )
+                state.infoMsg?.let {
+                    MessageDialog(
+                        message = it,
+                        onDismissRequest = {
+                            if (onEvent != null && state.infoMsg.isCancellable == true) {
+                                onEvent(FoodOrderDescriptionEvent.DismissInfoMsg)
+                            }
+                        },
+                        onPositive = { },
+                        onNegative = {
 
-                RatingBar(size = 15.dp,
-                    value = state.foodItemDetails.foodRating,
-                    spaceBetween = 2.dp,
-                    style = RatingBarStyle.Default,
-                    onValueChange = {
+                        })
+                }
+                if (pagerImages.size != 0) {
+                    HorizontalPager(
+                        state = pagerState
+                    ) { page ->
 
-                    },
-                    onRatingChanged = {
-
-                    })
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .wrapContentSize(Alignment.Center)
+                        ) {
+                            AsyncImage(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                                    .padding(horizontal = 10.dp)
+                                    .clip(shape = RectangleShape),
+                                contentScale = ContentScale.Crop,
+                                model = pagerImages[page],
+                                contentDescription = "",
+                                alignment = Alignment.Center
+                            )
+                        }
+                    }
+                }
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.Bottom
-                    ) {
-                        Text(
-                            text = "Rs. ${state.foodPrice * state.foodQuantity}",
-                            style = MaterialTheme.typography.headlineLarge.copy(
-                                fontWeight = FontWeight.ExtraBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
+                    repeat(pageCount) { iteration ->
+                        val color =
+                            if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                        Box(
+                            modifier = Modifier
+                                .padding(2.dp)
+                                .clip(CircleShape)
+                                .background(color = color)
+                                .size(20.dp)
                         )
-                        Text(
-                            text = "Rs. ${state.foodDiscount * state.foodQuantity}",
 
-                            style = MaterialTheme.typography.titleMedium.copy(
-                                color = MaterialTheme.colorScheme.outline,
-                                textDecoration = TextDecoration.LineThrough
+                    }
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 5.dp)
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(80.dp)
+                            .clip(shape = CircleShape),
+                        contentScale = ContentScale.Crop,
+                        model = state.foodItemDetails.faceImgUrl,
+                        contentDescription = "",
+                    )
+                    Text(
+                        text = state.foodItemDetails.foodName,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RatingBar(size = 15.dp,
+                            value = state.foodItemDetails.foodRating,
+                            spaceBetween = 2.dp,
+                            style = RatingBarStyle.Default,
+                            onValueChange = {
+
+                            },
+                            onRatingChanged = {
+
+                            })
+                        IconButton(modifier = Modifier
+                            .padding(end = 5.dp),
+                            onClick = {
+                                onEvent(
+                                    FoodOrderDescriptionEvent.SetFavourite(
+                                        foodId = state.foodItemDetails.foodId,
+                                        isFav = !state.favouriteList.contains(
+                                            FavouriteModel(state.foodItemDetails.foodId)
+                                        )
+                                    )
+                                )
+                            }) {
+                            Icon(
+                                imageVector = Icons.Default.Favorite,
+                                tint = if (state.favouriteList.contains(FavouriteModel(state.foodItemDetails.foodId))) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                                contentDescription = "favourite"
                             )
-                        )
+                        }
                     }
 
+
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        if (state.foodQuantity > 1) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Text(
+                                text = "Rs. ${state.foodPrice * state.foodQuantity}",
+                                style = MaterialTheme.typography.headlineLarge.copy(
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            )
+                            Text(
+                                text = "Rs. ${state.foodDiscount * state.foodQuantity}",
+
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    color = MaterialTheme.colorScheme.outline,
+                                    textDecoration = TextDecoration.LineThrough
+                                )
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            if (state.foodQuantity > 1) {
+                                Card(
+                                    modifier = Modifier.size(34.dp),
+                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                                    elevation = CardDefaults.cardElevation(10.dp),
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            onEvent(FoodOrderDescriptionEvent.DecreaseQuantity)
+                                        }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Remove,
+                                            contentDescription = "Remove",
+                                            tint = Color.White
+                                        )
+                                    }
+                                }
+                            }
+
+                            Text(
+                                text = "${state.foodQuantity}",
+                                style = MaterialTheme.typography.headlineSmall
+                            )
                             Card(
                                 modifier = Modifier.size(34.dp),
-                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
                                 elevation = CardDefaults.cardElevation(10.dp),
                             ) {
-                                IconButton(
-                                    onClick = {
-                                        onEvent(FoodOrderDescriptionEvent.DecreaseQuantity)
-                                    }) {
+                                IconButton(onClick = {
+                                    onEvent(FoodOrderDescriptionEvent.IncreaseQuantity)
+                                }) {
                                     Icon(
-                                        imageVector = Icons.Default.Remove,
-                                        contentDescription = "Remove",
-                                        tint = Color.White
+                                        imageVector = Icons.Default.Add, contentDescription = "Add"
                                     )
                                 }
                             }
-                        }
 
-                        Text(
-                            text = "${state.foodQuantity}",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                        Card(
-                            modifier = Modifier.size(34.dp),
-                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                            elevation = CardDefaults.cardElevation(10.dp),
-                        ) {
-                            IconButton(onClick = {
-                                onEvent(FoodOrderDescriptionEvent.IncreaseQuantity)
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Add, contentDescription = "Add"
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(5.dp))
+                    Text(
+                        text = "About the food", style = MaterialTheme.typography.headlineSmall
+                    )
+                    Text(
+                        text = state.foodItemDetails.foodDetails,
+                        style = MaterialTheme.typography.labelMedium.copy(MaterialTheme.colorScheme.outlineVariant)
+                    )
+
+
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        elevation = ButtonDefaults.buttonElevation(10.dp),
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                        onClick = {
+                            if (state.phoneNo.isNotBlank()) {
+                                onEvent(FoodOrderDescriptionEvent.OrderFood)
+                                navController.navigate(
+                                    Destination.Screen.UserOrderCheckoutScreen.route.replace(
+                                        "{totalCost}",
+                                        (state.foodItemDetails.foodNewPrice * state.foodQuantity).toString()
+                                    )
                                 )
+                            } else {
+                                showProfileWarning = true
                             }
-                        }
 
+                        },
+                        enabled = state.deliveryState
+                    ) {
+                        Text(text = "Order Now")
+                    }
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        elevation = ButtonDefaults.buttonElevation(10.dp),
+                        onClick = {
+                            onEvent(FoodOrderDescriptionEvent.AddToCart(state.foodItemDetails.foodId))
+                        },
+                        enabled = true
+                    ) {
+                        Text(text = "Add to Basket")
                     }
                 }
-                Spacer(modifier = Modifier.height(5.dp))
-                Text(
-                    text = "About the food", style = MaterialTheme.typography.headlineSmall
-                )
-                Text(
-                    text = state.foodItemDetails.foodDetails,
-                    style = MaterialTheme.typography.labelMedium.copy(MaterialTheme.colorScheme.outlineVariant)
-                )
-
-
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Button(
-                    modifier = Modifier.weight(1f),
-                    elevation = ButtonDefaults.buttonElevation(10.dp),
-                    colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
-                    onClick = {
-                        onEvent(FoodOrderDescriptionEvent.OrderFood)
-                        navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route.replace(
-                            "{totalCost}", (state.foodItemDetails.foodNewPrice * state.foodQuantity).toString()
-                        ))
-                    },
-                    enabled = true
-                ) {
-                    Text(text = "Order Now")
-                }
-                Button(
-                    modifier = Modifier.weight(1f),
-                    elevation = ButtonDefaults.buttonElevation(10.dp),
-                    onClick = {
-                        onEvent(FoodOrderDescriptionEvent.AddToCart(state.foodItemDetails.foodId))
-                    },
-                    enabled = true
-                ) {
-                    Text(text = "Add to Basket")
-                }
-            }
-        }
-    })
+        })
 }
 

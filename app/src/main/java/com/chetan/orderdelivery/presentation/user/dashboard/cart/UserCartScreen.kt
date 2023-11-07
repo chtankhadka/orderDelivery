@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -44,7 +45,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -56,6 +56,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -72,7 +73,7 @@ import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
-import com.chetan.orderdelivery.presentation.user.dashboard.home.UserHomeEvent
+import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -80,6 +81,64 @@ import kotlinx.coroutines.launch
 fun UserCartScreen(
     navController: NavHostController, state: UserCartState, event: (event: UserCartEvent) -> Unit
 ) {
+    var showProfileWarning by remember {
+        mutableStateOf(false)
+    }
+    if (showProfileWarning) {
+        AlertDialog(title = {
+            Text(
+                text = "Note", style = TextStyle(
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }, text = {
+            Text(text = "Please complete your profile.")
+        }, onDismissRequest = {
+
+        }, confirmButton = {
+            Button(onClick = {
+                navController.navigate(Destination.Screen.UserProfileScreen.route)
+            }) {
+                Text(text = "Complete Profile")
+            }
+        },
+            dismissButton = {
+                Button(onClick = {
+                    showProfileWarning = false
+                }) {
+                    Text(text = "Later")
+                }
+            })
+    }
+
+    if (!state.deliveryState){
+        AlertDialog(title = {
+            Text(
+                text = "Profile", style = TextStyle(
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        },
+            text = {
+            Text(text = "Regretfully, we cannot assist you with your order between 11 am to 7pm")
+        },
+            onDismissRequest = {
+
+        },
+            confirmButton = {
+            Button(onClick = {
+                navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
+            }) {
+                Text(text = "Okay")
+            }
+        },
+            )
+    }
+
+
+
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -444,12 +503,18 @@ fun UserCartScreen(
                             })
                             Button(
                                 onClick = {
-                                    event(UserCartEvent.Checkout)
-                                    navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route.replace(
-                                        "{totalCost}", state.cartItemList.filter { it.isSelected }
-                                            .sumOf { it.foodNewPrice * it.quantity }.toString()
-                                    ))
-                                }, shape = RoundedCornerShape(10.dp)
+                                    if (state.phoneNo.isNotBlank()) {
+                                        event(UserCartEvent.Checkout)
+                                        navController.navigate(Destination.Screen.UserOrderCheckoutScreen.route.replace(
+                                            "{totalCost}", state.cartItemList.filter { it.isSelected }
+                                                .sumOf { it.foodNewPrice * it.quantity }.toString()
+                                        ))
+                                    }else{
+                                        showProfileWarning = true
+                                    }
+
+                                }, shape = RoundedCornerShape(10.dp),
+                                enabled = state.deliveryState
                             ) {
                                 Text(text = "Check out(${state.cartItemList.filter { it.isSelected }.size})")
 

@@ -30,6 +30,7 @@ class UserHomeViewModel @Inject constructor(
     init {
         getFavList()
         getAllFoods()
+        getOffer()
     }
 
     private fun getAllFoods() {
@@ -41,6 +42,28 @@ class UserHomeViewModel @Inject constructor(
             }
         }
 
+    }
+    private fun getOffer(){
+        viewModelScope.launch {
+            val offer = firestoreUseCases.getOffer()
+            when(offer){
+                is Resource.Failure -> {
+
+                }
+                Resource.Loading -> {
+
+                }
+                is Resource.Success -> {
+                    println("llllllllllllllllllllllllllllllllllllllllllllll")
+                    println(offer.data)
+                    _state.update {
+                        it.copy(
+                            offer = offer.data
+                        )
+                    }
+                }
+            }
+        }
     }
 
     private fun getFavList() {

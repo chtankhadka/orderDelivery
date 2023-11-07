@@ -236,8 +236,8 @@ fun AdminDashboardScreen(
                             navController.navigate(Destination.Screen.AdminRatingUpdateScreen.route)
                         }
 
-                        MenuItem.User -> {
-                            navController.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
+                        MenuItem.AddOffer -> {
+                            navController.navigate(Destination.Screen.AdminAddOfferScreen.route)
                         }
 
                         MenuItem.Logout -> {
@@ -250,6 +250,10 @@ fun AdminDashboardScreen(
                         MenuItem.DarkMode ->{
                             showApplyThemeDialog = true
                             onEvent(AdminDashboardEvent.ChangeDarkMode)
+                        }
+
+                        MenuItem.StopDelivery -> {
+                            onEvent(AdminDashboardEvent.ChangeDeliveryState)
                         }
                     }
                 })

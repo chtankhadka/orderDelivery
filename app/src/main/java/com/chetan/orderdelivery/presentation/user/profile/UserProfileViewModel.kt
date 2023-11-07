@@ -26,6 +26,7 @@ class UserProfileViewModel @Inject constructor(
     fun getProfile() {
         viewModelScope.launch {
             val profile = firestoreUseCases.getUserProfile(preference.tableName ?: "test")
+            println(profile)
             when (profile) {
                 is Resource.Failure -> {
                 }
@@ -69,6 +70,9 @@ class UserProfileViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             if (update.data) {
+                                if (state.value.phoneNo.isNotBlank() && state.value.address.isNotBlank() && state.value.name.isNotBlank()){
+                                    preference.phone = state.value.phoneNo
+                                }
 
                             }
                         }

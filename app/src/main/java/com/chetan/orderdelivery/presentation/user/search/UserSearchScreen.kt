@@ -38,6 +38,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -146,10 +147,11 @@ fun UserSearchScreen(
 
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = foodItem.foodName,
+                                text = "ksdjkljlaksdj fkljl;asdkfj akl;sjd",
                                 style = MaterialTheme.typography.headlineSmall.copy(
                                     textAlign = TextAlign.Center
                                 ),
+                                overflow = TextOverflow.Ellipsis,
                                 maxLines = 1
                             )
                             RatingBar(

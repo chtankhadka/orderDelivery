@@ -294,11 +294,11 @@ fun UserHomeScreen(
                         elevation = CardDefaults.cardElevation(10.dp)
                     ) {
                         AsyncImage(
-                            contentScale = ContentScale.Fit,
+                            contentScale = ContentScale.Crop,
                             modifier = Modifier
                                 .height(110.dp)
                                 .fillMaxWidth(),
-                            model = Constants.testFoodUrl,
+                            model = state.offer,
                             contentDescription = ""
                         )
                     }

@@ -11,6 +11,8 @@ interface RealtimeRepository {
     ) : Resource<String>
 
     fun getItems() : Flow<Resource<List<RealtimeModelResponse>>>
+    fun deliveryState() : Flow<Resource<Boolean>>
+    suspend fun changeDeliveryState(onOff: Boolean) : Resource<Boolean>
 
     suspend fun deleteOrders() : Resource<Boolean>
 }
