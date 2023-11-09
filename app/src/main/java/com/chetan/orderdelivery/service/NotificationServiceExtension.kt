@@ -27,8 +27,8 @@ class NotificationServiceExtension
                 CoroutineScope(SupervisorJob()).launch {
                     firestoreUseCases.setNotification(
                         StoreNotificationRequestResponse(
-                            body = event.notification.body!!,
-                            title = event.notification.title!!,
+                            body = event.notification.body?:"",
+                            title = event.notification.title?:"",
                             time = event.notification.sentTime.toString(),
                             readNotice = false,
                         )

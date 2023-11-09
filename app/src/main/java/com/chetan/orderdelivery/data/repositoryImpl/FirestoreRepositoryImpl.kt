@@ -587,6 +587,27 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAdminHistories(): Resource<List<RequestFoodOrder>> {
+        return try {
+            var list = mutableListOf<RequestFoodOrder>()
+            val ref = firestore.collection("admin")
+                .document("foods")
+                .collection("orderHistory")
+                .get()
+                .await()
+            for (document in ref.documents){
+                val data = document.toObject<RequestFoodOrder>()
+                data?.let {
+                    list.add(it)
+                }
+            }
+            Resource.Success(list)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
 
     override suspend fun updateRating(foodId: String, foodRating: Float): Resource<Boolean> {
         return try {

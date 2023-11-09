@@ -2,6 +2,7 @@ package com.chetan.orderdelivery
 
 import android.app.Application
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.google.android.gms.ads.MobileAds
 import com.google.android.libraries.places.api.Places
 import com.google.firebase.FirebaseApp
 import com.onesignal.OneSignal
@@ -21,6 +22,7 @@ class OrderDeliveryApp : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
+        MobileAds.initialize(this)
         // Verbose Logging set to help debug issues, remove before releasing your app.
         OneSignal.Debug.logLevel = LogLevel.VERBOSE
 

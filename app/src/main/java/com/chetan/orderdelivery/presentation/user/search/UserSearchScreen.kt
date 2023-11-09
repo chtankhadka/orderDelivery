@@ -147,7 +147,7 @@ fun UserSearchScreen(
 
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = "ksdjkljlaksdj fkljl;asdkfj akl;sjd",
+                                text = foodItem.foodName,
                                 style = MaterialTheme.typography.headlineSmall.copy(
                                     textAlign = TextAlign.Center
                                 ),

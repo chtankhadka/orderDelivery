@@ -36,5 +36,6 @@ data class FirestoreUseCases(
 
     val rateIt : RateIt,
     val updateRating: UpdateRating,
-    val getFoodsForUpdate : GetFoodsForUpdate
+    val getFoodsForUpdate : GetFoodsForUpdate,
+    val getAdminHistories: GetAdminHistories
 )

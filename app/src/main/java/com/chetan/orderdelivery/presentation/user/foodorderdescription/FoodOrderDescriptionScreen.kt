@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.chetan.jobnepal.utils.ads.BannerAd
 import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.data.model.FavouriteModel
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
@@ -209,217 +210,229 @@ fun FoodOrderDescriptionScreen(
 
                         })
                 }
-                if (pagerImages.size != 0) {
-                    HorizontalPager(
-                        state = pagerState
-                    ) { page ->
+                Column(modifier = Modifier.weight(1f)) {
+                    if (pagerImages.size != 0) {
+                        HorizontalPager(
+                            state = pagerState
+                        ) { page ->
 
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .wrapContentSize(Alignment.Center)
-                        ) {
-                            AsyncImage(
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(200.dp)
-                                    .padding(horizontal = 10.dp)
-                                    .clip(shape = RectangleShape),
-                                contentScale = ContentScale.Crop,
-                                model = pagerImages[page],
-                                contentDescription = "",
-                                alignment = Alignment.Center
-                            )
+                                    .fillMaxSize()
+                                    .wrapContentSize(Alignment.Center)
+                            ) {
+                                AsyncImage(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(200.dp)
+                                        .padding(horizontal = 10.dp)
+                                        .clip(shape = RectangleShape),
+                                    contentScale = ContentScale.Crop,
+                                    model = pagerImages[page],
+                                    contentDescription = "",
+                                    alignment = Alignment.Center
+                                )
+                            }
                         }
                     }
-                }
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    repeat(pageCount) { iteration ->
-                        val color =
-                            if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
-                        Box(
-                            modifier = Modifier
-                                .padding(2.dp)
-                                .clip(CircleShape)
-                                .background(color = color)
-                                .size(20.dp)
-                        )
-
-                    }
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 5.dp)
-                ) {
-                    AsyncImage(
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(shape = CircleShape),
-                        contentScale = ContentScale.Crop,
-                        model = state.foodItemDetails.faceImgUrl,
-                        contentDescription = "",
-                    )
-                    Text(
-                        text = state.foodItemDetails.foodName,
-                        style = MaterialTheme.typography.headlineSmall
-                    )
                     Row(
-                        horizontalArrangement = Arrangement.spacedBy(20.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp),
+                        horizontalArrangement = Arrangement.Center
                     ) {
-                        RatingBar(size = 15.dp,
-                            value = state.foodItemDetails.foodRating,
-                            spaceBetween = 2.dp,
-                            style = RatingBarStyle.Default,
-                            onValueChange = {
+                        repeat(pageCount) { iteration ->
+                            val color =
+                                if (pagerState.currentPage == iteration) Color.DarkGray else Color.LightGray
+                            Box(
+                                modifier = Modifier
+                                    .padding(2.dp)
+                                    .clip(CircleShape)
+                                    .background(color = color)
+                                    .size(20.dp)
+                            )
 
-                            },
-                            onRatingChanged = {
+                        }
+                    }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 5.dp)
+                    ) {
+                        AsyncImage(
+                            modifier = Modifier
+                                .size(80.dp)
+                                .clip(shape = CircleShape),
+                            contentScale = ContentScale.Crop,
+                            model = state.foodItemDetails.faceImgUrl,
+                            contentDescription = "",
+                        )
+                        Text(
+                            text = state.foodItemDetails.foodName,
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(20.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RatingBar(size = 15.dp,
+                                value = state.foodItemDetails.foodRating,
+                                spaceBetween = 2.dp,
+                                style = RatingBarStyle.Default,
+                                onValueChange = {
 
-                            })
-                        IconButton(modifier = Modifier
-                            .padding(end = 5.dp),
-                            onClick = {
-                                onEvent(
-                                    FoodOrderDescriptionEvent.SetFavourite(
-                                        foodId = state.foodItemDetails.foodId,
-                                        isFav = !state.favouriteList.contains(
-                                            FavouriteModel(state.foodItemDetails.foodId)
+                                },
+                                onRatingChanged = {
+
+                                })
+                            IconButton(modifier = Modifier
+                                .padding(end = 5.dp),
+                                onClick = {
+                                    onEvent(
+                                        FoodOrderDescriptionEvent.SetFavourite(
+                                            foodId = state.foodItemDetails.foodId,
+                                            isFav = !state.favouriteList.contains(
+                                                FavouriteModel(state.foodItemDetails.foodId)
+                                            )
                                         )
                                     )
+                                }) {
+                                Icon(
+                                    imageVector = Icons.Default.Favorite,
+                                    tint = if (state.favouriteList.contains(FavouriteModel(state.foodItemDetails.foodId))) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
+                                    contentDescription = "favourite"
                                 )
-                            }) {
-                            Icon(
-                                imageVector = Icons.Default.Favorite,
-                                tint = if (state.favouriteList.contains(FavouriteModel(state.foodItemDetails.foodId))) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.outline,
-                                contentDescription = "favourite"
-                            )
-                        }
-                    }
-
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                            verticalAlignment = Alignment.Bottom
-                        ) {
-                            Text(
-                                text = "Rs. ${state.foodPrice * state.foodQuantity}",
-                                style = MaterialTheme.typography.headlineLarge.copy(
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            )
-                            Text(
-                                text = "Rs. ${state.foodDiscount * state.foodQuantity}",
-
-                                style = MaterialTheme.typography.titleMedium.copy(
-                                    color = MaterialTheme.colorScheme.outline,
-                                    textDecoration = TextDecoration.LineThrough
-                                )
-                            )
+                            }
                         }
 
+
                         Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            if (state.foodQuantity > 1) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                verticalAlignment = Alignment.Bottom
+                            ) {
+                                Text(
+                                    text = "Rs. ${state.foodPrice * state.foodQuantity}",
+                                    style = MaterialTheme.typography.headlineLarge.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                )
+                                Text(
+                                    text = "Rs. ${state.foodDiscount * state.foodQuantity}",
+
+                                    style = MaterialTheme.typography.titleMedium.copy(
+                                        color = MaterialTheme.colorScheme.outline,
+                                        textDecoration = TextDecoration.LineThrough
+                                    )
+                                )
+                            }
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                if (state.foodQuantity > 1) {
+                                    Card(
+                                        modifier = Modifier.size(34.dp),
+                                        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                                        elevation = CardDefaults.cardElevation(10.dp),
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                onEvent(FoodOrderDescriptionEvent.DecreaseQuantity)
+                                            }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Remove,
+                                                contentDescription = "Remove",
+                                                tint = Color.White
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Text(
+                                    text = "${state.foodQuantity}",
+                                    style = MaterialTheme.typography.headlineSmall
+                                )
                                 Card(
                                     modifier = Modifier.size(34.dp),
-                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
                                     elevation = CardDefaults.cardElevation(10.dp),
                                 ) {
-                                    IconButton(
-                                        onClick = {
-                                            onEvent(FoodOrderDescriptionEvent.DecreaseQuantity)
-                                        }) {
+                                    IconButton(onClick = {
+                                        onEvent(FoodOrderDescriptionEvent.IncreaseQuantity)
+                                    }) {
                                         Icon(
-                                            imageVector = Icons.Default.Remove,
-                                            contentDescription = "Remove",
-                                            tint = Color.White
+                                            imageVector = Icons.Default.Add, contentDescription = "Add"
                                         )
                                     }
                                 }
-                            }
 
-                            Text(
-                                text = "${state.foodQuantity}",
-                                style = MaterialTheme.typography.headlineSmall
-                            )
-                            Card(
-                                modifier = Modifier.size(34.dp),
-                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
-                                elevation = CardDefaults.cardElevation(10.dp),
-                            ) {
-                                IconButton(onClick = {
-                                    onEvent(FoodOrderDescriptionEvent.IncreaseQuantity)
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Add, contentDescription = "Add"
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "About the food", style = MaterialTheme.typography.headlineSmall
+                        )
+                        Text(
+                            text = state.foodItemDetails.foodDetails,
+                            style = MaterialTheme.typography.labelMedium.copy(MaterialTheme.colorScheme.outlineVariant)
+                        )
+
+
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            elevation = ButtonDefaults.buttonElevation(10.dp),
+                            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
+                            onClick = {
+                                if (state.phoneNo.isNotBlank()) {
+                                    onEvent(FoodOrderDescriptionEvent.OrderFood)
+                                    navController.navigate(
+                                        Destination.Screen.UserOrderCheckoutScreen.route.replace(
+                                            "{totalCost}",
+                                            (state.foodItemDetails.foodNewPrice * state.foodQuantity).toString()
+                                        )
                                     )
+                                } else {
+                                    showProfileWarning = true
                                 }
-                            }
 
+                            },
+                            enabled = state.deliveryState
+                        ) {
+                            Text(text = "Order Now")
+                        }
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            elevation = ButtonDefaults.buttonElevation(10.dp),
+                            onClick = {
+                                onEvent(FoodOrderDescriptionEvent.AddToCart(state.foodItemDetails.foodId))
+                            },
+                            enabled = true
+                        ) {
+                            Text(text = "Add to Basket")
                         }
                     }
-                    Spacer(modifier = Modifier.height(5.dp))
-                    Text(
-                        text = "About the food", style = MaterialTheme.typography.headlineSmall
-                    )
-                    Text(
-                        text = state.foodItemDetails.foodDetails,
-                        style = MaterialTheme.typography.labelMedium.copy(MaterialTheme.colorScheme.outlineVariant)
-                    )
-
-
                 }
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
                 ) {
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        elevation = ButtonDefaults.buttonElevation(10.dp),
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.onPrimaryContainer),
-                        onClick = {
-                            if (state.phoneNo.isNotBlank()) {
-                                onEvent(FoodOrderDescriptionEvent.OrderFood)
-                                navController.navigate(
-                                    Destination.Screen.UserOrderCheckoutScreen.route.replace(
-                                        "{totalCost}",
-                                        (state.foodItemDetails.foodNewPrice * state.foodQuantity).toString()
-                                    )
-                                )
-                            } else {
-                                showProfileWarning = true
-                            }
-
-                        },
-                        enabled = state.deliveryState
-                    ) {
-                        Text(text = "Order Now")
-                    }
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        elevation = ButtonDefaults.buttonElevation(10.dp),
-                        onClick = {
-                            onEvent(FoodOrderDescriptionEvent.AddToCart(state.foodItemDetails.foodId))
-                        },
-                        enabled = true
-                    ) {
-                        Text(text = "Add to Basket")
-                    }
+                    BannerAd(
+                        bId = "ca-app-pub-1412843616436423/1907426733",
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
+
             }
         })
 }

@@ -94,7 +94,7 @@ fun SignInScreen(
                 contentScale = ContentScale.Crop,
                 contentDescription = "")
             decorateText(text = "MOMO BAR", fontSize = 50.sp)
-            decorateText(text = "Next Inn", fontSize = 50.sp)
+            decorateText(text = "Next In.", fontSize = 30.sp)
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = isChecked,

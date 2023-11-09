@@ -2,11 +2,13 @@ package com.chetan.orderdelivery.presentation.common.components.dialogs
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,15 +29,13 @@ fun PrivacyPolicyDialog(
     Dialog(onDismissRequest = {
         onDismiss(false)
     }, content = {
-        Card {
+        Card(
+        ) {
             Column(
                 modifier = Modifier
                     .padding(10.dp)
                     .verticalScroll(rememberScrollState())
-
             ) {
-
-
                 Text(buildAnnotatedString {
                     withStyle(
                         style = SpanStyle(
@@ -53,26 +53,12 @@ fun PrivacyPolicyDialog(
                     append(" Your privacy is important to us, and we are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our online form-filling app. ")
                 })
 
-
                 Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = "1. Information We Collect"
+                    style = MaterialTheme.typography.titleMedium, text = "1. Information We Collect"
                 )
 
                 Text(
-                    style = MaterialTheme.typography.titleSmall,
-                    text = "1.1. Personal Information:"
-                )
-
-                Text(
-                    modifier = Modifier.padding(start = 5.dp),
-                    text = "We may collect personal information, such as your name, email address, and phone number,photos when you fill out forms on our App."
-                )
-
-
-                Text(
-                    style = MaterialTheme.typography.titleSmall,
-                    text = "1.1. Personal Information:"
+                    style = MaterialTheme.typography.titleSmall, text = "1.1. Personal Information:"
                 )
 
                 Text(
@@ -80,9 +66,18 @@ fun PrivacyPolicyDialog(
                     text = "We may collect personal information, such as your name, email address, and phone number,photos when you fill out forms on our App."
                 )
 
+
                 Text(
-                    style = MaterialTheme.typography.titleSmall,
-                    text = "1.2. Usage Data:"
+                    style = MaterialTheme.typography.titleSmall, text = "1.1. Personal Information:"
+                )
+
+                Text(
+                    modifier = Modifier.padding(start = 5.dp),
+                    text = "We may collect personal information, such as your name, email address, and phone number,photos when you fill out forms on our App."
+                )
+
+                Text(
+                    style = MaterialTheme.typography.titleSmall, text = "1.2. Usage Data:"
                 )
 
                 Text(
@@ -108,8 +103,7 @@ fun PrivacyPolicyDialog(
                 )
 
                 Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = "3. Data Security"
+                    style = MaterialTheme.typography.titleMedium, text = "3. Data Security"
                 )
 
                 Text(
@@ -133,8 +127,7 @@ fun PrivacyPolicyDialog(
                 })
 
                 Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = "4. User Rights"
+                    style = MaterialTheme.typography.titleMedium, text = "4. User Rights"
                 )
                 Text(
                     modifier = Modifier.padding(start = 5.dp),
@@ -153,8 +146,7 @@ fun PrivacyPolicyDialog(
 
 
                 Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = "5. Third-Party Links"
+                    style = MaterialTheme.typography.titleMedium, text = "5. Third-Party Links"
                 )
                 Text(
                     modifier = Modifier.padding(start = 5.dp),
@@ -173,8 +165,7 @@ fun PrivacyPolicyDialog(
                 )
 
                 Text(
-                    style = MaterialTheme.typography.titleMedium,
-                    text = "7. Contact Us"
+                    style = MaterialTheme.typography.titleMedium, text = "7. Contact Us"
                 )
                 Text(
                     modifier = Modifier.padding(start = 5.dp),
@@ -188,7 +179,7 @@ fun PrivacyPolicyDialog(
 
 
 
-                Button(onClick = {
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
                     onDismiss(false)
                 }) {
                     Text(text = "Confirm")

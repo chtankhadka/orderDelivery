@@ -15,6 +15,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteCartItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteMyHistory
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetAdminHistories
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetCartItems
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFavouriteList
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodItem
@@ -141,7 +142,8 @@ object FirebaseModule {
 
             rateIt = RateIt(repository = repository),
             updateRating = UpdateRating(repository = repository),
-            getFoodsForUpdate = GetFoodsForUpdate(repository = repository)
+            getFoodsForUpdate = GetFoodsForUpdate(repository = repository),
+            getAdminHistories = GetAdminHistories(repository = repository)
         )
 
     @Singleton

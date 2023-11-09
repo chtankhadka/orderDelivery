@@ -36,7 +36,7 @@ class UserMoreViewModel @Inject constructor(
                     _state.update {
                         it.copy(
                             searchQuery = event.value,
-                            searchedList = state.value.allFoods.filter { it.foodName.contains(event.value) }
+                            searchedList = state.value.allFoods.filter { it.foodName.contains(event.value,ignoreCase = true) }
 
                         )
                     }

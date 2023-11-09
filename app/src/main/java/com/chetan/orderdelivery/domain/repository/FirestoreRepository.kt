@@ -69,6 +69,7 @@ interface FirestoreRepository {
     suspend fun updateDeliveredHistroy(data: RequestFoodOrder) : Resource<Boolean>
     suspend fun addOffer(url: String) : Resource<Boolean>
     suspend fun getOffer() : Resource<String>
+    suspend fun getAdminHistories() : Resource<List<RequestFoodOrder>>
 
     suspend fun updateRating(
         foodId : String,

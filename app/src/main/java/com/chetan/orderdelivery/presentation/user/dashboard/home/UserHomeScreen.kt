@@ -131,7 +131,7 @@ fun UserHomeScreen(
                         }
                     }
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(15.dp), content = {
-                        items(state.allFoods) { foodItem ->
+                        items(state.allFoods.filterNot { it.foodType == "Drinks" }) { foodItem ->
                             Column(
                                 modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally
                             ) {
@@ -306,7 +306,7 @@ fun UserHomeScreen(
                     //Drinks
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
+                        horizontalArrangement = Arrangement.Start,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
@@ -314,21 +314,21 @@ fun UserHomeScreen(
                             style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
                             modifier = Modifier.padding(start = 5.dp)
                         )
-                        Button(
-                            onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(Color.Transparent)
-                        ) {
-                            Text(
-                                text = "More", style = MaterialTheme.typography.bodyMedium.copy(
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                                ), modifier = Modifier.padding(start = 5.dp)
-                            )
-                            Icon(
-                                imageVector = Icons.Default.KeyboardArrowRight,
-                                contentDescription = "",
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
+//                        Button(
+//                            onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(Color.Transparent)
+//                        ) {
+//                            Text(
+//                                text = "", style = MaterialTheme.typography.bodyMedium.copy(
+//                                    fontWeight = FontWeight.Bold,
+//                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+//                                ), modifier = Modifier.padding(start = 5.dp)
+//                            )
+//                            Icon(
+//                                imageVector = Icons.Default.KeyboardArrowRight,
+//                                contentDescription = "",
+//                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+//                            )
+//                        }
                     }
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(15.dp), content = {
                         items(state.allFoods.filter { it.foodType =="Drinks" }) { foodItem ->
@@ -348,7 +348,7 @@ fun UserHomeScreen(
                                         modifier = Modifier
                                             .size(100.dp)
                                             .padding(5.dp),
-                                        model = Constants.bottle,
+                                        model = foodItem.faceImgUrl,
                                         contentDescription = null,
                                         contentScale = ContentScale.FillWidth
                                     )

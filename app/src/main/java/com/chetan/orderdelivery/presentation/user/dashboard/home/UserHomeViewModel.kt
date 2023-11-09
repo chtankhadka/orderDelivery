@@ -54,7 +54,6 @@ class UserHomeViewModel @Inject constructor(
 
                 }
                 is Resource.Success -> {
-                    println("llllllllllllllllllllllllllllllllllllllllllllll")
                     println(offer.data)
                     _state.update {
                         it.copy(
