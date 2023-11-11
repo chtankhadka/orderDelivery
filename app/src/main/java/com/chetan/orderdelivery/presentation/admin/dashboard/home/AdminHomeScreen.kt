@@ -179,6 +179,15 @@ fun HomeScreen(
                                                 ),
                                                 overflow = TextOverflow.Ellipsis
                                             )
+                                            Text(
+                                                text = orders.userContactNo,
+                                                maxLines = 1,
+                                                minLines = 1,
+                                                style = MaterialTheme.typography.bodyMedium.copy(
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                overflow = TextOverflow.Ellipsis
+                                            )
                                             Row(
                                                 modifier = Modifier.fillMaxWidth(),
                                                 horizontalArrangement = Arrangement.SpaceBetween,
