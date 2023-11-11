@@ -244,6 +244,68 @@ class AdminOrderDetailViewModel @Inject constructor(
                         e.printStackTrace()
                     }
                 }
+
+                is AdminOrderDetailEvent.OnShowHideMsgDialog -> {
+                    _state.update {
+                        it.copy(
+                            showInformDialog = event.value
+                        )
+                    }
+                }
+                is AdminOrderDetailEvent.OnMessageChange -> {
+                    _state.update {
+                        it.copy(
+                            msg = event.value
+                        )
+                    }
+                }
+                is AdminOrderDetailEvent.OnMessageSend -> {
+                    val orderIdDetails =
+                        state.value.orderDetails.find { it.orderId == event.value }!!
+                    try {
+                        val sendNotification =
+                            oneSiganlRepository.pushNotification(
+                                PushNotificationRequest(
+                                    contents = mapOf("en" to state.value.msg),
+                                    headings = mapOf("en" to "Order Confirmed"),
+                                    include_player_ids = listOf(
+                                        orderIdDetails.oneSignalId
+                                    )
+                                )
+                            )
+                        when (sendNotification) {
+                            is Resource.Failure -> {
+
+                            }
+
+                            Resource.Loading -> {
+
+                            }
+
+                            is Resource.Success -> {
+                                _state.update {
+                                    it.copy(
+                                        showInformDialog = false
+                                    )
+                                }
+                            }
+                        }
+                    } catch (e: HttpException) {
+                        _state.update {
+                            it.copy(
+                                showInformDialog = false
+                            )
+                        }
+                        e.printStackTrace()
+                    } catch (e: Throwable) {
+                        _state.update {
+                            it.copy(
+                                showInformDialog = false
+                            )
+                        }
+                        e.printStackTrace()
+                    }
+                }
             }
         }
     }

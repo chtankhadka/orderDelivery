@@ -17,16 +17,14 @@ data class AddFoodState(
         "Special Combo Momo",
         "Special Piro Momo",
         "Regular Momo",
-        "Hard Drinks",
+        "Drinks",
         "Biryani with Raita",
         "Chowmin & Thuppa",
         "Rice & Achar",
-        "Healthy Salad",
-        "Chopshy with Fried Noodles",
-        "Sizzler",
         "Cutlets",
         "Starter Non Veg",
-        "Starter Veg"
+        "Starter Veg",
+        "Veg"
         ),
     val selectedFoodFamily: String = foodFamilies[0],
 

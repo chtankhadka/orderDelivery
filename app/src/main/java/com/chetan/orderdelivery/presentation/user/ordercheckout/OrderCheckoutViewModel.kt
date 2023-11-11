@@ -201,12 +201,13 @@ class OrderCheckoutViewModel @Inject constructor(
                     val location = state.value.location.split(",")
                     val setAddress = firestoreUseCases.setAddress(
                         SetLatLng(
+                            time = System.currentTimeMillis().toString(),
                             locationLat = location.first(),
                             locationLng = location.last(),
                             locationAddress = state.value.locationAddress,
                             distance = state.value.distance,
                             userName = "",
-                            userContactNo = preference.userName?:"",
+                            userContactNo = preference.phone?:"",
                             userMail = preference.tableName!!,
                             googleProfileUrl = preference.gmailProfile ?: "",
                             dbProfileUrl = "",

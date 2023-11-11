@@ -69,4 +69,18 @@ object MyDate {
 //            "just now"
 //        }
     }
+    fun differenceOfDatesNoMultiple(before: String, now: String): String {
+        val duration = abs(before.toLong() - now.toLong())
+        val days = TimeUnit.MILLISECONDS.toDays(duration)
+        val hours = TimeUnit.MILLISECONDS.toHours(duration) % 24
+        val minutes = TimeUnit.MILLISECONDS.toMinutes(duration) % 60
+        val seconds = TimeUnit.MILLISECONDS.toSeconds(duration) % 60
+
+        return when {
+            days != 0L -> if (days == 1L) "$days day ago" else "$days days ago"
+            hours != 0L -> if (hours == 1L) "$hours hour ago" else "$hours hours ago"
+            minutes != 0L -> if (minutes == 1L) "$minutes minute ago" else "$minutes minutes ago"
+            else -> "just now"
+        }
+    }
 }

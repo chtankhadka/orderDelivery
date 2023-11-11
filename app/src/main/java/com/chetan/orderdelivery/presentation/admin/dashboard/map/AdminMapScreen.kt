@@ -8,6 +8,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -26,8 +28,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -134,16 +138,27 @@ fun MapScreen(state: AdminMapState, onEvent: (event: AdminMapEvent) -> Unit) {
         mutableStateOf(false)
     }
     if (showUserDetails){
-        Dialog(onDismissRequest = {
+        Dialog(
+            onDismissRequest = {
             showUserDetails = false
         }) {
-            AsyncImage(
-                modifier = Modifier
-                    .size(150.dp)
-                    .clip(shape = CircleShape)
-                ,
-                model = state.userDetails.googleProfileUrl,
-                contentDescription = "")
+            Card {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    AsyncImage(
+                        modifier = Modifier
+                            .size(150.dp)
+                            .clip(shape = CircleShape)
+                        ,
+                        model = state.userDetails.googleProfileUrl,
+                        contentDescription = "")
+
+                    Text(text = state.userDetails.userContactNo)
+                }
+            }
+
+
         }
     }
 

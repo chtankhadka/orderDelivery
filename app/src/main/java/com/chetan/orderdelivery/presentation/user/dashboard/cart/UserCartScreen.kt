@@ -122,7 +122,7 @@ fun UserCartScreen(
             )
         },
             text = {
-            Text(text = "Regretfully, we cannot assist you with your order between 11 am to 7pm")
+            Text(text = "Regretfully, we cannot assist you with your order.")
         },
             onDismissRequest = {
 

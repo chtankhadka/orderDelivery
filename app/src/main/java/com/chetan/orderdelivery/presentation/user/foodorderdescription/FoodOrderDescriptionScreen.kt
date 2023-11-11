@@ -124,7 +124,7 @@ fun FoodOrderDescriptionScreen(
             )
         },
             text = {
-                Text(text = "Regretfully, we cannot assist you with your order between 11 am to 7pm")
+                Text(text = "Regretfully, we cannot assist you in this time.")
             },
             onDismissRequest = {
 
@@ -195,7 +195,7 @@ fun FoodOrderDescriptionScreen(
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
                 state.infoMsg?.let {
                     MessageDialog(
@@ -218,7 +218,6 @@ fun FoodOrderDescriptionScreen(
 
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
                                     .wrapContentSize(Alignment.Center)
                             ) {
                                 AsyncImage(
@@ -235,6 +234,7 @@ fun FoodOrderDescriptionScreen(
                             }
                         }
                     }
+                    Spacer(modifier = Modifier.height(10.dp))
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()

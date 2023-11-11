@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.chetan.orderdelivery.data.model.StoreNotificationRequestResponse
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
+import com.chetan.orderdelivery.presentation.common.utils.MyDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -148,7 +149,7 @@ fun swipeItem(
                     text = list[itemIndex].title, style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "2 days ago", style = MaterialTheme.typography.bodySmall
+                    text = MyDate.differenceOfDates(list[itemIndex].time,System.currentTimeMillis().toString()) , style = MaterialTheme.typography.bodySmall
                 )
             }
             Text(

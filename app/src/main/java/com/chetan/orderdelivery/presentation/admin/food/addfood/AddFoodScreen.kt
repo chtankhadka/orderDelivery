@@ -65,7 +65,7 @@ import com.chetan.orderdelivery.ui.theme.OrderDeliveryTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFoodScreen(
-    navController: NavHostController?, state: AddFoodState, onEvent: (event: AddFoodEvent) -> Unit
+    navController: NavHostController, state: AddFoodState, onEvent: (event: AddFoodEvent) -> Unit
 ) {
     var imageName by remember {
         mutableIntStateOf(1)
@@ -120,7 +120,9 @@ fun AddFoodScreen(
                 style = MaterialTheme.typography.titleMedium.copy(color = MaterialTheme.colorScheme.primary)
             )
         }, navigationIcon = {
-            IconButton(onClick = {}) {
+            IconButton(onClick = {
+                navController.popBackStack()
+            }) {
                 Icon(
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier,

@@ -77,7 +77,7 @@ class AdminHomeViewModel @Inject constructor(
                 is Resource.Success -> {
                     _state.update {
                         it.copy(
-                            orderList = orderList.data,
+                            orderList = orderList.data.sortedByDescending { it.time },
                             infoMsg = null
                         )
                     }
@@ -162,7 +162,7 @@ class AdminHomeViewModel @Inject constructor(
                             if (deleteUser.data) {
                                 _state.update {
                                     it.copy(
-                                        orderList = state.value.orderList.filter { it.userMail != event.user },
+                                        branchWiseList = state.value.branchWiseList.filter { it.userMail != event.user },
                                         infoMsg = null,
                                     )
                                 }

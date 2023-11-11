@@ -48,9 +48,8 @@ fun PrivacyPolicyDialog(
                             fontWeight = FontWeight.Bold
                         )
                     ) {
-                        append("Online Form!.")
+                        append("MOMO BAR Next In")
                     }
-                    append(" Your privacy is important to us, and we are committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our online form-filling app. ")
                 })
 
                 Text(
@@ -63,17 +62,7 @@ fun PrivacyPolicyDialog(
 
                 Text(
                     modifier = Modifier.padding(start = 5.dp),
-                    text = "We may collect personal information, such as your name, email address, and phone number,photos when you fill out forms on our App."
-                )
-
-
-                Text(
-                    style = MaterialTheme.typography.titleSmall, text = "1.1. Personal Information:"
-                )
-
-                Text(
-                    modifier = Modifier.padding(start = 5.dp),
-                    text = "We may collect personal information, such as your name, email address, and phone number,photos when you fill out forms on our App."
+                    text = "\nContact details(e.g., name, email address, phone number\nDelivery address"
                 )
 
                 Text(
@@ -169,7 +158,7 @@ fun PrivacyPolicyDialog(
                 )
                 Text(
                     modifier = Modifier.padding(start = 5.dp),
-                    text = "If you have questions, concerns, or requests related to your data or this Privacy Policy, please contact us at 9804542084."
+                    text = "If you have questions, concerns, or requests related to your data or this Privacy Policy, please contact us at 9745904088."
                 )
                 Text(
                     modifier = Modifier.padding(start = 5.dp),

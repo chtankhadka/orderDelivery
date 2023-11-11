@@ -33,6 +33,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Message
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -64,10 +65,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.common.Constants
+import com.chetan.orderdelivery.presentation.admin.editfood.EditFoodEvent
+import com.chetan.orderdelivery.presentation.admin.food.addfood.OutlinedTextFieldAddFood
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.presentation.common.components.requestpermission.RequestPermission
@@ -111,6 +115,56 @@ fun AdminOrderDetailScreen(
     var canOrder by remember {
         mutableStateOf(false)
     }
+    var orderId by remember {
+        mutableStateOf("")
+    }
+
+    if (state.showInformDialog) {
+        Dialog(
+            onDismissRequest = {
+
+            }) {
+            Card(modifier = Modifier.padding(5.dp)) {
+                Spacer(modifier = Modifier.height(5.dp))
+                OutlinedTextFieldAddFood(
+                    modifier = Modifier.fillMaxWidth(),
+                    foodLabel = "Say sth to customer",
+                    foodValue = state.msg,
+                    onFoodValueChange = {
+                        event(AdminOrderDetailEvent.OnMessageChange(it))
+                    },
+                    foodMaxLine = 2
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            event(AdminOrderDetailEvent.OnShowHideMsgDialog(false))
+                        },
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
+                    ) {
+                        Text(text = "Cancel")
+                    }
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = {
+                            event(AdminOrderDetailEvent.OnMessageSend(orderId))
+                        }) {
+                        Text(text = "Send")
+                    }
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+
+            }
+        }
+    }
+
     if (canOrder) {
         if (!isGpsEnabled && !hideDialog) {
             AlertDialog(title = {
@@ -164,13 +218,11 @@ fun AdminOrderDetailScreen(
         event(AdminOrderDetailEvent.GetOrderDetails(user))
     }
 
-    var orderId by remember {
-        mutableStateOf("")
-    }
+
     var showAlert by remember {
         mutableStateOf(false)
     }
-    if (showAlert){
+    if (showAlert) {
         AlertDialog(title = {
             Text(
                 text = "Food Delivery", style = TextStyle(
@@ -193,9 +245,11 @@ fun AdminOrderDetailScreen(
                     Text(text = "Confirm")
                 }
             }, dismissButton = {
-                Button(colors = ButtonDefaults.buttonColors(Color.Red.copy(alpha = 0.7f)), onClick = {
-                    showAlert = false
-                }) {
+                Button(
+                    colors = ButtonDefaults.buttonColors(Color.Red.copy(alpha = 0.7f)),
+                    onClick = {
+                        showAlert = false
+                    }) {
                     Text(text = "Cancel")
                 }
             })
@@ -238,7 +292,7 @@ fun AdminOrderDetailScreen(
 
                 })
             }
-            if (state.orderDetails.isNotEmpty()){
+            if (state.orderDetails.isNotEmpty()) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -266,7 +320,9 @@ fun AdminOrderDetailScreen(
                                         border = BorderStroke(
                                             width = 2.dp, color = Color.White
                                         )
-                                    ), model = state.orderDetails.first().googleProfileUrl, contentDescription = "",
+                                    ),
+                                model = state.orderDetails.first().googleProfileUrl,
+                                contentDescription = "",
                                 contentScale = ContentScale.Crop
                             )
                         }
@@ -355,19 +411,27 @@ fun AdminOrderDetailScreen(
                                                 .padding(5.dp),
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
-                                            Text(
-                                                text = orders.orderId,
-                                                style = MaterialTheme.typography.headlineSmall
-                                            )
+                                            IconButton(onClick = {
+                                                orderId = orders.orderId
+                                                event(AdminOrderDetailEvent.OnShowHideMsgDialog(true))
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Message,
+                                                    contentDescription = ""
+                                                )
+
+                                            }
                                             Column(
                                                 horizontalAlignment = Alignment.End
                                             ) {
                                                 Text(
-                                                    text = orders.orderList.sumOf { it.quantity * it.foodNewPrice }.toString(),
+                                                    text = orders.orderList.sumOf { it.quantity * it.foodNewPrice }
+                                                        .toString(),
                                                     style = MaterialTheme.typography.headlineMedium
                                                 )
                                                 Text(
-                                                    text = orders.orderList.sumOf { it.quantity * it.foodPrice.toInt() }.toString(),
+                                                    text = orders.orderList.sumOf { it.quantity * it.foodPrice.toInt() }
+                                                        .toString(),
                                                     style = MaterialTheme.typography.headlineSmall.copy(
                                                         textDecoration = TextDecoration.LineThrough,
                                                         color = MaterialTheme.colorScheme.outline
@@ -443,7 +507,8 @@ fun AdminOrderDetailScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 IconButton(modifier = Modifier.size(60.dp), onClick = {
-                                    val uri = Uri.parse("google.navigation:q=${orders.locationLat},${orders.locationLng}&origin=${locationInfo}")
+                                    val uri =
+                                        Uri.parse("google.navigation:q=${orders.locationLat},${orders.locationLng}&origin=${locationInfo}")
                                     val mapIntent = Intent(Intent.ACTION_VIEW, uri)
                                     mapIntent.setPackage("com.google.android.apps.maps")
                                     // Start the navigation intent

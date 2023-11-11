@@ -14,8 +14,8 @@ android {
         applicationId "com.chetan.orderdelivery"
         minSdk 26
         targetSdk 34
-        versionCode 6
-        versionName "6.0"
+        versionCode 8
+        versionName "8.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -167,6 +167,7 @@ dependencies {
     //admob
     implementation 'com.google.android.gms:play-services-ads:22.5.0'
 
-    implementation 'co.yml:ycharts:2.1.0'
+//    implementation 'co.yml:ycharts:2.1.0'
+    implementation 'com.github.jaikeerthick:Composable-Graphs:v1.0'
 
 }

@@ -48,6 +48,7 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
+import com.chetan.orderdelivery.presentation.common.utils.MyDate
 import com.chetan.orderdelivery.presentation.user.dashboard.cart.UserCartEvent
 import com.chetan.orderdelivery.presentation.user.morepopularfood.UserMoreEvent
 import kotlinx.coroutines.launch
@@ -165,6 +166,15 @@ fun HomeScreen(
                                                 minLines = 2,
                                                 style = MaterialTheme.typography.bodyMedium.copy(
                                                     color = MaterialTheme.colorScheme.outline,
+                                                    fontWeight = FontWeight.Bold
+                                                ),
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                            Text(
+                                                text = MyDate.differenceOfDatesNoMultiple(orders.time,System.currentTimeMillis().toString()),
+                                                maxLines = 1,
+                                                minLines = 1,
+                                                style = MaterialTheme.typography.bodyMedium.copy(
                                                     fontWeight = FontWeight.Bold
                                                 ),
                                                 overflow = TextOverflow.Ellipsis
