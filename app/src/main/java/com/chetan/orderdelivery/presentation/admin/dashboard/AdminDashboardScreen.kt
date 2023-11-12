@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,8 +21,8 @@ import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MenuOpen
-import androidx.compose.material.icons.filled.NotificationsActive
-import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.NotificationAdd
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -57,7 +58,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -85,7 +85,6 @@ import com.chetan.orderdelivery.presentation.admin.dashboard.map.MapScreen
 import com.chetan.orderdelivery.presentation.common.components.LoadLottieAnimation
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.presentation.common.utils.BottomNavigate.bottomNavigate
-import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 import com.chetan.orderdelivery.presentation.common.utils.PlayNotificationSound
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -286,6 +285,32 @@ fun AdminDashboardScreen(
                             }
 
                         }
+                    },
+                    actions = {
+                        Card(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .clickable {
+                                    navController.navigate(Destination.Screen.AdminNotificationScreen.route)
+                                },
+                            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+                            elevation = CardDefaults.cardElevation(10.dp),
+                        ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(2.dp)
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .align(Alignment.Center)
+                                    .size(20.dp),
+                                imageVector = if (state.isNewNotification) Icons.Default.NotificationAdd else Icons.Default.Notifications,
+                                tint = Color.White,
+                                contentDescription = ""
+                            )
+                        }
+                    }
                     },
 
                     title = {

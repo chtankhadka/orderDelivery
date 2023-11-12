@@ -1,4 +1,4 @@
-package com.chetan.orderdelivery.presentation.user.notification
+package com.chetan.orderdelivery.presentation.admin.notification
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -41,8 +41,8 @@ import com.chetan.orderdelivery.presentation.common.utils.MyDate
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun NotificationScreen(
-    nav: NavHostController, state: NotificationState, event: (event: NotificationEvent) -> Unit
+fun AdminNotificationScreen(
+    nav: NavHostController, state: AdminNotificationState, event: (event: AdminNotificationEvent) -> Unit
 ) {
     Scaffold(topBar = {
         TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
@@ -67,7 +67,7 @@ fun NotificationScreen(
         state.infoMsg?.let {
             MessageDialog(message = it, onDismissRequest = {
                 if (event != null && state.infoMsg.isCancellable == true) {
-                    event(NotificationEvent.DismissInfoMsg)
+                    event(AdminNotificationEvent.DismissInfoMsg)
                 }
             }, onPositive = { /*TODO*/ }) {
 
@@ -85,7 +85,7 @@ fun NotificationScreen(
             }) { index, item ->
                 val dismissState = rememberDismissState(confirmValueChange = {
                     if (it == DismissValue.DismissedToEnd) {
-                        event(NotificationEvent.DeleteNotification(item.time))
+                        event(AdminNotificationEvent.DeleteNotification(item.time))
                     }
                     true
                 })
@@ -112,7 +112,7 @@ fun NotificationScreen(
                     },
                     directions = setOf(DismissDirection.StartToEnd),
                     dismissContent = {
-                        swipeItem(list = state.notificationList, itemIndex = index, event = event)
+                        swipeItem(list = state.notificationList, itemIndex = index,event = event)
                     })
             }
         }
@@ -125,15 +125,12 @@ fun NotificationScreen(
 fun swipeItem(
     list: List<StoreNotificationRequestResponse>,
     itemIndex: Int,
-    event: (event: NotificationEvent) -> Unit
+    event: (event: AdminNotificationEvent) -> Unit
 ) {
     Box(modifier = Modifier.padding(bottom = 5.dp)) {
         Card(
             modifier = Modifier
-                .padding(top = 12.dp)
-                .clickable {
-                    event(NotificationEvent.ChangeToRead(list[itemIndex].time))
-                },
+                .padding(top = 12.dp),
             elevation = CardDefaults.cardElevation(10.dp),
             shape = RoundedCornerShape(5.dp),
             colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
@@ -148,10 +145,7 @@ fun swipeItem(
                     text = list[itemIndex].title, style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = MyDate.differenceOfDates(
-                        list[itemIndex].time,
-                        System.currentTimeMillis().toString()
-                    ), style = MaterialTheme.typography.bodySmall
+                    text = MyDate.differenceOfDatesNoMultiple(list[itemIndex].time,System.currentTimeMillis().toString()) , style = MaterialTheme.typography.bodySmall
                 )
             }
             Text(

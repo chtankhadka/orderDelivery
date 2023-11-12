@@ -6,6 +6,7 @@ import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.model.ProfileRequestResponse
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
+import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,14 +16,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
-    private val firestoreUseCases: FirestoreUseCases,
-    private val preference: Preference
+    private val firestoreUseCases: FirestoreUseCases, private val preference: Preference
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserProfileState())
     val state: StateFlow<UserProfileState> = _state
+
     init {
         getProfile()
     }
+
     fun getProfile() {
         viewModelScope.launch {
             val profile = firestoreUseCases.getUserProfile(preference.tableName ?: "test")
@@ -47,11 +49,21 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-
     val onEvent: (event: UserProfileEvent) -> Unit = { event ->
         viewModelScope.launch {
             when (event) {
                 UserProfileEvent.UpdateProfile -> {
+
+                    _state.update {
+                        it.copy(
+                            infoMsg = Message.Loading(
+                                title = "Profile",
+                                description = "Updating",
+                                isCancellable = false,
+                                yesNoRequired = false
+                            )
+                        )
+                    }
                     val update = firestoreUseCases.updateUserProfile(
                         ProfileRequestResponse(
                             name = state.value.name,
@@ -70,10 +82,15 @@ class UserProfileViewModel @Inject constructor(
 
                         is Resource.Success -> {
                             if (update.data) {
-                                if (state.value.phoneNo.isNotBlank() && state.value.address.isNotBlank() && state.value.name.isNotBlank()){
+                                if (state.value.phoneNo.isNotBlank() && state.value.address.isNotBlank() && state.value.name.isNotBlank()) {
                                     preference.phone = state.value.phoneNo
                                 }
 
+                            }
+                            _state.update {
+                                it.copy(
+                                    infoMsg = null
+                                )
                             }
                         }
                     }
@@ -103,7 +120,7 @@ class UserProfileViewModel @Inject constructor(
                     }
                 }
 
-                UserProfileEvent.DismissInfoMsg ->{
+                UserProfileEvent.DismissInfoMsg -> {
                     _state.update {
                         it.copy(
                             infoMsg = null

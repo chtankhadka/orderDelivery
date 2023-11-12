@@ -6,6 +6,7 @@ import com.chetan.orderdelivery.R
 import com.chetan.orderdelivery.data.Resource
 import com.chetan.orderdelivery.data.local.Preference
 import com.chetan.orderdelivery.data.model.PushNotificationRequest
+import com.chetan.orderdelivery.data.model.StoreNotificationRequestResponse
 import com.chetan.orderdelivery.domain.repository.OneSignalRepository
 import com.chetan.orderdelivery.domain.use_cases.db.DBUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
@@ -23,7 +24,7 @@ class MyOrderViewModel @Inject constructor(
     private val firestoreUseCases: FirestoreUseCases,
     private val preference: Preference,
     private val oneSignalRepository: OneSignalRepository,
-    private val dbUseCases: DBUseCases
+    private val dbUseCases: DBUseCases,
 ) : ViewModel() {
     private val _state = MutableStateFlow(MyOrderState())
     val state: StateFlow<MyOrderState> = _state
@@ -142,6 +143,99 @@ class MyOrderViewModel @Inject constructor(
                         it.copy(
                             infoMsg = null
                         )
+                    }
+                }
+
+                MyOrderEvent.GetFoodStatus -> {
+                    _state.update {
+                        it.copy(
+                            infoMsg = Message.Loading(
+                                title = "Order Status",
+                                description = "Please wait. We will inform you soon.",
+                                isCancellable = false,
+                                yesNoRequired = false
+                            )
+                        )
+                    }
+                    val askStatus = firestoreUseCases.setAdminNotification(
+                        StoreNotificationRequestResponse(
+                            body = "${preference.userName} wants to know status.",
+                            title = "Food Status",
+                            time = System.currentTimeMillis().toString(),
+                            readNotice = false,
+                        )
+                    )
+                    when(askStatus){
+                        is Resource.Failure -> {
+
+                        }
+                        Resource.Loading -> {
+
+                        }
+                        is Resource.Success -> {
+                            _state.update {
+                                it.copy(
+                                    infoMsg = null
+                                )
+                            }
+                            try {
+                                val sendNotification =
+                                    oneSignalRepository.pushNotification(
+                                        PushNotificationRequest(
+                                            contents = mapOf("en" to "${preference.userName?:"someone"}  wants to know status"),
+                                            headings = mapOf("en" to "Order Status"),
+                                            include_player_ids = dbUseCases.getAllIds()
+                                                .map { it.id }
+                                        )
+                                    )
+                                when (sendNotification) {
+                                    is Resource.Failure -> {
+//                        _state.update {
+//                            it.copy(
+//                                infoMsg = Message.Error(
+//                                    lottieImage = R.raw.delete_simple,
+//                                    yesNoRequired = false,
+//                                    isCancellable = false,
+//                                    description = "Error..."
+//                                )
+//                            )
+//
+//                        }
+                                    }
+
+                                    Resource.Loading -> {
+
+                                    }
+
+                                    is Resource.Success -> {
+//                        _state.update {
+//                            it.copy(
+//                                infoMsg = Message.Success(
+//                                    lottieImage = R.raw.pencil_walking,
+//                                    isCancellable = true,
+//                                    description = "Success"
+//                                )
+//                            )
+//                        }
+                                    }
+                                }
+                            } catch (e: HttpException) {
+                                _state.update {
+                                    it.copy(
+
+                                    )
+                                }
+                                e.printStackTrace()
+                            } catch (e: Throwable) {
+                                _state.update {
+                                    it.copy(
+
+                                    )
+                                }
+                                e.printStackTrace()
+                            }
+
+                        }
                     }
                 }
             }

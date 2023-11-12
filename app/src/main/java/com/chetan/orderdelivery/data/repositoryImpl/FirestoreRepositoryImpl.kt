@@ -608,6 +608,72 @@ class FirestoreRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getAdminNotification(): Resource<List<StoreNotificationRequestResponse>> {
+        return try {
+            val noticeList = mutableListOf<StoreNotificationRequestResponse>()
+            val querySnapshot =
+                firestore
+                    .collection("admin")
+                    .document("notification")
+                    .collection("notifications")
+                    .get()
+                    .await()
+            for (document in querySnapshot.documents) {
+                val order = document.toObject<StoreNotificationRequestResponse>()
+                order?.let {
+                    noticeList.add(it)
+                }
+            }
+            Resource.Success(noticeList)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun setAdminNotification(data: StoreNotificationRequestResponse): Resource<Boolean> {
+        return try {
+            var isSuccess = false
+            firestore.collection("admin")
+                .document("notification")
+                .collection("notifications")
+                .document(data.time)
+                .set(data)
+                .addOnSuccessListener {
+                    isSuccess = true
+                }.addOnFailureListener {
+                    isSuccess = false
+                }.await()
+            Resource.Success(isSuccess)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+    override suspend fun deleteAdminNotification(id: String): Resource<Boolean> {
+        return try {
+            var read = false
+            firestore
+                .collection("admin")
+                .document("notification")
+                .collection("notifications")
+                .document(id)
+                .delete()
+                .addOnSuccessListener {
+                    read = true
+                }
+                .addOnFailureListener {
+                    read = false
+                }
+            Resource.Success(read)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Failure(e)
+        }
+    }
+
+
 
     override suspend fun updateRating(foodId: String, foodRating: Float): Resource<Boolean> {
         return try {

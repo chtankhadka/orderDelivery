@@ -8,7 +8,6 @@ open class Destination(open val route: String) {
         object CommonSignInScreen : Destination("common-sign-in-screen")
 
 
-
         //Admin
         object AdminDashboardScreen : Destination("admin-dashboard-screen")
         object AdminAddFoodScreen : Destination("admin-add-food-screen")
@@ -17,6 +16,7 @@ open class Destination(open val route: String) {
         object AdminSendNoticeScreen : Destination("admin-send-notice-screen")
         object AdminEditFoodScreen : Destination("admin-edit-food-screen/{foodId}")
         object AdminAddOfferScreen : Destination("admin-add-offer-screen")
+        object AdminNotificationScreen: Destination("admin-notification-screen")
 
 
         //User
@@ -29,6 +29,6 @@ open class Destination(open val route: String) {
         object UserMoreScreen: Destination("user-more-screen")
         object UserSearchScreen: Destination("user-search-screen")
         object UserFoodCategoryScreen: Destination("user-food-category-screen")
-        object UserProfileScreen: Destination("user-profile-screen")
+        object UserProfileScreen: Destination("user-profile-screen/{isCompleteBack}")
     }
 }

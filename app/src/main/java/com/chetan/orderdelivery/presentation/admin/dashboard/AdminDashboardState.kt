@@ -9,5 +9,6 @@ data class AdminDashboardState(
     val changeDeliveryState: Boolean = false,
     val isNewOrder : Boolean = false,
     val newRequestList:  List<RealtimeModelResponse> = emptyList(),
+    val isNewNotification: Boolean = false,
     override val infoMsg: Message? = null
 ) : OrderDeliveryScreenState(infoMsg)

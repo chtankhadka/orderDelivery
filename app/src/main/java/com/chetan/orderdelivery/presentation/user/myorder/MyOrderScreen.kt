@@ -12,6 +12,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -149,6 +150,9 @@ fun MyOrderScreen(
                             style = MaterialTheme.typography.headlineMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
+                        IconButton(onClick = { event(MyOrderEvent.GetFoodStatus)}) {
+                            Icon(imageVector = Icons.Default.DeliveryDining, contentDescription ="" )
+                        }
                         Button(
                             onClick = {
                                       event(MyOrderEvent.CancelOrder(orders.orderId))

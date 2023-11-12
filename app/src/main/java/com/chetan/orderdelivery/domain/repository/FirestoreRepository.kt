@@ -70,6 +70,9 @@ interface FirestoreRepository {
     suspend fun addOffer(url: String) : Resource<Boolean>
     suspend fun getOffer() : Resource<String>
     suspend fun getAdminHistories() : Resource<List<RequestFoodOrder>>
+    suspend fun getAdminNotification(): Resource<List<StoreNotificationRequestResponse>>
+    suspend fun setAdminNotification(data: StoreNotificationRequestResponse): Resource<Boolean>
+    suspend fun deleteAdminNotification(id: String): Resource<Boolean>
 
     suspend fun updateRating(
         foodId : String,

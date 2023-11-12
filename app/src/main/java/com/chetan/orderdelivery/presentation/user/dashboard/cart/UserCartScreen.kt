@@ -98,7 +98,10 @@ fun UserCartScreen(
 
         }, confirmButton = {
             Button(onClick = {
-                navController.navigate(Destination.Screen.UserProfileScreen.route)
+                navController.navigate(Destination.Screen.UserProfileScreen.route.replace(
+                    "{isCompleteBack}",
+                    "Y"
+                ))
             }) {
                 Text(text = "Complete Profile")
             }

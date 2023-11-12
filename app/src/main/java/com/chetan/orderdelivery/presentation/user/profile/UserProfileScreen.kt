@@ -1,5 +1,6 @@
 package com.chetan.orderdelivery.presentation.user.profile
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -36,16 +37,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.chetan.orderdelivery.Destination
 import com.chetan.orderdelivery.common.Constants
 import com.chetan.orderdelivery.presentation.admin.food.addfood.OutlinedTextFieldAddFood
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
+import com.chetan.orderdelivery.presentation.common.utils.CleanNavigate.cleanNavigate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UserProfileScreen(
     nav: NavHostController,
     state: UserProfileState,
-    event: (event: UserProfileEvent) -> Unit
+    event: (event: UserProfileEvent) -> Unit,
+    isCompleteBack: String
 ) {
 
     var alertDialog by remember {
@@ -79,6 +83,15 @@ fun UserProfileScreen(
             }
         })
     }
+    BackHandler {
+        if (isCompleteBack == "Y"){
+            nav.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
+        }
+        else{
+            nav.popBackStack()
+        }
+
+    }
     Scaffold(topBar = {
         TopAppBar(modifier = Modifier.padding(horizontal = 5.dp), title = {
             Text(
@@ -87,7 +100,12 @@ fun UserProfileScreen(
             )
         }, navigationIcon = {
             IconButton(onClick = {
-                nav.popBackStack()
+                if (isCompleteBack == "Y"){
+                    nav.cleanNavigate(Destination.Screen.UserDashboardScreen.route)
+                }
+                else{
+                    nav.popBackStack()
+                }
             }) {
                 Icon(
                     tint = MaterialTheme.colorScheme.primary,
@@ -157,7 +175,7 @@ fun UserProfileScreen(
                 onClick = {
                     alertDialog = true
                 }) {
-                Text(text = "Send", color = Color.White)
+                Text(text = "Update", color = Color.White)
             }
 
         }

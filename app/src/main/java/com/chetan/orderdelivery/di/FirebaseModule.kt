@@ -11,11 +11,13 @@ import com.chetan.orderdelivery.domain.repository.StorageRepository
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddFood
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddOffer
 import com.chetan.orderdelivery.domain.use_cases.firestore.AddToCart
+import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteAdminNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteCartItem
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteMyHistory
 import com.chetan.orderdelivery.domain.use_cases.firestore.DeleteNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.FirestoreUseCases
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetAdminHistories
+import com.chetan.orderdelivery.domain.use_cases.firestore.GetAdminNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetCartItems
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFavouriteList
 import com.chetan.orderdelivery.domain.use_cases.firestore.GetFoodItem
@@ -34,6 +36,7 @@ import com.chetan.orderdelivery.domain.use_cases.firestore.RateIt
 import com.chetan.orderdelivery.domain.use_cases.firestore.ReadNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.RemoveUserOrder
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetAddress
+import com.chetan.orderdelivery.domain.use_cases.firestore.SetAdminNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetFavourite
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetNotification
 import com.chetan.orderdelivery.domain.use_cases.firestore.SetOneSignalId
@@ -50,7 +53,6 @@ import com.chetan.orderdelivery.domain.use_cases.realtime.RealtimeUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.DeleteImage
 import com.chetan.orderdelivery.domain.use_cases.storage.FirestorageUseCases
 import com.chetan.orderdelivery.domain.use_cases.storage.InsertImage
-import com.chetan.orderdelivery.service.NotificationServiceExtension
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -133,9 +135,12 @@ object FirebaseModule {
             getNotification = GetNotification(repository = repository),
             readNotification = ReadNotification(repository = repository),
             deleteNotification = DeleteNotification(repository = repository),
+            getAdminNotification = GetAdminNotification(repository = repository),
+            setAdminNotification = SetAdminNotification(repository = repository),
+            deleteAdminNotification = DeleteAdminNotification(repository = repository),
 
-            addOffer =  AddOffer(repository = repository),
-            getOffer =  GetOffer(repository = repository),
+            addOffer = AddOffer(repository = repository),
+            getOffer = GetOffer(repository = repository),
             getCartItems = GetCartItems(repository = repository),
             addToCart = AddToCart(repository = repository),
             deleteCartItem = DeleteCartItem(repository = repository),

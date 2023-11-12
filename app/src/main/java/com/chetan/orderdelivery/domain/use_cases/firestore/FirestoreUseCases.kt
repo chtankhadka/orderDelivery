@@ -25,6 +25,9 @@ data class FirestoreUseCases(
     val getNotification : GetNotification,
     val readNotification : ReadNotification,
     val deleteNotification: DeleteNotification,
+    val getAdminNotification: GetAdminNotification,
+    val setAdminNotification: SetAdminNotification,
+    val deleteAdminNotification: DeleteAdminNotification,
 
     val addFood : AddFood,
     val addOffer : AddOffer,

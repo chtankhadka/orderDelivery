@@ -28,6 +28,8 @@ import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodScreen
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodViewModel
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateScreen
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateViewModel
+import com.chetan.orderdelivery.presentation.admin.notification.AdminNotificationScreen
+import com.chetan.orderdelivery.presentation.admin.notification.AdminNotificationViewModel
 import com.chetan.orderdelivery.presentation.admin.orderdetails.AdminOrderDetailScreen
 import com.chetan.orderdelivery.presentation.admin.orderdetails.AdminOrderDetailViewModel
 import com.chetan.orderdelivery.presentation.admin.sendnotice.AdminSendNoticeScreen
@@ -209,12 +211,14 @@ fun AppNavHost(
         }
 
         composable(Destination.Screen.UserProfileScreen.route) {
+            val isCompleteBack = it.arguments?.getString("isCompleteBack")!!
             val viewModel = hiltViewModel<UserProfileViewModel>()
             val state = viewModel.state.collectAsStateWithLifecycle().value
             UserProfileScreen(
                 nav = navController,
                 state = state,
-                event = viewModel.onEvent
+                event = viewModel.onEvent,
+                isCompleteBack = isCompleteBack
             )
         }
 
@@ -303,6 +307,15 @@ fun AppNavHost(
                 navController = navController,
                 event = viewModel.onEvent,
                 state = viewModel.state.collectAsStateWithLifecycle().value,
+            )
+        }
+
+        composable(Destination.Screen.AdminNotificationScreen.route) {
+            val viewModel = hiltViewModel<AdminNotificationViewModel>()
+            AdminNotificationScreen(
+                nav = navController,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                event = viewModel.onEvent
             )
         }
     }
