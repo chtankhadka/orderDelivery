@@ -7,6 +7,7 @@ import com.chetan.orderdelivery.presentation.common.components.dialogs.Message
 
 data class FoodOrderDescriptionState(
     val deliveryState: Boolean = false,
+    val deliveryStateShowDialog: Boolean = true,
     val phoneNo : String = "",
     val location : String = "",
     val foodItemDetails : AllFoods = AllFoods(),

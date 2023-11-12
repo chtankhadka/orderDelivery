@@ -118,7 +118,6 @@ fun UserFavouriteScreen(
                                                 .padding(horizontal = 10.dp),
                                             verticalArrangement = Arrangement.Bottom
                                         ) {
-                                            Row(verticalAlignment = Alignment.CenterVertically) {
                                                 Text(
                                                     text = foodDetails.foodName,
                                                     modifier = Modifier,
@@ -126,16 +125,6 @@ fun UserFavouriteScreen(
                                                         color = MaterialTheme.colorScheme.onPrimaryContainer
                                                     )
                                                 )
-                                                RatingBar(
-                                                    size = 15.dp,
-                                                    value = 4f,
-                                                    style = RatingBarStyle.Fill(activeColor = Color.Green),
-                                                    onValueChange = {},
-                                                    onRatingChanged = {},
-                                                    numOfStars = 5,
-                                                    spaceBetween = 1.dp
-                                                )
-                                            }
 
                                             Text(
                                                 modifier = Modifier.fillMaxWidth(0.7f),
@@ -173,18 +162,27 @@ fun UserFavouriteScreen(
                                                 contentDescription = ""
                                             )
                                         }
-
-                                        IconButton(
-                                            modifier = Modifier.padding(end = 5.dp),
-                                            onClick = {
-                                                event(
-                                                    UserFavouriteEvent.RemoveFavourite(id = foodDetails.foodId)
+                                        Column(modifier = Modifier.padding(end = 5.dp)) {
+                                            IconButton(
+                                                onClick = {
+                                                    event(
+                                                        UserFavouriteEvent.RemoveFavourite(id = foodDetails.foodId)
+                                                    )
+                                                }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Favorite,
+                                                    tint = MaterialTheme.colorScheme.error,
+                                                    contentDescription = "favourite"
                                                 )
-                                            }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Favorite,
-                                                tint = MaterialTheme.colorScheme.error,
-                                                contentDescription = "favourite"
+                                            }
+                                            RatingBar(
+                                                size = 15.dp,
+                                                value = 4f,
+                                                style = RatingBarStyle.Fill(activeColor = Color.Green),
+                                                onValueChange = {},
+                                                onRatingChanged = {},
+                                                numOfStars = 5,
+                                                spaceBetween = 1.dp
                                             )
                                         }
                                     }

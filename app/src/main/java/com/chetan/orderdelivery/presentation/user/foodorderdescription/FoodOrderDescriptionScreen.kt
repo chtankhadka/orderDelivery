@@ -114,7 +114,7 @@ fun FoodOrderDescriptionScreen(
             })
     }
 
-    if (!state.deliveryState){
+    if (!state.deliveryStateShowDialog){
         AlertDialog(title = {
             Text(
                 text = "Profile", style = TextStyle(
@@ -192,8 +192,7 @@ fun FoodOrderDescriptionScreen(
                 modifier = Modifier
                     .padding(it)
                     .padding(horizontal = 5.dp)
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState()),
+                    .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(5.dp)
             ) {
@@ -210,7 +209,7 @@ fun FoodOrderDescriptionScreen(
 
                         })
                 }
-                Column(modifier = Modifier.weight(1f)) {
+                Column(modifier = Modifier.weight(1f).verticalScroll(rememberScrollState())) {
                     if (pagerImages.size != 0) {
                         HorizontalPager(
                             state = pagerState

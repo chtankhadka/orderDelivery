@@ -42,7 +42,8 @@ class UserCartViewModel @Inject constructor(
                     }
                     is Resource.Success -> {
 
-                        _state.update { it.copy(deliveryState = data.data) }
+                        _state.update { it.copy(deliveryState = data.data,deliveryStateShowDialog = data.data)
+                        }
                     }
                 }
             }

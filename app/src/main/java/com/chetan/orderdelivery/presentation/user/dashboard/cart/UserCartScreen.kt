@@ -112,7 +112,7 @@ fun UserCartScreen(
             })
     }
 
-    if (!state.deliveryState){
+    if (!state.deliveryStateShowDialog){
         AlertDialog(title = {
             Text(
                 text = "Profile", style = TextStyle(
