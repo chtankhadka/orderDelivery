@@ -28,6 +28,8 @@ import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodScreen
 import com.chetan.orderdelivery.presentation.admin.food.addfood.AddFoodViewModel
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateScreen
 import com.chetan.orderdelivery.presentation.admin.food.ratingUpdate.RatingUpdateViewModel
+import com.chetan.orderdelivery.presentation.admin.history.AdminHistoryScreen
+import com.chetan.orderdelivery.presentation.admin.history.AdminHistoryViewModel
 import com.chetan.orderdelivery.presentation.admin.notification.AdminNotificationScreen
 import com.chetan.orderdelivery.presentation.admin.notification.AdminNotificationViewModel
 import com.chetan.orderdelivery.presentation.admin.orderdetails.AdminOrderDetailScreen
@@ -313,6 +315,14 @@ fun AppNavHost(
         composable(Destination.Screen.AdminNotificationScreen.route) {
             val viewModel = hiltViewModel<AdminNotificationViewModel>()
             AdminNotificationScreen(
+                nav = navController,
+                state = viewModel.state.collectAsStateWithLifecycle().value,
+                event = viewModel.onEvent
+            )
+        }
+        composable(Destination.Screen.AdminOrderHistory.route) {
+            val viewModel = hiltViewModel<AdminHistoryViewModel>()
+            AdminHistoryScreen(
                 nav = navController,
                 state = viewModel.state.collectAsStateWithLifecycle().value,
                 event = viewModel.onEvent

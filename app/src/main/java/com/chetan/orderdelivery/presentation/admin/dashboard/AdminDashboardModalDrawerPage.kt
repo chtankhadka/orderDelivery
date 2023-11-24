@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.DeliveryDining
 import androidx.compose.material.icons.filled.FreeBreakfast
+import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocalDrink
 import androidx.compose.material.icons.filled.LocalPizza
@@ -51,6 +52,7 @@ fun AdminDashboardModalDrawerPage(
         MenuItem.UpdateRating,
         MenuItem.SendNotice,
         MenuItem.AddOffer,
+        MenuItem.OrderHistory
 
     )
     val bottomMenuItem = listOf(
@@ -240,6 +242,7 @@ sealed class MenuItem(val icon: ImageVector, val label: String) {
     data object AddFoodItem : MenuItem(icon = Icons.Default.LocalPizza, label = "Add Food Item")
     data object UpdateRating : MenuItem(icon = Icons.Default.StarRate, label = "Update Rating")
     data object SendNotice : MenuItem(icon = Icons.Default.NotificationAdd, label = "Send Notice")
+    data object OrderHistory: MenuItem(icon = Icons.Default.History, label = "Order History")
     data object AddOffer : MenuItem(icon = Icons.Default.FreeBreakfast, label = "Add Offer")
     data object DarkMode : MenuItem(icon = Icons.Default.DarkMode, label = "Dark Mode")
     data object StopDelivery : MenuItem(icon = Icons.Default.DeliveryDining, label = "Delivery")

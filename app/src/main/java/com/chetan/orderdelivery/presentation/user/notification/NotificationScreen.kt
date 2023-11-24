@@ -101,7 +101,6 @@ fun NotificationScreen(
 
                             }) {
                                 Icon(
-
                                     imageVector = Icons.Default.Delete,
                                     contentDescription = "",
                                     tint = MaterialTheme.colorScheme.error
@@ -136,7 +135,7 @@ fun swipeItem(
                 },
             elevation = CardDefaults.cardElevation(10.dp),
             shape = RoundedCornerShape(5.dp),
-            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary)
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.secondary)
         ) {
             Row(
                 modifier = Modifier

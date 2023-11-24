@@ -14,8 +14,8 @@ android {
         applicationId "com.chetan.orderdelivery"
         minSdk 26
         targetSdk 34
-        versionCode 11
-        versionName "11"
+        versionCode 12
+        versionName "12"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -169,5 +169,17 @@ dependencies {
 
 //    implementation 'co.yml:ycharts:2.1.0'
 //    implementation 'com.github.jaikeerthick:Composable-Graphs:v1.0'
+
+    // For Jetpack Compose.
+    implementation("com.patrykandpatrick.vico:compose:1.13.0")
+
+    // For `compose`. Creates a `ChartStyle` based on an M3 Material Theme.
+    implementation("com.patrykandpatrick.vico:compose-m3:1.13.0")
+
+    // Houses the core logic for charts and other elements. Included in all other modules.
+    implementation("com.patrykandpatrick.vico:core:1.13.0")
+
+    // For the view system.
+    implementation("com.patrykandpatrick.vico:views:1.13.0")
 
 }

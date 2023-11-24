@@ -142,8 +142,8 @@ class OrderCheckoutViewModel @Inject constructor(
 
                         val npjDistance = npjDirectionResult?.routes?.get(0)?.legs?.get(0)?.distance
                         val klpDistance = klpDirectionResult?.routes?.get(0)?.legs?.get(0)?.distance
-                        if ((npjDistance?.inMeters ?: 0L) <= 4000L || (klpDistance?.inMeters
-                                ?: 0L) <= 4000L
+                        if ((npjDistance?.inMeters ?: 0L) <= 5000L || (klpDistance?.inMeters
+                                ?: 0L) <= 5000L
                         ) {
                             if ((npjDistance?.inMeters
                                     ?: 0L) < (klpDistance?.inMeters ?: 0L)

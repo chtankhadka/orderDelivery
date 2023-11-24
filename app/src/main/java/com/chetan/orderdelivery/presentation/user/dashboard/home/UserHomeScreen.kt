@@ -200,7 +200,7 @@ fun UserHomeScreen(
 
                     }
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(15.dp), content = {
-                        items(state.allFoods.sortedBy { it.foodRating }) { foodItem ->
+                        items(state.allFoods.filter { it.foodType == "Popular" } .sortedBy { it.foodRating }) { foodItem ->
                             Box(
                                 modifier = Modifier
                                     .padding(5.dp)

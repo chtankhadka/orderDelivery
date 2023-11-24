@@ -56,7 +56,9 @@ class AdminOrderDetailViewModel @Inject constructor(
                         is Resource.Success -> {
                             if (updateUserHistory.data) {
                                 val updateDeliverHistory =
-                                    firestoreUseCases.updateDeliveredHistory(data = orderIdDetails)
+                                    firestoreUseCases.updateDeliveredHistory(data = orderIdDetails.copy(
+                                        dateTime = orderIdDetails.dateTime.split(" ").first().split("-").drop(1).joinToString("-")
+                                    ))
                                 when (updateDeliverHistory) {
                                     is Resource.Failure -> {}
                                     Resource.Loading -> {

@@ -254,6 +254,10 @@ fun AdminDashboardScreen(
                         MenuItem.StopDelivery -> {
                             onEvent(AdminDashboardEvent.ChangeDeliveryState)
                         }
+
+                        MenuItem.OrderHistory -> {
+                            navController.navigate(Destination.Screen.AdminOrderHistory.route)
+                        }
                     }
                 })
         }) {

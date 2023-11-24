@@ -140,8 +140,6 @@ fun UserCartScreen(
             )
     }
 
-
-
     val context = LocalContext.current
     val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
     val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
@@ -314,8 +312,9 @@ fun UserCartScreen(
                                                     Text(
                                                         text = food.foodName,
                                                         style = MaterialTheme.typography.headlineMedium.copy(
-
-                                                        )
+                                                        ),
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
                                                     )
                                                     Text(
                                                         text = food.foodDetails,
