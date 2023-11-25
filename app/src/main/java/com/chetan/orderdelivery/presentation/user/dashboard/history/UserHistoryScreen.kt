@@ -50,11 +50,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
-import com.chetan.orderdelivery.common.Constants
-import com.chetan.orderdelivery.data.model.RatingRequestResponse
 import com.chetan.orderdelivery.presentation.common.components.dialogs.MessageDialog
 import com.chetan.orderdelivery.presentation.common.utils.MyDate
-import com.google.protobuf.Empty
 import com.gowtham.ratingbar.RatingBar
 import com.gowtham.ratingbar.RatingBarStyle
 
@@ -95,7 +92,9 @@ fun UserHistoryScreen(
                 ) {
                     Text(text = "Rate it", style = MaterialTheme.typography.headlineMedium)
                     AsyncImage(
-                        modifier = Modifier.size(120.dp).clip(shape = CircleShape),
+                        modifier = Modifier
+                            .size(120.dp)
+                            .clip(shape = CircleShape),
                         model = foodUrl,
                         contentDescription = "",
                         contentScale = ContentScale.Crop
@@ -120,7 +119,13 @@ fun UserHistoryScreen(
                             modifier = Modifier.weight(1f),
                             elevation = ButtonDefaults.buttonElevation(10.dp),
                             onClick = {
-                                event(UserHistoryEvent.RateIt(id = foodId, url = foodUrl, value = rateValue))
+                                event(
+                                    UserHistoryEvent.RateIt(
+                                        id = foodId,
+                                        url = foodUrl,
+                                        value = rateValue
+                                    )
+                                )
                                 rateDialog = false
                             },
                         ) {
@@ -218,12 +223,12 @@ fun UserHistoryScreen(
                     ) {
                         history.orderList.forEach { foodDetails ->
                             Spacer(modifier = Modifier.height(5.dp))
-                            Box(modifier = Modifier){
+                            Box(modifier = Modifier) {
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(top = 30.dp, bottom = 10.dp, end = 20.dp)
-                                        .height(150.dp)
+                                        .height(170.dp)
                                         .onGloballyPositioned {
                                             cardSize.value = Size(
                                                 it.size.width.toFloat(), it.size.height.toFloat()
@@ -244,37 +249,36 @@ fun UserHistoryScreen(
                                             verticalAlignment = Alignment.CenterVertically,
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
-                                            Row(
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(5.dp)
-                                            ) {
-                                                Text(
-                                                    text = foodDetails.foodName,
-                                                    modifier = Modifier,
-                                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                                        color = MaterialTheme.colorScheme.onPrimaryContainer
-                                                    )
-                                                )
-                                                RatingBar(
-                                                    size = 15.dp,
-                                                    value = foodDetails.foodRating,
-                                                    style = RatingBarStyle.Default,
-                                                    onValueChange = {},
-                                                    onRatingChanged = {},
-                                                    numOfStars = 5,
-                                                    spaceBetween = 1.dp
-                                                )
-                                            }
-
+                                            RatingBar(
+                                                size = 15.dp,
+                                                value = foodDetails.foodRating,
+                                                style = RatingBarStyle.Default,
+                                                onValueChange = {},
+                                                onRatingChanged = {},
+                                                numOfStars = 5,
+                                                spaceBetween = 1.dp
+                                            )
                                             Text(
-                                                modifier = Modifier, text = MyDate.differenceOfDates(
-                                                    System.currentTimeMillis().toString(),
+                                                modifier = Modifier,
+                                                text = MyDate.differenceOfDatesNoMultiple(
+                                                   history.orderId,
                                                     System.currentTimeMillis().toString()
-                                                ), style = MaterialTheme.typography.bodySmall.copy(
-                                                    color = Color.White, fontWeight = FontWeight.Bold
+                                                ),
+                                                style = MaterialTheme.typography.bodySmall.copy(
+                                                    color = Color.White,
+                                                    fontWeight = FontWeight.Bold
                                                 )
                                             )
                                         }
+                                        Text(
+                                            text = foodDetails.foodName,
+                                            modifier = Modifier,
+                                            style = MaterialTheme.typography.headlineSmall.copy(
+                                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                            ),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
 
                                         Text(
                                             modifier = Modifier.fillMaxWidth(0.7f),
@@ -288,8 +292,6 @@ fun UserHistoryScreen(
                                             overflow = TextOverflow.Ellipsis
                                         )
                                     }
-
-
                                 }
                                 Row(
                                     modifier = Modifier
@@ -318,9 +320,11 @@ fun UserHistoryScreen(
                                         colors = CardDefaults.cardColors(Color.Transparent)
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Default.Favorite, tint = if (true) Color(
+                                            imageVector = Icons.Default.Favorite,
+                                            tint = if (true) Color(
                                                 179, 5, 5
-                                            ) else Color(179, 164, 164), contentDescription = "favourite"
+                                            ) else Color(179, 164, 164),
+                                            contentDescription = "favourite"
                                         )
                                     }
                                 }
