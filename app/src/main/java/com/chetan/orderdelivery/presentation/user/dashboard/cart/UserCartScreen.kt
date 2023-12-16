@@ -319,6 +319,7 @@ fun UserCartScreen(
                                                     Text(
                                                         text = food.foodDetails,
                                                         maxLines = 2,
+                                                        minLines = 2,
                                                         style = MaterialTheme.typography.bodyMedium.copy(
                                                             color = MaterialTheme.colorScheme.outline,
                                                             fontWeight = FontWeight.Bold

@@ -347,10 +347,11 @@ fun UserHomeScreen(
                                     AsyncImage(
                                         modifier = Modifier
                                             .size(100.dp)
-                                            .padding(5.dp),
+                                            .padding(5.dp)
+                                            .clip(shape = CircleShape),
                                         model = foodItem.faceImgUrl,
                                         contentDescription = null,
-                                        contentScale = ContentScale.FillWidth
+                                        contentScale = ContentScale.Crop
                                     )
                                     Text(
                                         modifier = Modifier.width(100.dp),

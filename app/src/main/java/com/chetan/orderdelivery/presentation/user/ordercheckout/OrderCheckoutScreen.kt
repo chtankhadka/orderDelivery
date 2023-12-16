@@ -12,15 +12,18 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
@@ -390,14 +393,18 @@ fun OrderCheckoutScreen(
                     Text(text = if (canOrder){
                         state.distance + "  "+ state.locationAddress
                     }else "Sorry we cannot give delivery here", modifier = Modifier.weight(1f))
-                    IconButton(onClick = {
+                    LoadLottieAnimation(modifier = Modifier
+                        .clickable {
                         openMap = true
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.LocationOn,
-                            contentDescription = "location"
-                        )
-                    }
+                    }.height(80.dp), image = R.raw.location_up_down)
+//                    IconButton(onClick = {
+//
+//                    }) {
+//                        Icon(
+//                            imageVector = Icons.Default.LocationOn,
+//                            contentDescription = "location"
+//                        )
+//                    }
                 }
             }
             Column(
@@ -428,12 +435,15 @@ fun OrderCheckoutScreen(
                                 Column {
                                     Text(
                                         text = food.foodName,
-                                        style = MaterialTheme.typography.headlineMedium.copy()
+                                        style = MaterialTheme.typography.headlineMedium.copy(),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
                                     )
 
                                     Text(
                                         text = food.foodDetails,
                                         maxLines = 2,
+                                        minLines = 2,
                                         style = MaterialTheme.typography.bodyMedium.copy(
                                             color = MaterialTheme.colorScheme.outline,
                                             fontWeight = FontWeight.Bold

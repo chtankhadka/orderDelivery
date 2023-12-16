@@ -95,7 +95,7 @@ fun UserFavouriteScreen(
                 when (page) {
                     0 -> {
                         LazyColumn(modifier = Modifier.fillMaxSize(), content = {
-                            items(state.allFoods.filter { it.foodType != "drinks" }) { foodDetails ->
+                            items(state.allFoods.filter { it.foodType != "Drinks" }) { foodDetails ->
                                 Box(modifier = Modifier.padding(horizontal = 25.dp)) {
                                     Card(
                                         modifier = Modifier
@@ -215,7 +215,7 @@ fun UserFavouriteScreen(
 
                     1 -> {
                         LazyColumn(modifier = Modifier.fillMaxSize(), content = {
-                            items(state.allFoods.filter { it.foodType == "drinks" }) { foodDetails ->
+                            items(state.allFoods.filter { it.foodType == "Drinks" }) { foodDetails ->
                                 Box(modifier = Modifier.padding(horizontal = 25.dp)) {
                                     Card(
                                         modifier = Modifier
